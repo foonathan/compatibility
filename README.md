@@ -24,7 +24,7 @@ include(your/dir/comp_base.cmake)
 include(cpp11_lang/noexcept.cmake)
 include(cpp11_lang/constexpr.cmake)
 include(cpp11_lib/max_align_t.cmake)
-target_link_libraries(target PUBLIC comp_target)
+target_link_libraries(target PUBLIC comp_target comp_cpp11) # comp_cpp11 activates C++11 for me, see next section
 ```
 
 And the header file, let's name it `config.hpp`:
@@ -73,10 +73,12 @@ The better way is to let the client decide which standard to use by explicitly l
 
 ## Feature Checks
 
-This library currently tests for the following features.
 A feature named `xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `{PREFIX}HAS_XXX` in a file named `xxx.hpp`.
 For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `{PREFIX}XXX`.
 Prefix and namespace name can be controlled via the CMake options `COMP_PREFIX` (default: `COMP_`) and `COMP_NAMESPACE` (default: `comp`).
+*To use a C++11 or 14 feature, the target must obviously activate C++11 or 14!*
+
+This library currently tests for the following features.
 The code below assumes no prefix and a namespace name of `comp`.
 
 ### C++11 language features:
