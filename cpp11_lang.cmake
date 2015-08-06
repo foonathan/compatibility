@@ -2,8 +2,6 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-# cpp11_lang.cmake - all C++11 language features compatibilties
-
 include(cpp11_lang/alignof.cmake)
 include(cpp11_lang/constexpr.cmake)
 include(cpp11_lang/decltype.cmake)
