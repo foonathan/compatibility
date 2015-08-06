@@ -40,7 +40,7 @@ endif()
 # interface library that allows the use of generated compatiblity headers
 # it sets the appropriate include directories
 add_library(comp_target INTERFACE)
-target_include_directories(comp_target INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(comp_target INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/comp)
 
 # option to change the macro prefix or namespace name
 set(COMP_PREFIX "COMP_" CACHE STRING "prefix for all generated macros")
@@ -73,7 +73,7 @@ macro(comp_gen_header name workaround)
         set(result "0")
     endif()
 
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${name}.hpp
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/comp/${name}.hpp
 "#define ${COMP_PREFIX}HAS_${macro_name} ${result}
 ${workaround}")
 endmacro()
