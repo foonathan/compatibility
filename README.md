@@ -1,4 +1,4 @@
-# Compatibilty
+# Compatibility
 
 This library consists of a bunch of CMake files that can be included to test for C++ features.
 They will also generate a header to make the result available as macro and workaround code - like a `CONSTEXPR` macro - 
@@ -142,7 +142,7 @@ Get them all by including `ext.cmake`.
 As you probably noted, there are *many* features missing.
 I wrote this library in a few hours and concentrated on the most important features for me.
 If you want to extend it or improve a workaround, please don't hesitate to fork and PR
-(or just write an issue and let me take care of it, when I have time, if your lazy).
+(or just write an issue and let me take care of it, when I have time, if you are lazy).
 
 To write a new feature check, just create a new file in the appropriate subdirectory.
 You only need to call two CMake macros I have defined:
