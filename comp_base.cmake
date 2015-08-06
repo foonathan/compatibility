@@ -9,6 +9,33 @@ if(TARGET comp_target)
 endif()
 
 include(CheckCXXSourceCompiles)
+include(CheckCXXCompilerFlag)
+
+# possible C++11 flags
+CHECK_CXX_COMPILER_FLAG("-std=c++11" has_cpp11_flag) # newer GCC/Clang
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" has_cpp0x_flag) # older GCC/Clang
+
+if(has_cpp11_flag)
+    set(cpp11_flag "-std=c++11")
+elseif(has_cpp0x_flag)
+    set(cpp11_flag "-std=c++0x")
+else()
+    message(WARNING "No required C++11 flag found, this could either be the case or missing support for your compiler.")
+    set(cpp11_flag "")
+endif()
+
+# possible C++14 flags
+CHECK_CXX_COMPILER_FLAG("-std=c++14" has_cpp14_flag) # newer GCC/Clang
+CHECK_CXX_COMPILER_FLAG("-std=c++1y" has_cpp1y_flag) # older GCC/Clang
+
+if(has_cpp14_flag)
+    set(cpp14_flag "-std=c++14")
+elseif(has_cpp1y_flag)
+    set(cpp14_flag "-std=c++1y")
+else()
+    message(WARNING "No required C++14 flag found, this could either be the case or missing support for your compiler.")
+    set(cpp14_flag "")
+endif()
 
 # interface library that allows the use of generated compatiblity headers
 # it sets the appropriate include directories
@@ -22,7 +49,7 @@ set(COMP_NAMESPACE "comp" CACHE STRING "namespace name")
 # checks if ${code}, which is a feature test code, compiles
 # provides option COMP_HAS_${name} defaulted to result
 # flags specify the required compiler flags for the test
-# and can be obtained via cpp11/14_flags from cpp_standard.cmake
+# and can be obtained via cpp11/14_flags
 macro(comp_check_feature code name flags)
     set(CMAKE_REQUIRED_FLAGS "${flags}")
     check_cxx_source_compiles("${code}" has_${name})
