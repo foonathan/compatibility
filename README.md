@@ -137,6 +137,19 @@ make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
 
 Get them all by including `cpp14_lib.cmake`.
 
+### Environment
+
+Features regarding the general environment.
+Note: These checks here aren't that great, it is recommended to set option explicitly.
+
+feature name|example|workaround, if any
+------------|-------|------------------
+exception_support|support for exception handling|`THROW(Ex)`, `RETHROW_EX`, fallback to `std::abort()`; `TRY`, fallback to `if (true)`, CATCH_ALL, fallback to `if (false)`
+rtti_support|support for RTTI|`comp::polymorhpic_cast`, fallback to `static_cast`
+threading_support|support for threading|no workaround
+
+Get them all by including `env.cmake`.
+
 ### Common extensions
 
 feature name|example|workaround, if any
