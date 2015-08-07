@@ -13,8 +13,11 @@ In addition, it provides interface libraries to activate C++11 or 14 for CMake t
 
 2\. Link to the interface library `comp_target` to setup the include directory for the files containing the macro definitions.
 
-3\. Create a new header in your code - i.e. `compatibility.hpp` - that `#include`s `<cstddef>` (important!),
-followed by all the generated headers you want. A macro can be overriden by defining it prior to the `#include`.
+3\. Create a new header in your code - i.e. `compatibility.hpp` - that `#include`s `<cstddef>` (important!)
+followed by all the generated headers you want.
+To prevent accidentally including the generated headers from another file, you need to define `COMP_IN_PARENT_HEADER` before the includes
+and undefine it afterwards.
+A macro can be overriden by defining it prior to the `#include`.
 
 Example for a target that needs C++11 and wants compatibility for `noexcept`, `constexpr` and `std::max_align_t`:
 ```
@@ -25,7 +28,7 @@ include(your/dir/cpp_standard.cmake) # for comp_cpp11
 include(your/dir/cpp11_lang/noexcept.cmake)
 include(your/dir/cpp11_lang/constexpr.cmake)
 include(your/dir/cpp11_lib/max_align_t.cmake)
-target_link_libraries(target PUBLIC comp_target comp_cpp11) # comp_cpp11 activates C++11 for me, see next section
+target_link_libraries(target PRIVATE comp_target comp_cpp11) # comp_cpp11 activates C++11 for me, see next section
 ```
 
 And the header file, let's name it `config.hpp`:
@@ -36,9 +39,11 @@ And the header file, let's name it `config.hpp`:
 
 #include <cstddef>
 
+#define COMP_IN_PARENT_HEADER // headers can only be included when this is defined
 #include <comp/noexcept.hpp>
 #include <comp/constexpr.hpp>
 #include <comp/max_align_t.hpp>
+#undef COMP_IN_PARENT_HEADER // undefine it, to prevent accidentally including them elsewhere
 
 #endif
 ```

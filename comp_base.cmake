@@ -12,8 +12,8 @@ include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
 
 # possible C++11 flags
-CHECK_CXX_COMPILER_FLAG("-std=c++11" has_cpp11_flag) # newer GCC/Clang
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" has_cpp0x_flag) # older GCC/Clang
+check_cxx_compiler_flag("-std=c++11" has_cpp11_flag) # newer GCC/Clang
+check_cxx_compiler_flag("-std=c++0x" has_cpp0x_flag) # older GCC/Clang
 
 if(has_cpp11_flag)
     set(cpp11_flag "-std=c++11")
@@ -25,8 +25,8 @@ else()
 endif()
 
 # possible C++14 flags
-CHECK_CXX_COMPILER_FLAG("-std=c++14" has_cpp14_flag) # newer GCC/Clang
-CHECK_CXX_COMPILER_FLAG("-std=c++1y" has_cpp1y_flag) # older GCC/Clang
+check_cxx_compiler_flag("-std=c++14" has_cpp14_flag) # newer GCC/Clang
+check_cxx_compiler_flag("-std=c++1y" has_cpp1y_flag) # older GCC/Clang
 
 if(has_cpp14_flag)
     set(cpp14_flag "-std=c++14")
@@ -74,6 +74,10 @@ macro(comp_gen_header name workaround)
     endif()
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/comp/${name}.hpp
-"#define ${COMP_PREFIX}HAS_${macro_name} ${result}
+"#ifndef COMP_IN_PARENT_HEADER
+#error \"Don't include this file directly, only into a proper parent header.\"
+#endif
+
+#define ${COMP_PREFIX}HAS_${macro_name} ${result}
 ${workaround}")
 endmacro()
