@@ -16,14 +16,15 @@ In addition, it provides interface libraries to activate C++11 or 14 for CMake t
 3\. Create a new header in your code - i.e. `compatibility.hpp` - that `#include`s `<cstddef>` (important!),
 followed by all the generated headers you want. A macro can be overriden by defining it prior to the `#include`.
 
-Example for a target that wants compatibility for `noexcept`, `constexpr` and `std::max_align_t`:
+Example for a target that needs C++11 and wants compatibility for `noexcept`, `constexpr` and `std::max_align_t`:
 ```
 add_executable(target ...)
 
 include(your/dir/comp_base.cmake)
-include(cpp11_lang/noexcept.cmake)
-include(cpp11_lang/constexpr.cmake)
-include(cpp11_lib/max_align_t.cmake)
+include(your/dir/cpp_standard.cmake) # for comp_cpp11
+include(your/dir/cpp11_lang/noexcept.cmake)
+include(your/dir/cpp11_lang/constexpr.cmake)
+include(your/dir/cpp11_lib/max_align_t.cmake)
 target_link_libraries(target PUBLIC comp_target comp_cpp11) # comp_cpp11 activates C++11 for me, see next section
 ```
 
@@ -48,7 +49,7 @@ Usage like so:
 #include "config.hpp"
 
 // use workaround macro, if there is one
-COMP_CONSTEXPR int foo() {...}
+COMP_CONSTEXPR_FNC int foo() {...}
 
 // or make conditional compilation (although for noexcept is a macro)
 #if COMP_HAS_NOEXCEPT
@@ -74,8 +75,11 @@ The better way is to let the client decide which standard to use by explicitly l
 ## Feature Checks
 
 A feature named `xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `{PREFIX}HAS_XXX` in a file named `xxx.hpp`.
-For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `{PREFIX}XXX`.
+
+For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `{PREFIX}XXX`. Those macros often use compiler extensions. If there is none (or a lacking implementation...), an error message will be emmitted. To prevent this, simply define the macro as no-op or as you want prior to including the file.
+
 Prefix and namespace name can be controlled via the CMake options `COMP_PREFIX` (default: `COMP_`) and `COMP_NAMESPACE` (default: `comp`).
+
 *To use a C++11 or 14 feature, the target must obviously activate C++11 or 14!*
 
 This library currently tests for the following features.
@@ -142,7 +146,7 @@ Get them all by including `ext.cmake`.
 As you probably noted, there are *many* features missing.
 I wrote this library in a few hours and concentrated on the most important features for me.
 If you want to extend it or improve a workaround, please don't hesitate to fork and PR
-(or just write an issue and let me take care of it, when I have time, if you are lazy).
+(or just write an issue and let me take care of it, when I have time, if you're lazy).
 
 To write a new feature check, just create a new file in the appropriate subdirectory.
 You only need to call two CMake macros I have defined:
