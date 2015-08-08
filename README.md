@@ -59,6 +59,12 @@ void func() COMP_NOEXCEPT
 }
 ```
 
+If you don't care about the workarounds, but just want C++11 or 14, simply call:
+```
+comp_target_features(tgt PUBLIC CPP11) # or CPP14
+```
+This will only activate C++11/14 without doing anything else.
+
 ## Usage
 
 You only need to download `comp_base.cmake` and `include()` it in your `CMakeLists.txt`.
