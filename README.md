@@ -71,6 +71,12 @@ This will only activate C++11/14 without doing anything else.
 
 ## Usage
 
+The only file needed is `comp_base.cmake`.
+You can either manually download it, use CMakes `file(DOWNLOAD` facility,
+or use git submodules.
+The branch `git-submodule` only contains `comp_base.cmake` and is thus perfect for this purpose.
+Run `git submodule add -b "git-submodule" https://github.com/foonathan/compatibility.git` to initialize it and fetch the file.
+
 You only need to download `comp_base.cmake` and `include()` it in your `CMakeLists.txt`.
 It generates CMake options - `COMP_CPP11_FLAG` and `COMP_CPP14_FLAG` - storing the calculated compiler flag for a given standard,
 useful if you want to override it, if it can't find one for your compiler,
