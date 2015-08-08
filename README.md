@@ -11,13 +11,17 @@ to use the features anyway.
 
 It also provides the automatic standard deduction from `target_compile_features()` to activate the right standard.
 
-Here is an example. First the `CMakeLists.txt`:
+## Example
 
+If you only want the C++ standard activation, simply `include()` `comp_base.cmake` and replace `target_compile_features()` by `comp_compile_features()`.
+
+This is a `CMakeLists.txt` for a more advanced usage:
 ```
 # suppose we have a target 'tgt'
 include(your/dir/to/comp_base.cmake) # only file you need to download, rest is taken as needed
 
 # we want constexpr, noexcept, std::max_align_t and rtti_support
+# instead of cpp11_lang/constexpr and cpp11_lang/noexcept, you could also write cxx_constexpr/cxx_noexcept
 comp_target_features(tgt PUBLIC cpp11_lang/constexpr cpp11_lang/noexcept cpp11_lib/max_align_t env/rtti_support)
 ```
 
@@ -68,7 +72,9 @@ This will only activate C++11/14 without doing anything else.
 ## Usage
 
 You only need to download `comp_base.cmake` and `include()` it in your `CMakeLists.txt`.
-Among other things necessary by the feature modules, it provides the following function:
+It generates CMake options - `COMP_CPP11_FLAG` and `COMP_CPP14_FLAG` - storing the calculated compiler flag for a given standard,
+useful if you want to override it, if it can't find one for your compiler,
+it also provides the following function:
 
     comp_target_features(<target> <PRIVATE|PUBLIC|INTERFACE> <features...>
                          [NOPREFIX] [PREFIX <prefix] [NAMESPACE <namespace>]
@@ -215,12 +221,12 @@ If you want to extend it or improve a workaround, please don't hesitate to fork 
 (or just write an issue and let me take care of it, when I have time, if you're lazy).
 
 To write a new feature check, just create a new file in the appropriate subdirectory.
-You only need to call two CMake macros I have defined:
+You only need to call two CMake function defined in `comp_base.cmake`:
 
 1. `comp_check_feature` - It takes three parameters. The first is a minimal test code that uses this feature.
 It is recommended to avoid using multiple features (i.e. avoid `auto`, `nullptr` and the like).
 The second parameter is the name of the feature, this should follow my naming convention.
-The third is a list of required compiler flags, pass `${cpp11_flag}` or `${cpp14_flag}` or `""`.
+The third is a list of required compiler flags, use the variables `${cpp11_flag}` or `${cpp14_flag}` for that or simply `""`.
 Based on the flags the language standard for a feature is also determined.
 
 2. `comp_gen_header` - It takes two parameters. The first is the name of the feature, must be the same as above.
@@ -228,4 +234,5 @@ The second is code that will be appended to the file. It is used for workarounds
 If you define macros, wrap them in an `#ifndef ... #endif` and use `${COMP_PREFIX}` as prefix.
 If you define anything else, do it inside namespace `${COMP_NAMESPACE}` or a sub namespace.
 
+Note: Do **not** include `comp_base.cmake!`.
 Look at a few other files for example implementations.
