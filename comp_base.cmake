@@ -4,12 +4,47 @@
 
 # comp_base.cmake - base functionality for all compatibility files
 
-if(TARGET comp_target)
-    return()
-endif()
-
 include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
+include(CMakeParseArguments)
+
+macro(_comp_setup_feature path feature)
+    if(NOT EXISTS "${comp_path}/${feature}.cmake")
+        file(DOWNLOAD https://raw.githubusercontent.com/foonathan/compatibility/master/${feature}.cmake
+                     ${path}/${feature}.cmake
+                     SHOW_PROGESS
+                     STATUS status
+                     LOG log)
+        list(GET status 0 status_code)
+        list(GET status 1 status_string)
+        if(NOT status_code EQUAL 0)
+            message(FATAL_ERROR "error downloading feature file ${feature}.cmake: ${status_string} - ${log}")
+        endif()
+    endif()
+    include("${path}/${feature}.cmake")
+endmacro()
+
+# setups certain features for a target
+macro(comp_target_features target include_policy)
+    cmake_parse_arguments(COMP "" "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" "" ${ARGN})
+    if(NOT DEFINED COMP_PREFIX)
+        set(COMP_PREFIX "COMP_")
+    endif()
+    if(NOT DEFINED COMP_NAMESPACE)
+        set(COMP_NAMESPACE "comp")
+    endif()
+    if(NOT DEFINED COMP_CMAKE_PATH)
+        set(COMP_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
+    if(NOT DEFINED COMP_INCLUDE_PATH)
+        set(COMP_INCLUDE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
+
+    target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
+    foreach(feature ${COMP_UNPARSED_ARGUMENTS})
+        _comp_setup_feature(${COMP_CMAKE_PATH} ${feature})
+    endforeach()
+endmacro()
 
 # possible C++11 flags
 check_cxx_compiler_flag("-std=c++11" has_cpp11_flag) # newer GCC/Clang
@@ -37,15 +72,6 @@ else()
     set(cpp14_flag "")
 endif()
 
-# interface library that allows the use of generated compatiblity headers
-# it sets the appropriate include directories
-add_library(comp_target INTERFACE)
-target_include_directories(comp_target INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
-
-# option to change the macro prefix or namespace name
-set(COMP_PREFIX "COMP_" CACHE STRING "prefix for all generated macros")
-set(COMP_NAMESPACE "comp" CACHE STRING "namespace name")
-
 # checks if ${code}, which is a feature test code, compiles
 # provides option COMP_HAS_${name} defaulted to result
 # flags specify the required compiler flags for the test
@@ -62,7 +88,7 @@ macro(comp_check_feature code name flags)
     endif()
 endmacro()
 
-# writes test result into a new header file ${CMAKE_CURRENT_BINARY_DIR}/${name}.hpp
+# writes test result into a new header file ${CMAKE_CURRENT_BINARY_DIR}/comp/${name}.hpp
 # also write workaround code
 # test result is available via macor ${COMP_PREFIX}HAS_${name in uppercase}
 macro(comp_gen_header name workaround)
