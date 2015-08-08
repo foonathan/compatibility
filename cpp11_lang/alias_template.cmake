@@ -4,5 +4,5 @@
 
 comp_check_feature("template <typename A, typename B> struct foo {};
                     template <typename A> using bar = foo<A, int>;
-                    int main(){}" template_alias "${cpp11_flag}")
-comp_gen_header(template_alias "")
+                    int main(){}" alias_template "${cpp11_flag}")
+comp_gen_header(alias_template "")

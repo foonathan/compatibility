@@ -142,6 +142,7 @@ The code below assumes no prefix and a namespace name of `comp`.
 
 feature name|example|workaround, if any
 ------------|-------|------------------
+alias_template|`template <typename T> using my_map = std::map<int, T>;`|no workaround
 alignof|`alignof(int)`|`ALIGNOF(x)`, fallback to compiler extension, if available
 constexpr|`constexpr int foo()`|`CONSTEXPR`, fallback to `const`, `CONSTEXPR_FNC`, fallback to `inline`
 decltype|`decltype(a)`|`DECLTYPE(x)`, fallback to `typeof` extension, if available
@@ -152,7 +153,6 @@ nullptr|`void* ptr = nullptr;`|`NULLPTR`, fallback to [null pointer idiom](https
 override|`void bar() override;`|`OVERRIDE`, fallback to nothing
 rvalue_ref|`int&& a = 4;`|no workaround
 static_assert|`static_assert(std::is_integral<T>::value, "");`|`STATIC_ASSERT(Expr, Msg)`, fallback to simple undefined struct technique
-template_alias|`template <typename T> using my_map = std::map<int, T>;`|no workaround
 thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to `__thread` extension or similar, if available - **does not call constructors or destructors!**
 
 Get them all by specifying `cpp11_lang`.

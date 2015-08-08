@@ -2,6 +2,7 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
+include(cpp11_lang/alias_template.cmake)
 include(cpp11_lang/alignof.cmake)
 include(cpp11_lang/constexpr.cmake)
 include(cpp11_lang/decltype.cmake)
@@ -12,5 +13,4 @@ include(cpp11_lang/nullptr.cmake)
 include(cpp11_lang/override.cmake)
 include(cpp11_lang/rvalue_ref.cmake)
 include(cpp11_lang/static_assert.cmake)
-include(cpp11_lang/template_alias.cmake)
 include(cpp11_lang/thread_local.cmake)
