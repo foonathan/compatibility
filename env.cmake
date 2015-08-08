@@ -3,5 +3,6 @@
 # found in the top-level directory of this distribution.
 
 include(env/exception_support.cmake)
+include(env/hosted_implementation.cmake)
 include(env/rtti_support.cmake)
 include(env/threading_support.cmake)

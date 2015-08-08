@@ -215,9 +215,10 @@ Get them all by specifying `cpp14_lib`.
 Features regarding the general environment. These features are all in the subdirectory `env`.
 Note: These checks here aren't that great, it is recommended to set option explicitly.
 
-feature name|example|workaround, if any
+feature name|description|workaround, if any
 ------------|-------|------------------
 exception_support|support for exception handling|`THROW(Ex)`, `RETHROW_EX`, fallback to `std::abort()`; `TRY`, fallback to `if (true)`, CATCH_ALL, fallback to `if (false)`
+hosted_implementation|freestanding vs hosted|no workaround, but alias macro `HOSTED_IMPLEMENTATION`, since `HAS_HOSTED_IMPLEMENTATION` doesn't sound nice
 rtti_support|support for RTTI|`comp::polymorhpic_cast`, fallback to `static_cast`
 threading_support|support for threading|no workaround
 
