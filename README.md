@@ -76,6 +76,7 @@ You can either manually download it, use CMakes `file(DOWNLOAD` facility,
 or use git submodules.
 The branch `git-submodule` only contains `comp_base.cmake` and is thus perfect for this purpose.
 Run `git submodule add -b "git-submodule" https://github.com/foonathan/compatibility.git` to initialize it and fetch the file.
+Then you only need to run `git submodule update --remote` to update it to the newest version.
 
 You only need to download `comp_base.cmake` and `include()` it in your `CMakeLists.txt`.
 It generates CMake options - `COMP_CPP11_FLAG` and `COMP_CPP14_FLAG` - storing the calculated compiler flag for a given standard,

@@ -12,12 +12,12 @@ comp_gen_header(get_new_handler
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_GET_NEW_HANDLER
-    std::new_handler get_new_handler()
+    inline std::new_handler get_new_handler()
     {
         return std::get_new_handler();
     }
 #else
-    std::new_handler get_new_handler()
+    inline std::new_handler get_new_handler()
     {
         std::new_handler h = std::set_new_handler(0);
         std::set_new_handler(h);

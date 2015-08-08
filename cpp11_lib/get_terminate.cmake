@@ -12,12 +12,12 @@ comp_gen_header(get_terminate
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_GET_TERMINATE
-    std::terminate_handler get_terminate()
+    inline std::terminate_handler get_terminate()
     {
         return std::get_terminate();
     }
 #else
-    std::terminate_handler get_terminate()
+    inline std::terminate_handler get_terminate()
     {
         std::terminate_handler h = std::set_terminate(0);
         std::set_terminate(h);
