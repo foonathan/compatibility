@@ -155,7 +155,7 @@ static_assert|`static_assert(std::is_integral<T>::value, "");`|`STATIC_ASSERT(Ex
 template_alias|`template <typename T> using my_map = std::map<int, T>;`|no workaround
 thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to `__thread` extension or similar, if available - **does not call constructors or destructors!**
 
-Get them all by specifying `cpp11_lang.cmake`.
+Get them all by specifying `cpp11_lang`.
 
 ### C++11 library features:
 
@@ -165,7 +165,7 @@ get_new_handler|`std::get_new_handler()`|`comp::get_new_handler()`, fallback to 
 get_terminate|`std::get_terminate()`|`comp::get_terminate()`, same as above
 max_align_t|`std::max_align_t`|`comp::max_align_t`, fallback to `::max_align_t` or a struct with a `long double` and `long long`
 
-Get them all by specifying `cpp11_lib.cmake`.
+Get them all by specifying `cpp11_lib`.
 
 ### C++14 language features:
 
@@ -175,7 +175,7 @@ deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallb
 general_constexpr|generalized constexpr|no workaround
 variable_template|`template <typename T> T pi;`|no workaround
 
-Get them all by specifying `cpp14_lang.cmake`.
+Get them all by specifying `cpp14_lang`.
 
 ### C++14 library features:
 
@@ -183,7 +183,7 @@ feature name|example|workaround, if any
 ------------|-------|------------------
 make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
 
-Get them all by specifying `cpp14_lib.cmake`.
+Get them all by specifying `cpp14_lib`.
 
 ### Environment
 
@@ -196,7 +196,7 @@ exception_support|support for exception handling|`THROW(Ex)`, `RETHROW_EX`, fall
 rtti_support|support for RTTI|`comp::polymorhpic_cast`, fallback to `static_cast`
 threading_support|support for threading|no workaround
 
-Get them all by specifying `env.cmake`.
+Get them all by specifying `env`.
 
 ### Common extensions
 
