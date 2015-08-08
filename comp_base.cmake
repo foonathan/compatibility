@@ -26,8 +26,10 @@ endmacro()
 
 # setups certain features for a target
 macro(comp_target_features target include_policy)
-    cmake_parse_arguments(COMP "" "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" "" ${ARGN})
-    if(NOT DEFINED COMP_PREFIX)
+    cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14" "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" "" ${ARGN})
+    if(COMP_NOPREFIX)
+        set(COMP_PREFIX "")
+    elseif(NOT DEFINED COMP_PREFIX)
         set(COMP_PREFIX "COMP_")
     endif()
     if(NOT DEFINED COMP_NAMESPACE)
@@ -40,10 +42,24 @@ macro(comp_target_features target include_policy)
         set(COMP_INCLUDE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
     endif()
 
+    set(_comp_need_cpp11 FALSE)
+    set(_comp_need_cpp14 FALSE)
+
     target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
         _comp_setup_feature(${COMP_CMAKE_PATH} ${feature})
     endforeach()
+
+    # first explicit option, then implicit; 14 over 11
+    if(COMP_CPP14)
+        target_compile_options(${target} PRIVATE ${cpp14_flag})
+    elseif(COMP_CPP11)
+        target_compile_options(${target} PRIVATE ${cpp11_flag})
+    elseif(_comp_need_cpp14)
+        target_compile_options(${target} PRIVATE ${cpp14_flag})
+    elseif(_comp_need_cpp11)
+        target_compile_options(${target} PRIVATE ${cpp11_flag})
+    endif()
 endmacro()
 
 # possible C++11 flags
@@ -77,6 +93,16 @@ endif()
 # flags specify the required compiler flags for the test
 # and can be obtained via cpp11/14_flags
 macro(comp_check_feature code name flags)
+    string(FIND "${flags}" "${cpp14_flag}" res)
+    if(NOT (res EQUAL -1))
+        set(_comp_need_cpp14 TRUE)
+    else()
+        string(FIND "${flags}" "${cpp11_flag}" res)
+        if(NOT (res EQUAL -1))
+            set(_comp_need_cpp11 TRUE)
+        endif()
+    endif()
+
     set(CMAKE_REQUIRED_FLAGS "${flags}")
     check_cxx_source_compiles("${code}" has_${name})
 
