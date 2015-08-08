@@ -146,24 +146,32 @@ The code below assumes no prefix and a namespace name of `comp`.
 
 ### C++11 language features:
 
-feature name|example|workaround, if any
-------------|-------|------------------
-alias_template|`template <typename T> using my_map = std::map<int, T>;`|no workaround
-alignof|`alignof(int)`|`ALIGNOF(x)`, fallback to compiler extension, if available
-constexpr|`constexpr int foo()`|`CONSTEXPR`, fallback to `const`, `CONSTEXPR_FNC`, fallback to `inline`
-decltype|`decltype(a)`|`DECLTYPE(x)`, fallback to `typeof` extension, if available
-delete_fnc|`void foo() = delete;`|no workaround
-literal_op|`operator""`|no workaround
-noexcept|`void foo() noexcept;`|`NOEXCEPT`, fallback to nothing, `NOEXCEPT_OP(x)`, fallback to `false`
-nullptr|`void* ptr = nullptr;`|`NULLPTR`, fallback to [null pointer idiom](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/nullptr), also `comp::nullptr_t`
-override|`void bar() override;`|`OVERRIDE`, fallback to nothing
-rvalue_ref|`int&& a = 4;`|no workaround
-static_assert|`static_assert(std::is_integral<T>::value, "");`|`STATIC_ASSERT(Expr, Msg)`, fallback to simple undefined struct technique
-thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to `__thread` extension or similar, if available - **does not call constructors or destructors!**
+These features are all in the subdirectory `cpp11_lang`.
 
-Get them all by specifying `cpp11_lang`.
+feature name|alternative name|example|workaround, if any
+------------|----------------|-------|------------------
+alias_template|cxx_alias_templas|`template <typename T> using my_map = std::map<int, T>;`|no workaround
+alignas|cxx_alignas|`alignas(int) char c`|`ALIGNAS(x)`, fallback to compiler extension, if available
+alignof|cxx_alignof|`alignof(int)`|`ALIGNOF(x)`, fallback to compiler extension, if available
+constexpr|cxx_constexpr|`constexpr int foo()`|`CONSTEXPR`, fallback to `const`; `CONSTEXPR_FNC`, fallback to `inline`
+decltype|cxx_decltype|`decltype(a)`|`DECLTYPE(x)`, fallback to `typeof` extension, if available
+delete_fnc|cxx_deleted_functions|`void foo() = delete;`|no workaround
+explicit_conversion_op|cxx_explicit_conversion|`explicit operator bool()`|no workaround
+final|cxx_final|`void bar() final;`|no workaround
+literal_op|cxx_user_literals|`operator""`|no workaround
+noexcept|cxx_noexcept|`void foo() noexcept;`|`NOEXCEPT`, fallback to nothing; `NOEXCEPT_OP(x)`, fallback to `false`
+noreturn|none|`[[noreturn]] void foo();`|`NORETURN`, fallback to compiler extension, if available
+nullptr|cxx_nullptr|`void* ptr = nullptr;`|`NULLPTR`, fallback to [null pointer idiom](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/nullptr); also `comp::nullptr_t`
+override|cxx_override|`void bar() override;`|`OVERRIDE`, fallback to nothing
+rvalue_ref|cxx_rvalue_references|`int&& a = 4;`|no workaround
+static_assert|cxx_static_assert|`static_assert(std::is_integral<T>::value, "");`|`STATIC_ASSERT(Expr, Msg)`, fallback to simple undefined struct technique
+thread_local|cxx_thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to `__thread` extension or similar, if available - **does not call constructors or destructors!**
+
+Get them all by specifying `cpp11_lang`..
 
 ### C++11 library features:
+
+These features are all in the subdirectory `cpp11_lib`.
 
 feature name|example|workaround, if any
 ------------|-------|------------------
@@ -175,15 +183,19 @@ Get them all by specifying `cpp11_lib`.
 
 ### C++14 language features:
 
-feature name|example|workaround, if any
-------------|-------|------------------
-deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
-general_constexpr|generalized constexpr|no workaround
-variable_template|`template <typename T> T pi;`|no workaround
+These features are all in the subdirectory `cpp14_lang`.
+
+feature name|alternative name|example|workaround, if any
+------------|----------------|-------|------------------
+deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
+general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
+variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
 
 Get them all by specifying `cpp14_lang`.
 
 ### C++14 library features:
+
+These features are all in the subdirectory `cpp14_lib`.
 
 feature name|example|workaround, if any
 ------------|-------|------------------
@@ -193,7 +205,7 @@ Get them all by specifying `cpp14_lib`.
 
 ### Environment
 
-Features regarding the general environment.
+Features regarding the general environment. These features are all in the subdirectory `env`.
 Note: These checks here aren't that great, it is recommended to set option explicitly.
 
 feature name|example|workaround, if any
@@ -205,6 +217,8 @@ threading_support|support for threading|no workaround
 Get them all by specifying `env`.
 
 ### Common extensions
+
+These features are all in the subdirectory `ext`.
 
 feature name|example|workaround, if any
 ------------|-------|------------------
