@@ -5,3 +5,4 @@
 include(cpp11_lib/get_new_handler.cmake)
 include(cpp11_lib/get_terminate.cmake)
 include(cpp11_lib/max_align_t.cmake)
+include(cpp11_lib/to_string.cmake)

@@ -185,6 +185,7 @@ feature name|example|workaround, if any
 get_new_handler|`std::get_new_handler()`|`comp::get_new_handler()`, fallback to old `std::set_new_handler(nullptr)` technique - **not thread safe**
 get_terminate|`std::get_terminate()`|`comp::get_terminate()`, same as above
 max_align_t|`std::max_align_t`|`comp::max_align_t`, fallback to `::max_align_t` or a struct with a `long double` and `long long`
+to_string|`std::to_string(54)`|`comp::to_string()`, fallback to `std::sprintf()`
 
 Get them all by specifying `cpp11_lib`.
 
