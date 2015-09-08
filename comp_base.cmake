@@ -38,7 +38,7 @@ _comp_check_flags(COMP_CPP14_FLAG "C++14" std_cpp14_flag -std=c++14 std_cpp1y_fl
 # INTERNAL
 # parses arguments for comp_compile_features
 macro(_comp_parse_arguments)
-    cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14" "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" "" ${ARGN})
+    cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14;NOFLAGS" "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" "" ${ARGN})
     if(COMP_NOPREFIX)
         set(COMP_PREFIX "")
     elseif(NOT DEFINED COMP_PREFIX)
@@ -118,6 +118,10 @@ function(comp_target_features target include_policy)
         _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
         include(${COMP_CMAKE_PATH}/${feature}.cmake)
     endforeach()
+
+    if(COMP_NOFLAGS)
+        return()
+    endif()
 
     # first explicit option, then implicit; 14 over 11
     if(COMP_CPP14)
