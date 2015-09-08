@@ -84,9 +84,9 @@ useful if you want to override it, if it can't find one for your compiler,
 it also provides the following function:
 
     comp_target_features(<target> <PRIVATE|PUBLIC|INTERFACE> <features...>
-                         [NOPREFIX] [PREFIX <prefix] [NAMESPACE <namespace>]
+                         [NOPREFIX | PREFIX <prefix] [NAMESPACE <namespace>]
                          [CMAKE_PATH <path>] [INCLUDE_PATH <include_path>]
-                         [CPP11] [CPP14])
+                         [NOFLAGS | CPP11 | CPP14])
 
 Ignoring all the other options, it is similar like `target_compile_features()`.
 It takes a list of features to activate for a certain target.
@@ -134,8 +134,10 @@ This behavior can be customized with the other options:
 default is `${CMAKE_CURRENT_BINARY_DIR}` for both.
 `INCLUDE_PATH` is also given to `target_include_directories()`, but note that the generated headers are in a subfolder `comp`.
 
-* `CPP11`/`CPP14`: Override for the standard detection, if you want to have a newer standard than deduced from the features,
+* `NOFLAGS`/`CPP11`/`CPP14`: Override for the standard detection, if you want to have a newer standard than deduced from the features,
 or a lower (not recommended). They have priority over the deduction, C++14 over C++11.
+Specify `NOFLAGS` if you do not want to have any compiler flags set.
+The latter is useful for `INTERFACE` libraries which are only there to run the tests and generate the options and headers.
 
 ## Feature Reference
 
