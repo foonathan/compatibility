@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Jonathan Müller <jonathanmueller.dev@gmail.com>
+# Copyright (C) 2015 Jonathan MÃ¼ller <jonathanmueller.dev@gmail.com>
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
@@ -17,15 +17,14 @@ function(_comp_check_flags result standard_name)
     foreach(flag ${ARGN})
         if(NOT DEFINED name)
             set(name ${flag})
-            continue()
+        else()
+            check_cxx_compiler_flag("${flag}" ${name})
+            if(${name})
+                set(${result} ${flag} CACHE STRING "Flag to activate ${standard_name}")
+                return()
+            endif()
+            unset(name)
         endif()
-
-        check_cxx_compiler_flag("${flag}" ${name})
-        if(${name})
-            set(${result} ${flag} CACHE STRING "Flag to activate ${standard_name}")
-            return()
-        endif()
-        unset(name)
     endforeach()
     message(WARNING "No required ${standard_name} flag found,\
                     this could either be the case or missing support for your compiler.")
