@@ -4,7 +4,7 @@
 
 # uses macro __STDC_HOSTED__
 comp_check_feature("#include <cstddef>
-                    #if !__STDC_HOSTED__
+                    #if !_MSC_VER && !__STDC_HOSTED__
                         #error \"no hosted\"
                     #endif
                     
