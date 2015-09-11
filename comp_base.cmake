@@ -139,18 +139,18 @@ endfunction()
 # provides option COMP_HAS_${name} defaulted to result
 # flags specify the required compiler flags for the test
 # and can be obtained via cpp11/14_flags
-function(comp_check_feature code name flags)
-    string(FIND "${flags}" "${cpp14_flag}" res)
+function(comp_check_feature code name)
+    string(FIND "${ARGN}" "${cpp14_flag}" res)
     if(NOT (res EQUAL -1))
         set(need_cpp14 TRUE PARENT_SCOPE)
     else()
-        string(FIND "${flags}" "${cpp11_flag}" res)
+        string(FIND "${ARGN}" "${cpp11_flag}" res)
         if(NOT (res EQUAL -1))
             set(need_cpp11 TRUE PARENT_SCOPE)
         endif()
     endif()
 
-    set(CMAKE_REQUIRED_FLAGS "${flags}")
+    set(CMAKE_REQUIRED_FLAGS "${ARGN}")
     check_cxx_source_compiles("${code}" has_${name})
 
     string(TOUPPER "${name}" macro_name)
