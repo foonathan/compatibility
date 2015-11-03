@@ -55,7 +55,7 @@ void func() COMP_NOEXCEPT
 {
     // use a workaround typedef
     comp::max_align_t foo;
-    
+
     // or conditional compilation
 #if COMP_HAS_RTTI_SUPPORT
     do_sth();
@@ -63,11 +63,11 @@ void func() COMP_NOEXCEPT
 }
 ```
 
-If you don't care about the workarounds, but just want C++11 or 14, simply call:
+If you don't care about the workarounds, but just want a specific standard, simply call:
 ```
-comp_target_features(tgt PUBLIC CPP11) # or CPP14
+comp_target_features(tgt PUBLIC CPP11) # or CPP14 or CPP17
 ```
-This will only activate C++11/14 without doing anything else.
+This will only activate C++11/14/17 without doing anything else.
 
 ## Usage
 
@@ -79,14 +79,14 @@ Run `git submodule add -b "git-submodule" https://github.com/foonathan/compatibi
 Then you only need to run `git submodule update --remote` to update it to the newest version.
 
 You only need to download `comp_base.cmake` and `include()` it in your `CMakeLists.txt`.
-It generates CMake options - `COMP_CPP11_FLAG` and `COMP_CPP14_FLAG` - storing the calculated compiler flag for a given standard,
+It generates CMake options - `COMP_CPP11_FLAG`, `COMP_CPP14_FLAG` and `COMP_CPP17_FLAG` - storing the calculated compiler flag for a given standard,
 useful if you want to override it, if it can't find one for your compiler,
 it also provides the following function:
 
     comp_target_features(<target> <PRIVATE|PUBLIC|INTERFACE> <features...>
                          [NOPREFIX | PREFIX <prefix] [NAMESPACE <namespace>]
                          [CMAKE_PATH <path>] [INCLUDE_PATH <include_path>]
-                         [NOFLAGS | CPP11 | CPP14])
+                         [NOFLAGS | CPP11 | CPP14 | CPP17])
 
 Ignoring all the other options, it is similar like `target_compile_features()`.
 It takes a list of features to activate for a certain target.
@@ -104,7 +104,7 @@ or if the test is poorly written (please contact me in this case!)
 It contains at least a macro `<PREFIX>HAS_XXX` with the same value as the CMake option
 and often workaround macros or functions that can be used instead of the feature.
 
-If you want a C++11 feature, it also activates C++11 for your target, likewise for C++14.
+If you want a C++11 feature, it also activates C++11 for your target, likewise for C++14 and C++17.
 Note that this activation is `PRIVATE` to allow users of a library to have a different standard than the library itself.
 
 To use the generated header files, it is recommended to create a single header,
@@ -122,7 +122,7 @@ What `comp_target_features` function actually does is the following:
 * It calls `target_include_directories` to allow including the generated header files.
 The `INTERFACE/PUBLIC/PRIVATE` specifier are only used in this call.
 
-* If any feature requires C++11, it activates C++11 for the target. Likewise for C++14.
+* If any feature requires C++11, it activates C++11 for the target. Likewise for the other standards.
 
 This behavior can be customized with the other options:
 
@@ -134,8 +134,8 @@ This behavior can be customized with the other options:
 default is `${CMAKE_CURRENT_BINARY_DIR}` for both.
 `INCLUDE_PATH` is also given to `target_include_directories()`, but note that the generated headers are in a subfolder `comp`.
 
-* `NOFLAGS`/`CPP11`/`CPP14`: Override for the standard detection, if you want to have a newer standard than deduced from the features,
-or a lower (not recommended). They have priority over the deduction, C++14 over C++11.
+* `NOFLAGS`/`CPP11`/`CPP14`/`CPP17`: Override for the standard detection, if you want to have a newer standard than deduced from the features,
+or a lower (not recommended). They have priority over the deduction, C++17 over C++14 over C++11.
 Specify `NOFLAGS` if you do not want to have any compiler flags set.
 The latter is useful for `INTERFACE` libraries which are only there to run the tests and generate the options and headers.
 
@@ -251,7 +251,7 @@ You only need to call two CMake function defined in `comp_base.cmake`:
 1. `comp_check_feature` - It takes three parameters. The first is a minimal test code that uses this feature.
 It is recommended to avoid using multiple features (i.e. avoid `auto`, `nullptr` and the like).
 The second parameter is the name of the feature, this should follow my naming convention.
-The third is a list of required compiler flags, use the variables `${cpp11_flag}` or `${cpp14_flag}` for that or simply `""`.
+The third is a list of required compiler flags, use the variables `${cpp11_flag}`, `${cpp14_flag}` or `${cpp17_flag}` for that or simply `""`.
 Based on the flags the language standard for a feature is also determined.
 
 2. `comp_gen_header` - It takes two parameters. The first is the name of the feature, must be the same as above.
