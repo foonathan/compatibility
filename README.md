@@ -213,6 +213,16 @@ make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
 
 Get them all by specifying `cpp14_lib`.
 
+### C++17 language features
+
+These features are all in the subdirectory `cpp17_lang`.
+
+feature name|example|workaround, if any
+------------|-------|------------------
+fold_expressions|`return (args && ....);`|no workaround
+terse_static_assert|`static_assert(condition);`|`TERSE_STATIC_ASSERT(Cond)` macro
+utf8_char_literal|`char c = u8'A';`|`UTF8_ChAR_LITERAL(Str)` macro taking a normal string, appending `u8` prefix and converting it to a character
+
 ### Environment
 
 Features regarding the general environment. These features are all in the subdirectory `env`.
