@@ -33,22 +33,28 @@ endfunction()
 
 _comp_check_flags(COMP_CPP11_FLAG "C++11" std_cpp11_flag -std=c++11 std_cpp0x_flag -std=c++0x)
 _comp_check_flags(COMP_CPP14_FLAG "C++14" std_cpp14_flag -std=c++14 std_cpp1y_flag -std=c++1y)
+_comp_check_flags(COMP_CPP17_FLAG "C++17" std_cpp17_flag -std=c++17 std_cpp1z_flag -std=c++1z)
 
 # INTERNAL
 # parses arguments for comp_compile_features
 macro(_comp_parse_arguments)
-    cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14;NOFLAGS" "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" "" ${ARGN})
+    cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14;CPP17;NOFLAGS" # no arg
+                               "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" # single arg
+                                "" ${ARGN})
     if(COMP_NOPREFIX)
         set(COMP_PREFIX "")
     elseif(NOT DEFINED COMP_PREFIX)
         set(COMP_PREFIX "COMP_")
     endif()
+
     if(NOT DEFINED COMP_NAMESPACE)
         set(COMP_NAMESPACE "comp")
     endif()
+
     if(NOT DEFINED COMP_CMAKE_PATH)
         set(COMP_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
     endif()
+
     if(NOT DEFINED COMP_INCLUDE_PATH)
         set(COMP_INCLUDE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
     endif()
@@ -108,8 +114,10 @@ function(comp_target_features target include_policy)
     # these variables are modified/accessed by the feature modules
     set(need_cpp11 FALSE)
     set(need_cpp14 FALSE)
+    set(need_cpp17 FALSE)
     set(cpp11_flag ${COMP_CPP11_FLAG})
     set(cpp14_flag ${COMP_CPP14_FLAG})
+    set(cpp17_flag ${COMP_CPP17_FLAG})
 
     target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
@@ -122,11 +130,15 @@ function(comp_target_features target include_policy)
         return()
     endif()
 
-    # first explicit option, then implicit; 14 over 11
-    if(COMP_CPP14)
+    # first explicit option, then implicit; 17 over 14 over 11
+    if(COMP_CPP17)
+        target_compile_options(${target} PRIVATE ${cpp17_flag})
+    elseif(COMP_CPP14)
         target_compile_options(${target} PRIVATE ${cpp14_flag})
     elseif(COMP_CPP11)
         target_compile_options(${target} PRIVATE ${cpp11_flag})
+    elseif(need_cpp17)
+        target_compile_options(${target} PRIVATE ${cpp17_flag})
     elseif(need_cpp14)
         target_compile_options(${target} PRIVATE ${cpp14_flag})
     elseif(need_cpp11)
@@ -138,15 +150,20 @@ endfunction()
 # checks if ${code}, which is a feature test code, compiles
 # provides option COMP_HAS_${name} defaulted to result
 # flags specify the required compiler flags for the test
-# and can be obtained via cpp11/14_flags
+# and can be obtained via cpp11/14/17_flags
 function(comp_check_feature code name)
-    string(FIND "${ARGN}" "${cpp14_flag}" res)
-    if(NOT (res EQUAL -1))
-        set(need_cpp14 TRUE PARENT_SCOPE)
+    string(FIND "${ARGN}" "${cpp17_flag}" res)
+    if (NOT (res EQUAL -1))
+        set(need_cpp17 TRUE PARENT_SCOPE)
     else()
-        string(FIND "${ARGN}" "${cpp11_flag}" res)
+        string(FIND "${ARGN}" "${cpp14_flag}" res)
         if(NOT (res EQUAL -1))
-            set(need_cpp11 TRUE PARENT_SCOPE)
+            set(need_cpp14 TRUE PARENT_SCOPE)
+        else()
+            string(FIND "${ARGN}" "${cpp11_flag}" res)
+            if(NOT (res EQUAL -1))
+                set(need_cpp11 TRUE PARENT_SCOPE)
+            endif()
         endif()
     endif()
 
