@@ -216,6 +216,7 @@ function(comp_unit_test name global code)
     file (WRITE ${_COMP_TEST}/${name}.cpp
 "
 #define COMP_IN_PARENT_HEADER
+#include <cstddef>
 #include <comp/${name}.hpp>
 
 #include <catch.hpp>
