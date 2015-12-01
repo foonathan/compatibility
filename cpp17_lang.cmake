@@ -2,6 +2,6 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-include(cpp17_lang/fold_expressions.cmake)
-include(cpp17_lang/terse_static_assert.cmake)
-include(cpp17_lang/utf8_char_literal.cmake)
+comp_fetch_include(cpp17_lang/fold_expressions)
+comp_fetch_include(cpp17_lang/terse_static_assert)
+comp_fetch_include(cpp17_lang/utf8_char_literal)

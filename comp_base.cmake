@@ -167,14 +167,19 @@ function(comp_check_feature code name)
         endif()
     endif()
 
-    set(CMAKE_REQUIRED_FLAGS "${ARGN}")
-    check_cxx_source_compiles("${code}" has_${name})
-
-    string(TOUPPER "${name}" macro_name)
-    if(has_${name})
-        option(COMP_HAS_${macro_name} "whether or not ${name} is available" ON)
+    if(_COMP_TEST_WORKAROUND)
+        string(TOUPPER "${name}" macro_name)
+        set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "" FORCE)
     else()
-        option(COMP_HAS_${macro_name} "whether or not ${name} is available" OFF)
+        set(CMAKE_REQUIRED_FLAGS "${ARGN}")
+        check_cxx_source_compiles("${code}" has_${name})
+
+        string(TOUPPER "${name}" macro_name)
+        if(has_${name})
+            option(COMP_HAS_${macro_name} "whether or not ${name} is available" ON)
+        else()
+            option(COMP_HAS_${macro_name} "whether or not ${name} is available" OFF)
+        endif()
     endif()
 endfunction()
 
@@ -190,11 +195,44 @@ function(comp_gen_header name workaround)
         set(result "0")
     endif()
 
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/comp/${name}.hpp
+    file(WRITE ${COMP_INCLUDE_PATH}/comp/${name}.hpp
 "#ifndef COMP_IN_PARENT_HEADER
 #error \"Don't include this file directly, only into a proper parent header.\"
 #endif
 
 #define ${COMP_PREFIX}HAS_${macro_name} ${result}
 ${workaround}")
+endfunction()
+
+# EXTERNAL; feature module
+# generates a unit test file for workaround of feature ${name}
+# the include for the feature is available as is the Catch library
+# ${code} will be placed inside a Catch TEST_CASE, ${global} in the global scope in front of it
+function(comp_unit_test name global code)
+    if (NOT _COMP_TEST)
+        return()
+    endif()
+
+    file (WRITE ${_COMP_TEST}/${name}.cpp
+"
+#define COMP_IN_PARENT_HEADER
+#include <cstddef>
+#include <comp/${name}.hpp>
+
+#include <catch.hpp>
+
+${global}
+
+TEST_CASE(\"${name}\", \"\")
+{
+    ${code}
+}
+")
+endfunction()
+
+# EXTERNAL; umbrella feature module
+# downloads and includes a feature named ${feature}
+function(comp_fetch_include feature)
+    _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
+    include(${COMP_CMAKE_PATH}/${feature}.cmake)
 endfunction()

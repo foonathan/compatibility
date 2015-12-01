@@ -3,8 +3,8 @@
 # found in the top-level directory of this distribution.
 
 comp_check_feature("#include <shared_mutex>
-					int main()
-					{
-						std::shared_mutex m;
-					}" shared_mutex "${cpp17_flag}")
+                    int main()
+                    {
+                        std::shared_mutex m;
+                    }" shared_mutex "${cpp17_flag}")
 comp_gen_header(shared_mutex "")

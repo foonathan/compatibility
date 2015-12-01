@@ -283,5 +283,10 @@ The second is code that will be appended to the file. It is used for workarounds
 If you define macros, wrap them in an `#ifndef ... #endif` and use `${COMP_PREFIX}` as prefix.
 If you define anything else, do it inside namespace `${COMP_NAMESPACE}` or a sub namespace.
 
+3. (optional) `comp_unit_test` - Generates a Catch unit test, takes three parameters.
+The first one is the name of the feature, must be the same as above.
+The second is code that will be inserted into the global scope.
+The third one is code that will be inserted into a Catch TEST_CASE().
+
 Note: Do **not** include `comp_base.cmake!`.
 Look at a few other files for example implementations.

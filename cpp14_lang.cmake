@@ -2,6 +2,6 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-include(cpp14_lang/deprecated.cmake)
-include(cpp14_lang/general_constexpr.cmake)
-include(cpp14_lang/variable_template.cmake)
+comp_fetch_include(cpp14_lang/deprecated)
+comp_fetch_include(cpp14_lang/general_constexpr)
+comp_fetch_include(cpp14_lang/variable_template)
