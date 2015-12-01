@@ -223,6 +223,20 @@ fold_expressions|`return (args && ....);`|no workaround
 terse_static_assert|`static_assert(condition);`|`TERSE_STATIC_ASSERT(Cond)` macro
 utf8_char_literal|`char c = u8'A';`|`UTF8_ChAR_LITERAL(Str)` macro taking a normal string, appending `u8` prefix and converting it to a character
 
+### C++17 library features
+
+These features are all in the subdirectory `cpp17_lib`.
+
+feature name|example|workaround, if any
+------------|-------|------------------
+bool_constant|`std::bool_constant`|`comp::bool_constant`
+container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
+invoke|`std::invoke(f)`|`comp::invoke(f)`
+map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
+shared_mutex|`std::shared_mutex`|no workaround
+uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
+void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
+
 ### Environment
 
 Features regarding the general environment. These features are all in the subdirectory `env`.
