@@ -3,7 +3,7 @@
 # found in the top-level directory of this distribution.
 
 comp_check_feature("[[noreturn]] int f(); int main() {}"
-                   noreturn "${cpp14_flag}")
+                   noreturn "${cpp11_flag}")
 comp_gen_header(noreturn
 "
 #ifndef ${COMP_PREFIX}NORETURN

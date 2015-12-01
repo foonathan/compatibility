@@ -36,3 +36,24 @@ comp_gen_header(nullptr
     #endif
 #endif
 ")
+comp_unit_test(nullptr
+"
+struct nullptr_foo
+{
+    int m;
+
+    void foo() {}
+};
+"
+"
+    ${COMP_NAMESPACE}::nullptr_t nptr = ${COMP_PREFIX}NULLPTR;
+    void* vptr = ${COMP_PREFIX}NULLPTR;
+    int*  iptr = ${COMP_PREFIX}NULLPTR;
+    int nullptr_foo::*mptr = ${COMP_PREFIX}NULLPTR;
+    void (nullptr_foo::*mfptr)() = ${COMP_PREFIX}NULLPTR;
+
+    REQUIRE(!vptr);
+    REQUIRE(!iptr);
+    REQUIRE(!mptr);
+    REQUIRE(!mfptr);
+")
