@@ -28,6 +28,7 @@ namespace ${COMP_NAMESPACE}
         using std::empty;
         using std::data;
     #else
+        // see http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4280.pdf
         template <class C>
         constexpr auto size(const C &c) -> decltype(c.size())
         {

@@ -12,6 +12,8 @@ comp_check_feature("#include <map>
                     map_insertion "${cpp17_flag}")
 comp_gen_header(map_insertion
 "
+#include <utility>
+
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_MAP_INSERTION
@@ -50,8 +52,7 @@ namespace ${COMP_NAMESPACE}
         auto iter = m.find(key);
         if (iter != m.end())
             return {iter, false};
-        iter = m.insert(typename Map::value_type(std::forward<Key>(key), std::forward<Args>(args)...));
-        return {iter, true};
+        return m.insert(typename Map::value_type(std::forward<Key>(key), std::forward<Args>(args)...));
     }
 
     template <class Map, typename Key, typename ... Args>
@@ -61,8 +62,7 @@ namespace ${COMP_NAMESPACE}
         auto iter = m.find(key);
         if (iter != m.end())
             return iter;
-        iter = m.insert(hint, typename Map::value_type(std::forward<Key>(key), std::forward<Args>(args)...));
-        return iter;
+        return m.insert(hint, typename Map::value_type(std::forward<Key>(key), std::forward<Args>(args)...)).first;
     }
 
     template <class Map, typename Key, typename M>
@@ -75,8 +75,7 @@ namespace ${COMP_NAMESPACE}
             iter->second = std::forward<M>(obj);
             return {iter, false};
         }
-        iter = m.insert(typename Map::value_type(std::forward<Key>(key), std::forward<M>(m)));
-        return {iter, true};
+        return m.insert(typename Map::value_type(std::forward<Key>(key), std::forward<M>(obj)));
     }
 
     template <class Map, typename Key, typename M>
@@ -89,9 +88,30 @@ namespace ${COMP_NAMESPACE}
             iter->second = std::forward<M>(obj);
             return iter;
         }
-        iter = m.insert(hint, typename Map::value_type(std::forward<Key>(key), std::forward<M>(m)));
-        return iter;
+        m.insert(hint, typename Map::value_type(std::forward<Key>(key), std::forward<M>(obj))).first;
     }
 #endif
 }
+")
+comp_unit_test(map_insertion
+"
+#include <map>
+"
+"
+std::map<int, int> map;
+auto res = ${COMMP_NAMESPACE}::try_emplace(map, 0, 0);
+REQUIRE(res.second == true);
+REQUIRE(res.first->second == 0);
+
+res = ${COMMP_NAMESPACE}::try_emplace(map, 0, 1);
+REQUIRE(res.second == false);
+REQUIRE(res.first->second == 0);
+
+res = ${COMP_NAMSPACE}::insert_or_assign(map, 1, 1);
+REQUIRE(res.second == true);
+REQUIRE(res.first->second == 1);
+
+res = ${COMP_NAMSPACE}::insert_or_assign(map, 1, 2);
+REQUIRE(res.second == false);
+REQUIRE(res.first->second == 2);
 ")
