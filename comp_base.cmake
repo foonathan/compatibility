@@ -195,7 +195,7 @@ function(comp_gen_header name workaround)
         set(result "0")
     endif()
 
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/comp/${name}.hpp
+    file(WRITE ${COMP_INCLUDE_PATH}/comp/${name}.hpp
 "#ifndef COMP_IN_PARENT_HEADER
 #error \"Don't include this file directly, only into a proper parent header.\"
 #endif

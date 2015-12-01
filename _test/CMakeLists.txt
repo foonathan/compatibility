@@ -29,6 +29,7 @@ include(../comp_base.cmake)
 set(cpp11_flag ${COMP_CPP11_FLAG})
 set(cpp14_flag ${COMP_CPP14_FLAG})
 set(cpp17_flag ${COMP_CPP17_FLAG})
+set(COMP_INCLUDE_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 file(GLOB features ../*/*.cmake)
 file(COPY main.cpp DESTINATION ${_COMP_TEST})
