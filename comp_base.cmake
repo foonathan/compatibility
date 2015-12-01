@@ -229,3 +229,10 @@ TEST_CASE(\"${name}\", \"\")
 }
 ")
 endfunction()
+
+# EXTERNAL; umbrella feature module
+# downloads and includes a feature named ${feature}
+function(comp_fetch_include feature)
+    _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
+    include(${COMP_CMAKE_PATH}/${feature}.cmake)
+endfunction()

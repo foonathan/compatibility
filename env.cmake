@@ -2,7 +2,7 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-include(env/exception_support.cmake)
-include(env/hosted_implementation.cmake)
-include(env/rtti_support.cmake)
-include(env/threading_support.cmake)
+comp_fetch_include(env/exception_support)
+comp_fetch_include(env/hosted_implementation)
+comp_fetch_include(env/rtti_support)
+comp_fetch_include(env/threading_support)
