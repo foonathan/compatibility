@@ -198,3 +198,28 @@ function(comp_gen_header name workaround)
 #define ${COMP_PREFIX}HAS_${macro_name} ${result}
 ${workaround}")
 endfunction()
+
+# EXTERNAL; feature module
+# generates a unit test file for workaround of feature ${name}
+# the include for the feature is available as is the Catch library
+# ${code} will be placed inside a Catch TEST_CASE, ${global} in the global scope in front of it
+function(comp_unit_test name global code)
+    if (NOT _COMP_TEST)
+        return()
+    endif()
+
+    file (WRITE ${_COMP_TEST}/${name}.cpp
+"
+#define COMP_IN_PARENT_HEADER
+#include <comp/${name}.hpp>
+
+#include <catch.hpp>
+
+${global}
+
+TEST_CASE(\"${name}\", \"\")
+{
+    ${code}
+}
+")
+endfunction()
