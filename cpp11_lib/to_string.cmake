@@ -82,7 +82,7 @@ namespace ${COMP_NAMESPACE}
     std::string to_string(long double value)
     {
         char buf[LDBL_MAX_10_EXP + 20];
-        std::sprintf(buf, \"%fL\", value);
+        std::sprintf(buf, \"%Lf\", value);
         return buf;
     }
 #endif
