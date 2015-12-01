@@ -37,7 +37,7 @@ namespace ${COMP_NAMESPACE}
 		template <typename T, std::size_t N>
 		constexpr std::size_t size(const T (&) [N]) noexcept
 		{
-			return N:
+			return N;
 		}
 		
 		template <class C>
@@ -49,7 +49,7 @@ namespace ${COMP_NAMESPACE}
 		template <typename T, std::size_t N>
 		constexpr bool empty(const T (&) [N]) noexcept
 		{
-			return false:
+			return false;
 		}
 		
 		template <typename T>
@@ -73,7 +73,7 @@ namespace ${COMP_NAMESPACE}
 		template <typename T, std::size_t N>
 		constexpr T* data(const T (&array) [N]) noexcept
 		{
-			return array:
+			return array;
 		}	
 		
 		template <typename T>
