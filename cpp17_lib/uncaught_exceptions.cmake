@@ -3,8 +3,8 @@
 # found in the top-level directory of this distribution.
 
 comp_check_feature("#include <exception>
-					int main()
-					{
-						int count = std::uncaught_exceptions();
-					}" uncaught_exceptions "${cpp17_flag}")
+                    int main()
+                    {
+                        int count = std::uncaught_exceptions();
+                    }" uncaught_exceptions "${cpp17_flag}")
 comp_gen_header(uncaught_exceptions "")

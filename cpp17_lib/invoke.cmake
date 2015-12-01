@@ -3,11 +3,11 @@
 # found in the top-level directory of this distribution.
 
 comp_check_feature("#include <functional>
-					void foo() {}
-					int main()
-					{
-						std::invoke(foo);
-					}" invoke "${cpp17_flag}")
+                    void foo() {}
+                    int main()
+                    {
+                        std::invoke(foo);
+                    }" invoke "${cpp17_flag}")
 comp_gen_header(invoke
 "
 #include <functional>
@@ -17,24 +17,24 @@ comp_gen_header(invoke
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_INVOKE
-	using std::invoke;
+    using std::invoke;
 #else
   template<typename Functor, typename... Args>
   typename std::enable_if<
     std::is_member_pointer<typename std::decay<Functor>::type>::value,
     typename std::result_of<Functor&&(Args&&...)>::type
   >::type invoke(Functor&& f, Args&&... args)
-  { 
-    return std::mem_fn(f)(std::forward<Args>(args)...); 
+  {
+    return std::mem_fn(f)(std::forward<Args>(args)...);
   }
-   
+
   template<typename Functor, typename... Args>
   typename std::enable_if<
     !std::is_member_pointer<typename std::decay<Functor>::type>::value,
     typename std::result_of<Functor&&(Args&&...)>::type
   >::type invoke(Functor&& f, Args&&... args)
-  { 
-    return std::forward<Functor>(f)(std::forward<Args>(args)...); 
+  {
+    return std::forward<Functor>(f)(std::forward<Args>(args)...);
   }
 #endif
 }
