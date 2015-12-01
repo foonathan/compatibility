@@ -1,5 +1,7 @@
 # Compatibility
 
+[![Build Status](https://travis-ci.org/foonathan/compatibility.svg?branch=master)](https://travis-ci.org/foonathan/compatibility)
+
 This library provides an advanced `target_compile_features()` and `write_compiler_detection_header()`.
 The problem with those is that they are controlled via a CMake internal database, which has to be kept manually up-to-date.
 This version uses `check_cxx_source_compiles()` instead and is such automatically up-to-date - a compiler supports a feature,
