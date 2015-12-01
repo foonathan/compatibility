@@ -1,0 +1,23 @@
+language: cpp
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
+
+install:
+  - wget --no-check-certificate https://www.cmake.org/files/v3.3/cmake-3.3.1-Linux-x86_64.tar.gz
+  - tar -xzf cmake-3.3.1-Linux-x86_64.tar.gz
+  - export CC='gcc-5'
+  - export CXX='g++-5'
+script:
+  - mkdir build && cd build/
+  - ../cmake-3.3.1-Linux-x86_64/bin/cmake ../_test
+  - ../cmake-3.3.1-Linux-x86_64/bin/cmake --build .
+  - ./comp_test
+  - rm -r *
+  - ../cmake-3.3.1-Linux-x86_64/bin/cmake -D_COMP_TEST_WORKAROUND=ON ../_test
+  - ../cmake-3.3.1-Linux-x86_64/bin/cmake --build .
+  - ./comp_test
