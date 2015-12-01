@@ -40,7 +40,6 @@ foreach(feature ${features})
     include(${feature})
 endforeach()
 
-
 file(GLOB tests ${_COMP_TEST}/*.cpp)
 add_executable(comp_test ${_COMP_TEST}/main.cpp ${tests})
 target_include_directories(comp_test PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
