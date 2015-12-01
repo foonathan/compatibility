@@ -64,7 +64,7 @@ namespace ${COMP_NAMESPACE}
         std::sprintf(buf, \"%llu\", value);
         return buf;
     }
-    
+
     std::string to_string(float value)
     {
         char buf[FLT_MAX_10_EXP + 20];
@@ -78,7 +78,7 @@ namespace ${COMP_NAMESPACE}
         std::sprintf(buf, \"%f\", value);
         return buf;
     }
-    
+
     std::string to_string(long double value)
     {
         char buf[LDBL_MAX_10_EXP + 20];
@@ -87,5 +87,90 @@ namespace ${COMP_NAMESPACE}
     }
 #endif
 }
+")
+comp_unit_test(to_string
 "
-)
+#include <limits>
+
+template <typename Int>
+void test_integer()
+{
+    auto min = std::numeric_limits<Int>::min();
+    auto max = std::numeric_limits<Int>::max();
+
+    REQUIRE(${COMP_NAMESPACE}::to_string(Int(0)) == \"0\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(Int(1024)) == \"1024\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(Int(-10)) == \"-10\");
+
+    REQUIRE(${COMP_NAMSPACE}::to_string(min) != \"\");
+    REQUIRE(${COMP_NAMSPACE}::to_string(max) != \"\");
+}
+
+template <typename Int>
+void test_unsigned_integer()
+{
+    auto max = std::numeric_limits<Int>::max();
+
+    REQUIRE(${COMP_NAMESPACE}::to_string(Int(0)) == \"0\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(Int(1024)) == \"1024\");
+
+    REQUIRE(${COMP_NAMSPACE}::to_string(max) != \"\");
+}
+
+template <typename Float>
+void test_float()
+{
+    auto min = std::numeric_limits<Float>::min();
+    auto max = std::numeric_limits<Float>::max();
+    auto inf = std::numeric_limits<Float>::infinity();
+    auto nan = std::numeric_limits<Float>::quiet_NaN();
+
+    REQUIRE(${COMP_NAMESPACE}::to_string(Float(0)) == \"0.000000\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(Float(1024)) == \"1024.000000\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(Float(0.5)) == \"0.500000\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(Float(-0.5)) == \"-0.500000\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(Float(-10)) == \"-10.000000\");
+
+    auto inf_str = ${COMP_NAMESPACE}::to_string(inf);
+    REQUIRE(inf_str.size() >= 3);
+    REQUIRE(inf_str[0] == 'i');
+    REQUIRE(inf_str[1] == 'n');
+    REQUIRE(inf_str[2] == 'f');
+
+    inf_str = ${COMP_NAMESPACE}::to_string(-inf);
+    REQUIRE(inf_str.size() >= 4);
+    REQUIRE(inf_str[0] == '-');
+    REQUIRE(inf_str[1] == 'i');
+    REQUIRE(inf_str[2] == 'n');
+    REQUIRE(inf_str[3] == 'f');
+
+    auto nan_str = ${COMP_NAMESPACE}::to_string(nan);
+    REQUIRE(nan_str.size() >= 3);
+    REQUIRE(nan_str[0] == 'n');
+    REQUIRE(nan_str[1] == 'a');
+    REQUIRE(nan_str[2] == 'n');
+
+    nan_str = ${COMP_NAMESPACE}::to_string(-nan);
+    REQUIRE(nan_str.size() >= 4);
+    REQUIRE(nan_str[0] == '-');
+    REQUIRE(nan_str[1] == 'n');
+    REQUIRE(nan_str[2] == 'a');
+    REQUIRE(nan_str[3] == 'n');
+
+    REQUIRE(${COMP_NAMSPACE}::to_string(min) != \"\");
+    REQUIRE(${COMP_NAMSPACE}::to_string(max) != \"\");
+}
+"
+"
+test_integer<int>();
+test_integer<long>();
+test_integer<long long>();
+
+test_unsigned_integer<unsigned int>();
+test_unsigned_integer<unsigned long>();
+test_unsigned_integer<unsigned long long>();
+
+test_float<float>();
+test_float<double>();
+test_float<long double>();
+")
