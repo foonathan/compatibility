@@ -8,6 +8,23 @@ include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
 include(CMakeParseArguments)
 
+# EXTERNAL
+# the current API version
+set(COMP_API_VERSION 1 CACHE STRING "compatibility api version" FORCE)
+
+# EXTERNAL; feature module
+# requires a certain API version
+function(comp_api_version version)
+    string(FIND "${version}" "." first_dot)
+    string(SUBSTRING "${version}" 0 ${first_dot} major_version)
+    string(FIND "${COMP_API_VERSION}" "." first_dot)
+    string(SUBSTRING "${COMP_API_VERSION}" 0 ${first_dot} comp_major_version)
+
+    if(NOT major_version EQUAL comp_major_version OR COMP_API_VERSION VERSION_LESS version)
+        message(FATAL_ERROR "compatibility version is ${COMP_API_VERSION}, required is ${version}")
+    endif()
+endfunction()
+
 # INTERNAL
 # gets name, followed by flag, name, flag, name, flag...
 # checks flags in order of occurence
