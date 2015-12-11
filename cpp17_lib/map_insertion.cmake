@@ -2,17 +2,21 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <map>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(map_insertion
+                    "#include <map>
                     int main()
                     {
                         std::map<int, int> m;
                         m.try_emplace(5, 5);
                         m.insert_or_assign(10, 5);
-                    }"
-                    map_insertion "${cpp17_flag}")
-comp_gen_header(map_insertion
-"
-#include <utility>
+                    }" COMP_CPP17_FLAG)
+comp_workaround(map_insertion
+"#include <utility>
 
 namespace ${COMP_NAMESPACE}
 {
@@ -91,8 +95,7 @@ namespace ${COMP_NAMESPACE}
         m.insert(hint, typename Map::value_type(std::forward<Key>(key), std::forward<M>(obj))).first;
     }
 #endif
-}
-")
+}" COMP_CPP11_FLAG)
 comp_unit_test(map_insertion
 "
 #include <map>

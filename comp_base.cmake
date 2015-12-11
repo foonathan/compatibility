@@ -207,7 +207,7 @@ function(comp_feature name test_code standard)
         set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "" FORCE)
     else()
         set(CMAKE_REQUIRED_FLAGS "${${standard}}")
-        check_cxx_source_compiles("${code}" has_${name})
+        check_cxx_source_compiles("${test_code}" has_${name})
 
         if(has_${name})
             option(COMP_HAS_${macro_name} "whether or not ${name} is available" ON)

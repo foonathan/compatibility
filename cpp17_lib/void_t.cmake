@@ -2,15 +2,18 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <type_traits>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(void_t "#include <type_traits>
                     int main()
                     {
                         std::void_t<int, char> *ptr;
-                    }"
-                    void_t "${cpp17_flag}")
-comp_gen_header(void_t
-"
-// see proposal: http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3911.pdf
+                    }" COMP_CPP17_FLAG)
+comp_workaround(void_t
+"// see proposal: http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3911.pdf
 namespace ${COMP_NAMESPACE}
 {
     namespace detail
@@ -24,5 +27,4 @@ namespace ${COMP_NAMESPACE}
 
     template <typename ... Ts>
     using void_t = typename detail::voider<Ts...>::type;
-}
-")
+}" COMP_CPP1_FLAG)

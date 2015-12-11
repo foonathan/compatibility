@@ -2,9 +2,13 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("int main() {alignas(int) char c; alignas(16) int i;}" alignas "${cpp11_flag}")
-comp_gen_header(alignas
-"
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(alignas "int main() {alignas(int) char c; alignas(16) int i;}" COMP_CPP11_FLAG)
+comp_workaround(alignas "
 #ifndef ${COMP_PREFIX}ALIGNAS
     #if ${COMP_PREFIX}HAS_ALIGNAS
         #define ${COMP_PREFIX}ALIGNAS(X) alignas(X)
@@ -15,5 +19,4 @@ comp_gen_header(alignas
     #else
         #error \"no alignas replacement available\"
     #endif
-#endif
-")
+#endif" COMP_CPP98_FLAG)

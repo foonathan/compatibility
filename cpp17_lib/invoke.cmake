@@ -2,15 +2,19 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <functional>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(invoke "#include <functional>
                     void foo() {}
                     int main()
                     {
                         std::invoke(foo);
-                    }" invoke "${cpp17_flag}")
-comp_gen_header(invoke
-"
-#include <functional>
+                    }" COMP_CPP17_FLAG)
+comp_workaround(invoke
+"#include <functional>
 #include <type_traits>
 
 // see http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4169.html
@@ -37,5 +41,4 @@ namespace ${COMP_NAMESPACE}
     return std::forward<Functor>(f)(std::forward<Args>(args)...);
   }
 #endif
-}
-")
+}" COMP_CPP11_FLAG)

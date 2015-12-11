@@ -2,10 +2,10 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("struct foo
-                    {
-                        foo(const foo&) = delete;
-                    };
-                    int main(){}"
-                   delete_fnc "${cpp11_flag}")
-comp_gen_header(delete_fnc "")
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(delete_fnc "struct foo { foo(const foo&) = delete; };
+                         int main(){}" COMP_CPP11_FLAG)

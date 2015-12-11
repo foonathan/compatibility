@@ -2,10 +2,14 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("int main() {thread_local int i;}" thread_local ${cpp11_flag})
-comp_gen_header(thread_local
-"
-#ifndef ${COMP_PREFIX}THREAD_LOCAL
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(thread_local "int main() {thread_local int i;}" COMP_CPP11_FLAG)
+comp_workaround(thread_local
+"#ifndef ${COMP_PREFIX}THREAD_LOCAL
     #if ${COMP_PREFIX}HAS_THREAD_LOCAL
         #define ${COMP_PREFIX}THREAD_LOCAL thread_local
     #elif defined(__GNUC__)
@@ -15,5 +19,4 @@ comp_gen_header(thread_local
     #else
         #error \"no thread_local replacement available\"
     #endif
-#endif
-")
+#endif" COMP_CPP98_FLAG)

@@ -2,16 +2,19 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("struct base {virtual void foo() {}};
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(final "struct base {virtual void foo() {}};
                    struct derived final : base {void foo() final {}};
-                   int main(){}" final "${cpp11_flag}")
-comp_gen_header(final
-"
-#ifndef ${COMP_PREFIX}FINAL
+                   int main(){}" COMP_CPP11_FLAG)
+comp_workaround(final
+"#ifndef ${COMP_PREFIX}FINAL
     #if ${COMP_PREFIX}HAS_FINAL
         #define ${COMP_PREFIX}FINAL final
     #else
         #define ${COMP_PREFIX}FINAL
     #endif
-#endif
-")
+#endif" COMP_CPP98_FLAG)

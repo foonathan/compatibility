@@ -2,10 +2,14 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("int main() {constexpr int foo = 1;}" constexpr "${cpp11_flag}")
-comp_gen_header(constexpr
-"
-#ifndef ${COMP_PREFIX}CONSTEXPR
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(constexpr "int main() {constexpr int foo = 1;}" COMP_CPP11_FLAG)
+comp_workaround(constexpr
+"#ifndef ${COMP_PREFIX}CONSTEXPR
     #if ${COMP_PREFIX}HAS_CONSTEXPR
         #define ${COMP_PREFIX}CONSTEXPR constexpr
     #else
@@ -19,5 +23,4 @@ comp_gen_header(constexpr
     #else
         #define ${COMP_PREFIX}CONSTEXPR_FNC inline
     #endif
-#endif
-")
+#endif" COMP_CPP98_FLAG)

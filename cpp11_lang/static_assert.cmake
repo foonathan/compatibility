@@ -2,10 +2,14 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("int main(){static_assert(true, \"\");}" static_assert "${cpp11_flag}")
-comp_gen_header(static_assert
-"
-#ifndef ${COMP_PREFIX}STATIC_ASSERT
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(static_assert "int main(){static_assert(true, \"\");}" COMP_CPP11_FLAG)
+comp_workaround(static_assert
+"#ifndef ${COMP_PREFIX}STATIC_ASSERT
     #if ${COMP_PREFIX}HAS_STATIC_ASSERT
         #define ${COMP_PREFIX}STATIC_ASSERT(Expr, Msg) static_assert(Expr, Msg)
     #else
@@ -20,5 +24,4 @@ comp_gen_header(static_assert
 
         #define ${COMP_PREFIX}STATIC_ASSERT(Expr, Msg) ${COMP_NAMESPACE}::detail::static_assert_impl<(Expr)>()
     #endif
-#endif
-")
+#endif" COMP_CPP98_FLAG)

@@ -2,23 +2,27 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <iterator>
-                    #include <vector>
-                    int main()
-                    {
-                        int array[3];
-                        std::size(array);
-                        std::data(array);
-                        std::empty(array);
-                        std::vector<int> vec;
-                        std::size(vec);
-                        std::data(vec);
-                        std::empty(vec);
-                    }"
-                    container_access "${cpp17_flag}")
-comp_gen_header(container_access
-"
-#include <cstddef>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(container_access
+                "#include <iterator>
+                #include <vector>
+                int main()
+                {
+                    int array[3];
+                    std::size(array);
+                    std::data(array);
+                    std::empty(array);
+                    std::vector<int> vec;
+                    std::size(vec);
+                    std::data(vec);
+                    std::empty(vec);
+                }" COMP_CPP17_FLAG)
+comp_workaround(container_access
+"#include <cstddef>
 #include <initializer_list>
 
 namespace ${COMP_NAMESPACE}
@@ -83,5 +87,4 @@ namespace ${COMP_NAMESPACE}
             return list.begin();
         }
     #endif
-}
-")
+}" COMP_CPP11_FLAG)

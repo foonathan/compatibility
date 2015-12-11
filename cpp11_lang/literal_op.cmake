@@ -2,7 +2,11 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <cstddef>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(literal_op "#include <cstddef>
                    int operator\"\"_foo(const char *, std::size_t){return 0;} int main(){}"
-                   literal_op "${cpp11_flag}")
-comp_gen_header(literal_op "")
+                   COMP_CPP11_FLAG)

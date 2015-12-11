@@ -2,9 +2,14 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <exception>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(uncaught_exceptions
+                    "#include <exception>
                     int main()
                     {
                         int count = std::uncaught_exceptions();
-                    }" uncaught_exceptions "${cpp17_flag}")
-comp_gen_header(uncaught_exceptions "")
+                    }" COMP_CPP17_FLAG)

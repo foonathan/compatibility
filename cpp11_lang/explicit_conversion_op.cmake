@@ -2,7 +2,13 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("struct foo
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(explicit_conversion_op
+                    "struct foo
                     {
                         explicit operator int() {return 5;}
                         explicit operator bool() {return true;}
@@ -13,6 +19,4 @@ comp_check_feature("struct foo
                         int i = static_cast<int>(f);
                         bool b = static_cast<bool>(f);
                         if (f) {}
-                    }"
-                   explicit_conversion_op "${cpp11_flag}")
-comp_gen_header(explicit_conversion_op "")
+                    }" COMP_CPP11_FLAG)
