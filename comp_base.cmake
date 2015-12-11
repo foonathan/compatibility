@@ -106,6 +106,41 @@ function(_comp_fetch_feature path feature)
     endif()
 endfunction()
 
+# INTERNAL
+# writes the header and testing code, if needed
+function(_comp_gen_files feature)
+    get_filename_component(name "${feature}" NAME_WE)
+    string(TOUPPER "${name}" macro_name)
+    if (COMP_HAS_${macro_name})
+        set(result "1")
+    else()
+        set(result "0")
+    endif()
+    file(WRITE ${COMP_INCLUDE_PATH}/comp/${name}.hpp
+            "#ifndef COMP_IN_PARENT_HEADER
+            #error \"Don't include this file directly, only into a proper parent header.\"
+            #endif
+
+            #define ${COMP_PREFIX}HAS_${macro_name} ${result}
+
+            ${${name}_workaround}")
+    if(${name}_test_code)
+        file(WRITE ${_COMP_TEST}/${name}.cpp
+                "#define COMP_IN_PARENT_HEADER
+                #include <cstddef>
+                #include <comp/${name}.hpp>
+
+                #include <catch.hpp>
+
+                ${${name}_test_global}
+
+                TEST_CASE(\"${name}\", \"\")
+                {
+                    ${${name}_test_code}
+                }")
+    endif()
+endfunction()
+
 # EXTERNAL; user
 # setups certain features for a target
 function(comp_target_features target include_policy)
@@ -124,6 +159,7 @@ function(comp_target_features target include_policy)
         _comp_translate_feature(${feature})
         _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
         include(${COMP_CMAKE_PATH}/${feature}.cmake)
+        _comp_gen_files(${feature})
     endforeach()
 
     if(COMP_NOFLAGS)
@@ -151,6 +187,7 @@ endfunction()
 # provides option COMP_HAS_${name} defaulted to result
 # flags specify the required compiler flags for the test
 # and can be obtained via cpp11/14/17_flags
+# also writes test result into a new header file ${CMAKE_CURRENT_BINARY_DIR}/comp/${name}.hpp
 function(comp_check_feature code name)
     string(FIND "${ARGN}" "${cpp17_flag}" res)
     if (NOT (res EQUAL -1))
@@ -167,14 +204,13 @@ function(comp_check_feature code name)
         endif()
     endif()
 
+    string(TOUPPER "${name}" macro_name)
     if(_COMP_TEST_WORKAROUND)
-        string(TOUPPER "${name}" macro_name)
         set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "" FORCE)
     else()
         set(CMAKE_REQUIRED_FLAGS "${ARGN}")
         check_cxx_source_compiles("${code}" has_${name})
 
-        string(TOUPPER "${name}" macro_name)
         if(has_${name})
             option(COMP_HAS_${macro_name} "whether or not ${name} is available" ON)
         else()
@@ -184,25 +220,17 @@ function(comp_check_feature code name)
 endfunction()
 
 # EXTERNAL; feature module
-# writes test result into a new header file ${CMAKE_CURRENT_BINARY_DIR}/comp/${name}.hpp
-# also write workaround code
+# writes workaround code
 # test result is available via macor ${COMP_PREFIX}HAS_${name in uppercase}
-function(comp_gen_header name workaround)
-    string(TOUPPER "${name}" macro_name)
-    if (COMP_HAS_${macro_name})
-        set(result "1")
-    else()
-        set(result "0")
-    endif()
-
-    file(WRITE ${COMP_INCLUDE_PATH}/comp/${name}.hpp
-"#ifndef COMP_IN_PARENT_HEADER
-#error \"Don't include this file directly, only into a proper parent header.\"
-#endif
-
-#define ${COMP_PREFIX}HAS_${macro_name} ${result}
-${workaround}")
+function(comp_workaround name workaround)
+    set(${name}_workaround "${workaround}" PARENT_SCOPE)
 endfunction()
+
+# EXTERNAL; deprecated use comp_workaround
+macro(comp_gen_header name workaround)
+    message(AUTHOR_WARNING "deprecated, use comp_workaround()")
+    comp_workaround("${name}" "${workaround}")
+endmacro()
 
 # EXTERNAL; feature module
 # generates a unit test file for workaround of feature ${name}
@@ -212,22 +240,8 @@ function(comp_unit_test name global code)
     if (NOT _COMP_TEST)
         return()
     endif()
-
-    file (WRITE ${_COMP_TEST}/${name}.cpp
-"
-#define COMP_IN_PARENT_HEADER
-#include <cstddef>
-#include <comp/${name}.hpp>
-
-#include <catch.hpp>
-
-${global}
-
-TEST_CASE(\"${name}\", \"\")
-{
-    ${code}
-}
-")
+    set(${name}_test_code "${code}" PARENT_SCOPE)
+    set(${name}_test_global "${global}" PARENT_SCOPE)
 endfunction()
 
 # EXTERNAL; umbrella feature module
