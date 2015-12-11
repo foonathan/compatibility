@@ -7,7 +7,7 @@ project(COMPATIBILITY_TEST)
 
 # download catch
 file(DOWNLOAD
-        https://raw.githubusercontent.com/philsquared/Catch/develop/single_include/catch.hpp
+        https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
         ${CMAKE_CURRENT_BINARY_DIR}/catch.downloaded
         SHOW_PROGESS
         STATUS status
