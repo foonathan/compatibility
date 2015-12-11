@@ -23,63 +23,63 @@ namespace ${COMP_NAMESPACE}
 #if ${COMP_PREFIX}HAS_TO_STRING
     using std::to_string;
 #else
-    std::string to_string(int value)
+    inline std::string to_string(int value)
     {
         char buf[4 * sizeof(value)];
         std::sprintf(buf, \"%d\", value);
         return buf;
     }
 
-    std::string to_string(long value)
+    inline std::string to_string(long value)
     {
         char buf[4 * sizeof(value)];
         std::sprintf(buf, \"%ld\", value);
         return buf;
     }
 
-    std::string to_string(long long value)
+    inline std::string to_string(long long value)
     {
         char buf[4 * sizeof(value)];
         std::sprintf(buf, \"%lld\", value);
         return buf;
     }
 
-    std::string to_string(unsigned value)
+    inline std::string to_string(unsigned value)
     {
         char buf[4 * sizeof(value)];
         std::sprintf(buf, \"%u\", value);
         return buf;
     }
 
-    std::string to_string(unsigned long value)
+    inline std::string to_string(unsigned long value)
     {
         char buf[4 * sizeof(value)];
         std::sprintf(buf, \"%lu\", value);
         return buf;
     }
 
-    std::string to_string(unsigned long long value)
+    inline std::string to_string(unsigned long long value)
     {
         char buf[4 * sizeof(value)];
         std::sprintf(buf, \"%llu\", value);
         return buf;
     }
 
-    std::string to_string(float value)
+    inline std::string to_string(float value)
     {
         char buf[FLT_MAX_10_EXP + 20];
         std::sprintf(buf, \"%f\", value);
         return buf;
     }
 
-    std::string to_string(double value)
+    inline std::string to_string(double value)
     {
         char buf[DBL_MAX_10_EXP + 20];
         std::sprintf(buf, \"%f\", value);
         return buf;
     }
 
-    std::string to_string(long double value)
+    inline std::string to_string(long double value)
     {
         char buf[LDBL_MAX_10_EXP + 20];
         std::sprintf(buf, \"%Lf\", value);
@@ -102,8 +102,8 @@ void test_integer()
     REQUIRE(${COMP_NAMESPACE}::to_string(Int(1024)) == \"1024\");
     REQUIRE(${COMP_NAMESPACE}::to_string(Int(-10)) == \"-10\");
 
-    REQUIRE(${COMP_NAMSPACE}::to_string(min) != \"\");
-    REQUIRE(${COMP_NAMSPACE}::to_string(max) != \"\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(min) != \"\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(max) != \"\");
 }
 
 template <typename Int>
@@ -114,7 +114,7 @@ void test_unsigned_integer()
     REQUIRE(${COMP_NAMESPACE}::to_string(Int(0)) == \"0\");
     REQUIRE(${COMP_NAMESPACE}::to_string(Int(1024)) == \"1024\");
 
-    REQUIRE(${COMP_NAMSPACE}::to_string(max) != \"\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(max) != \"\");
 }
 
 template <typename Float>
@@ -157,8 +157,8 @@ void test_float()
     REQUIRE(nan_str[2] == 'a');
     REQUIRE(nan_str[3] == 'n');
 
-    REQUIRE(${COMP_NAMSPACE}::to_string(min) != \"\");
-    REQUIRE(${COMP_NAMSPACE}::to_string(max) != \"\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(min) != \"\");
+    REQUIRE(${COMP_NAMESPACE}::to_string(max) != \"\");
 }
 "
 "

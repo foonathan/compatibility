@@ -99,19 +99,19 @@ comp_unit_test(map_insertion
 "
 "
 std::map<int, int> map;
-auto res = ${COMMP_NAMESPACE}::try_emplace(map, 0, 0);
+auto res = ${COMP_NAMESPACE}::try_emplace(map, 0, 0);
 REQUIRE(res.second == true);
 REQUIRE(res.first->second == 0);
 
-res = ${COMMP_NAMESPACE}::try_emplace(map, 0, 1);
+res = ${COMP_NAMESPACE}::try_emplace(map, 0, 1);
 REQUIRE(res.second == false);
 REQUIRE(res.first->second == 0);
 
-res = ${COMP_NAMSPACE}::insert_or_assign(map, 1, 1);
+res = ${COMP_NAMESPACE}::insert_or_assign(map, 1, 1);
 REQUIRE(res.second == true);
 REQUIRE(res.first->second == 1);
 
-res = ${COMP_NAMSPACE}::insert_or_assign(map, 1, 2);
+res = ${COMP_NAMESPACE}::insert_or_assign(map, 1, 2);
 REQUIRE(res.second == false);
 REQUIRE(res.first->second == 2);
 ")
