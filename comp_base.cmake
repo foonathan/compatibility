@@ -202,7 +202,8 @@ function(comp_feature name test_code standard)
 endfunction()
 
 # DEPRECATED, use comp_feature()
-function(comp_check_feature code name)
+macro(comp_check_feature code name)
+    message(AUTHOR_WARNING "deprecated, use comp_feature()")
     string(FIND "${ARGN}" "${cpp17_flag}" res)
     if (NOT (res EQUAL -1))
         comp_feature(${name} ${code} COMP_CPP17_FLAG)
@@ -219,19 +220,22 @@ function(comp_check_feature code name)
             endif()
         endif()
     endif()
-endfunction()
+endmacro()
 
 # EXTERNAL; feature module
 # writes workaround code
-# test result is available via macor ${COMP_PREFIX}HAS_${name in uppercase}
-function(comp_workaround name workaround)
+# test result is available via macro ${COMP_PREFIX}HAS_${name in uppercase}
+# standard is COMP_CPPXX_FLAG required for the workaround code
+# if the test succeds, the standard of the test is also activated
+function(comp_workaround name workaround standard)
     set(${name}_workaround "${workaround}" PARENT_SCOPE)
+    set(need_${standard} TRUE PARENT_SCOPE)
 endfunction()
 
 # DEPRECATED, use comp_workaround
 macro(comp_gen_header name workaround)
     message(AUTHOR_WARNING "deprecated, use comp_workaround()")
-    comp_workaround("${name}" "${workaround}")
+    comp_workaround("${name}" "${workaround}" COMP_CPP98_FLAG)
 endmacro()
 
 # EXTERNAL; feature module
