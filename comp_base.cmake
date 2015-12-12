@@ -143,6 +143,7 @@ function(_comp_gen_files feature)
 
             #define ${COMP_PREFIX}HAS_${macro_name} ${result}
 
+            ${${name}_requires}
             ${${name}_workaround}
 
             #endif")
@@ -248,9 +249,15 @@ endmacro()
 # test result is available via macro ${COMP_PREFIX}HAS_${name in uppercase}
 # standard is COMP_CPPXX_FLAG required for the workaround code
 # if the test succeds, the standard of the test is also activated
+# additional arguments are required other features, their headers are also included then
 function(comp_workaround name workaround standard)
     set(${name}_workaround "${workaround}" PARENT_SCOPE)
     set(need_${standard} TRUE PARENT_SCOPE)
+    set(${name}_requires "" PARENT_SCOPE)
+    foreach(feature ${ARGN})
+        get_filename_component(header "${feature}" NAME_WE)
+        set(${name}_requires "${${name}_requires}#include <comp/${header}.hpp>\n" PARENT_SCOPE)
+    endforeach()
 endfunction()
 
 # DEPRECATED, use comp_workaround
