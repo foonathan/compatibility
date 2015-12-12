@@ -164,6 +164,18 @@ function(_comp_gen_files feature)
     endif()
 endfunction()
 
+# INTERNAL
+# handles a feature file
+macro(_comp_handle_feature feature)
+    if(NOT ${feature}_handled)
+        _comp_translate_feature(${feature})
+        _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
+        include(${COMP_CMAKE_PATH}/${feature}.cmake)
+        _comp_gen_files(${feature})
+        set(${feature}_handled ON PARENT_SCOPE)
+    endif()
+endmacro()
+
 # EXTERNAL; user
 # setups certain features for a target
 function(comp_target_features target include_policy)
@@ -177,10 +189,7 @@ function(comp_target_features target include_policy)
 
     target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
-        _comp_translate_feature(${feature})
-        _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
-        include(${COMP_CMAKE_PATH}/${feature}.cmake)
-        _comp_gen_files(${feature})
+        _comp_handle_feature(${feature})
     endforeach()
 
     if(COMP_NOFLAGS)
@@ -257,6 +266,7 @@ function(comp_workaround name workaround standard)
     foreach(feature ${ARGN})
         get_filename_component(header "${feature}" NAME_WE)
         set(${name}_requires "${${name}_requires}#include <comp/${header}.hpp>\n" PARENT_SCOPE)
+        _comp_handle_feature(${feature})
     endforeach()
 endfunction()
 
