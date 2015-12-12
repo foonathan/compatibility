@@ -138,10 +138,14 @@ function(_comp_gen_files feature)
             "#ifndef COMP_IN_PARENT_HEADER
             #error \"Don't include this file directly, only into a proper parent header.\"
             #endif
+            #ifndef COMP_${macro_name}_HPP_INCLUDED
+            #define COMP_${macro_name}_HPP_INCLUDED
 
             #define ${COMP_PREFIX}HAS_${macro_name} ${result}
 
-            ${${name}_workaround}")
+            ${${name}_workaround}
+
+            #endif")
     if(${name}_test_code)
         file(WRITE ${_COMP_TEST}/${name}.cpp
                 "#define COMP_IN_PARENT_HEADER
