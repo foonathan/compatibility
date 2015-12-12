@@ -53,7 +53,7 @@ namespace ${COMP_NAMESPACE}
     std::pair<typename Map::iterator, bool>
         try_emplace(Map &m, Key &&key, Args&&... args)
     {
-        auto iter = m.find(key);
+        typename Map::iterator iter = m.find(key);
         if (iter != m.end())
             return {iter, false};
         return m.insert(typename Map::value_type(std::forward<Key>(key), std::forward<Args>(args)...));
@@ -63,7 +63,7 @@ namespace ${COMP_NAMESPACE}
     typename Map::iterator
         try_emplace(Map &m, typename Map::const_iterator hint, Key &&key, Args&&... args)
     {
-        auto iter = m.find(key);
+        typename Map::iterator iter = m.find(key);
         if (iter != m.end())
             return iter;
         return m.insert(hint, typename Map::value_type(std::forward<Key>(key), std::forward<Args>(args)...)).first;
@@ -73,7 +73,7 @@ namespace ${COMP_NAMESPACE}
     std::pair<typename Map::iterator, bool>
         insert_or_assign(Map &m, Key &&key, M &&obj)
     {
-        auto iter = m.find(key);
+        typename Map::iterator iter = m.find(key);
         if (iter != m.end())
         {
             iter->second = std::forward<M>(obj);
@@ -86,7 +86,7 @@ namespace ${COMP_NAMESPACE}
     typename Map::iterator
         insert_or_assign(Map &m, typename Map::const_iterator hint, Key &&key, M &&obj)
     {
-        auto iter = m.find(key);
+        typename Map::iterator iter = m.find(key);
         if (iter != m.end())
         {
             iter->second = std::forward<M>(obj);

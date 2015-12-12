@@ -21,6 +21,6 @@ comp_workaround(deprecated
         #define ${COMP_PREFIX}DEPRECATED_MSG(Msg) __declspec(deprecated(Msg))
     #else
         #define ${COMP_PREFIX}DEPRECATED
-        #define ${COMP_PREFIX}DEPRECATED_MSG
+        #define ${COMP_PREFIX}DEPRECATED_MSG(Msg)
     #endif
 #endif" COMP_CPP98_FLAG)
