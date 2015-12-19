@@ -215,13 +215,28 @@ endfunction()
 # EXTERNAL; feature module
 # checks for a feature with ${name} by compiling ${test_code}
 # standard is COMP_CPPXX_FLAG and will be used for testing
+# additional arguments are required other features, if they are not supported, it will be neither
 function(comp_feature name test_code standard)
     string(TOUPPER "${name}" macro_name)
     if(_COMP_TEST_WORKAROUND)
         set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "" FORCE)
     else()
-        set(CMAKE_REQUIRED_FLAGS "${${standard}}")
-        check_cxx_source_compiles("${test_code}" has_${name})
+        set(result ON)
+        foreach(feature ${ARGN})
+            _comp_handle_feature(${feature})
+            get_filename_component(cur_name "${feature}" NAME_WE)
+            string(TOUPPER "${cur_name}" cur_name)
+            if(NOT COMP_HAS_${cur_name})
+                set(result OFF)
+            endif()
+        endforeach()
+
+        if(result)
+            set(CMAKE_REQUIRED_FLAGS "${${standard}}")
+            check_cxx_source_compiles("${test_code}" has_${name})
+        else()
+            set(has_${name} OFF)
+        endif()
 
         if(has_${name})
             option(COMP_HAS_${macro_name} "whether or not ${name} is available" ON)
@@ -231,6 +246,49 @@ function(comp_feature name test_code standard)
         endif()
     endif()
 endfunction()
+
+# EXTERNAL; feature module
+# writes workaround code
+# test result is available via macro ${COMP_PREFIX}HAS_${name in uppercase}
+# standard is COMP_CPPXX_FLAG required for the workaround code
+# if the test succeds, the standard of the test is also activated
+# additional arguments are required other features, their headers are also included then
+function(comp_workaround name workaround standard)
+    set(${name}_workaround "${workaround}" PARENT_SCOPE)
+    set(need_${standard} TRUE PARENT_SCOPE)
+    set(requires "")
+    foreach(feature ${ARGN})
+        get_filename_component(header "${feature}" NAME_WE)
+        set(requires "${requires}#include <comp/${header}.hpp>\n")
+        _comp_handle_feature(${feature})
+    endforeach()
+    set(${name}_requires ${requires} PARENT_SCOPE)
+endfunction()
+
+# EXTERNAL; feature module
+# generates a unit test file for workaround of feature ${name}
+# the include for the feature is available as is the Catch library
+# ${code} will be placed inside a Catch TEST_CASE, ${global} in the global scope in front of it
+function(comp_unit_test name global code)
+    if (NOT _COMP_TEST)
+        return()
+    endif()
+    set(${name}_test_code "${code}" PARENT_SCOPE)
+    set(${name}_test_global "${global}" PARENT_SCOPE)
+endfunction()
+
+# EXTERNAL; umbrella feature module
+# downloads and includes a feature named ${feature}
+function(comp_fetch_include feature)
+    _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
+    include(${COMP_CMAKE_PATH}/${feature}.cmake)
+endfunction()
+
+# DEPRECATED, use comp_workaround
+macro(comp_gen_header name workaround)
+    message(AUTHOR_WARNING "deprecated, use comp_workaround()")
+    comp_workaround("${name}" "${workaround}" COMP_CPP98_FLAG)
+endmacro()
 
 # DEPRECATED, use comp_feature()
 macro(comp_check_feature code name)
@@ -252,46 +310,3 @@ macro(comp_check_feature code name)
         endif()
     endif()
 endmacro()
-
-# EXTERNAL; feature module
-# writes workaround code
-# test result is available via macro ${COMP_PREFIX}HAS_${name in uppercase}
-# standard is COMP_CPPXX_FLAG required for the workaround code
-# if the test succeds, the standard of the test is also activated
-# additional arguments are required other features, their headers are also included then
-function(comp_workaround name workaround standard)
-    set(${name}_workaround "${workaround}" PARENT_SCOPE)
-    set(need_${standard} TRUE PARENT_SCOPE)
-    set(requires "")
-    foreach(feature ${ARGN})
-        get_filename_component(header "${feature}" NAME_WE)
-        set(requires "${requires}#include <comp/${header}.hpp>\n")
-        _comp_handle_feature(${feature})
-    endforeach()
-    set(${name}_requires ${requires} PARENT_SCOPE)
-endfunction()
-
-# DEPRECATED, use comp_workaround
-macro(comp_gen_header name workaround)
-    message(AUTHOR_WARNING "deprecated, use comp_workaround()")
-    comp_workaround("${name}" "${workaround}" COMP_CPP98_FLAG)
-endmacro()
-
-# EXTERNAL; feature module
-# generates a unit test file for workaround of feature ${name}
-# the include for the feature is available as is the Catch library
-# ${code} will be placed inside a Catch TEST_CASE, ${global} in the global scope in front of it
-function(comp_unit_test name global code)
-    if (NOT _COMP_TEST)
-        return()
-    endif()
-    set(${name}_test_code "${code}" PARENT_SCOPE)
-    set(${name}_test_global "${global}" PARENT_SCOPE)
-endfunction()
-
-# EXTERNAL; umbrella feature module
-# downloads and includes a feature named ${feature}
-function(comp_fetch_include feature)
-    _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
-    include(${COMP_CMAKE_PATH}/${feature}.cmake)
-endfunction()

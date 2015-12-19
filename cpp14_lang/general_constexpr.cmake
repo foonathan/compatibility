@@ -7,4 +7,6 @@ if(NOT COMP_API_VERSION)
 endif()
 comp_api_version(1)
 
-comp_feature(general_constexpr "constexpr int foo() {int i = 0; return i;} int main() {}" COMP_CPP14_FLAG)
+comp_feature(general_constexpr
+             "constexpr int foo() {int i = 0; return i;} int main() {}" COMP_CPP14_FLAG
+             cpp11_lang/constexpr)
