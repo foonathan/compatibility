@@ -221,11 +221,16 @@ endfunction()
 # additional arguments are required other features, if they are not supported, it will be neither
 function(comp_feature name test_code standard)
     string(TOUPPER "${name}" macro_name)
+    message(STATUS "Checking for feature ${name}")
+
     if(_COMP_TEST_WORKAROUND)
         set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "" FORCE)
+    elseif(DEFINED COMP_HAS_${macro_name})
+        message(STATUS "Checking for feature ${name} - overriden")
+        if(COMP_HAS_${macro_name})
+            set(need_${standard} TRUE PARENT_SCOPE)
+        endif()
     else()
-        message(STATUS "Checking for feature ${name}")
-
         set(result ON)
         foreach(feature ${ARGN})
             _comp_handle_feature(${feature})
