@@ -2,12 +2,16 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <memory>
-                    int main() {std::unique_ptr<int> ptr = std::make_unique<int>(4);}"
-                    make_unqiue "${cpp14_flag}")
-comp_gen_header(make_unique
-"
-#include <memory>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(make_unique "#include <memory>
+                          int main() {std::unique_ptr<int> ptr = std::make_unique<int>(4);}"
+             COMP_CPP14_FLAG)
+comp_workaround(make_unique
+"#include <memory>
 #include <type_traits>
 
 namespace ${COMP_NAMESPACE}
@@ -35,5 +39,4 @@ namespace ${COMP_NAMESPACE}
         return std::unique_ptr<T>(new typename std::remove_extent<T>::type[size]());
 #endif
     }
-}
-")
+}" COMP_CPP11_FLAG)

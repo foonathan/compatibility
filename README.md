@@ -71,6 +71,8 @@ comp_target_features(tgt PUBLIC CPP11) # or CPP14 or CPP17
 ```
 This will only activate C++11/14/17 without doing anything else.
 
+*Note: The standard activation is always `PRIVATE` to allow users of a library to have a different (higher) standard than the library.*
+
 ## Usage
 
 The only file needed is `comp_base.cmake`.
@@ -80,19 +82,19 @@ The branch `git-submodule` only contains `comp_base.cmake` and is thus perfect f
 Run `git submodule add -b "git-submodule" https://github.com/foonathan/compatibility.git` to initialize it and fetch the file.
 Then you only need to run `git submodule update --remote` to update it to the newest version.
 
-You only need to download `comp_base.cmake` and `include()` it in your `CMakeLists.txt`.
-It generates CMake options - `COMP_CPP11_FLAG`, `COMP_CPP14_FLAG` and `COMP_CPP17_FLAG` - storing the calculated compiler flag for a given standard,
-useful if you want to override it, if it can't find one for your compiler,
-it also provides the following function:
+`include()` it in your `CMakeLists.txt` now.
+First it generates CMake options - `COMP_CPP11_FLAG`, `COMP_CPP14_FLAG` and `COMP_CPP17_FLAG` - storing the calculated compiler flag for a given standard,
+useful if you want to override it, if it can't find one for your compiler.
+It also provides the following function:
 
     comp_target_features(<target> <PRIVATE|PUBLIC|INTERFACE> <features...>
                          [NOPREFIX | PREFIX <prefix] [NAMESPACE <namespace>]
                          [CMAKE_PATH <path>] [INCLUDE_PATH <include_path>]
                          [NOFLAGS | CPP11 | CPP14 | CPP17])
 
-Ignoring all the other options, it is similar like `target_compile_features()`.
+Ignoring all the other options, it is like `target_compile_features()`.
 It takes a list of features to activate for a certain target.
-A features is a file in this repository without the `.cmake` extension, i.e. `cpp11_lang` for all C++11 language features,
+A features is a file in this repository without the `.cmake` extension, e.g. `cpp11_lang` for all C++11 language features,
 or `cpp14_lang/deprecated` for the C++14 deprecated features.
 
 A feature file with name `dir/xxx.cmake` belonging to a feature `dir/xxx` consists of the following:
@@ -102,12 +104,9 @@ A feature file with name `dir/xxx.cmake` belonging to a feature `dir/xxx` consis
 * a CMake option with name `COMP_HAS_XXX` to override its result, useful if you want to act like it doesn't support a feature,
 or if the test is poorly written (please contact me in this case!)
 
-* generation of a header named `comp/xxx.hpp`.
-It contains at least a macro `<PREFIX>HAS_XXX` with the same value as the CMake option
+* a header named `comp/xxx.hpp`.
+The header contains at least a macro `<PREFIX>HAS_XXX` with the same value as the CMake option
 and often workaround macros or functions that can be used instead of the feature.
-
-If you want a C++11 feature, it also activates C++11 for your target, likewise for C++14 and C++17.
-Note that this activation is `PRIVATE` to allow users of a library to have a different standard than the library itself.
 
 To use the generated header files, it is recommended to create a single header,
 which includes `cstddef` (important!), followed by all the other headers.
@@ -124,9 +123,9 @@ What `comp_target_features` function actually does is the following:
 * It calls `target_include_directories` to allow including the generated header files.
 The `INTERFACE/PUBLIC/PRIVATE` specifier are only used in this call.
 
-* If any feature requires C++11, it activates C++11 for the target. Likewise for the other standards.
+* Activates the right C++ standard. E.g., if a feature requires C++11, it will be activated if it is available. If it is not, it will only activate the C++ standard required by the workaround code. This activation is always `PRIVATE`.
 
-This behavior can be customized with the other options:
+The behavior can be customized with the other options:
 
 * `NOPREFIX`/`PREFIX`: The prefix of any generated macros or none if `NOPREFIX` is set. Default is `COMP_`.
 
@@ -143,7 +142,7 @@ The latter is useful for `INTERFACE` libraries which are only there to run the t
 
 ## Feature Reference
 
-A feature named `xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `{PREFIX}HAS_XXX` in a file named `comp/xxx.hpp`.
+A feature named `dir/xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `{PREFIX}HAS_XXX` in a file named `comp/xxx.hpp`.
 
 For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `{PREFIX}XXX`.
 Those macros often use compiler extensions.
@@ -264,7 +263,7 @@ pretty_function|`__PRETTY_FUNCTION__`|`PRETTY_FUNCTION`, fallback to `__FUNCSIG_
 
 Get them all by specifying `ext.cmake`.
 
-## Pull-Requests.
+## Contribution
 
 As you probably noted, there are *many* features missing.
 I wrote this library in a few hours and concentrated on the most important features for me.
@@ -272,23 +271,34 @@ If you want to extend it or improve a workaround, please don't hesitate to fork 
 (or just write an issue and let me take care of it, when I have time, if you're lazy).
 
 To write a new feature check, just create a new file in the appropriate subdirectory.
-You only need to call two CMake function defined in `comp_base.cmake`:
-
-1. `comp_check_feature` - It takes three parameters. The first is a minimal test code that uses this feature.
-It is recommended to avoid using multiple features (i.e. avoid `auto`, `nullptr` and the like).
-The second parameter is the name of the feature, this should follow my naming convention.
-The third is a list of required compiler flags, use the variables `${cpp11_flag}`, `${cpp14_flag}` or `${cpp17_flag}` for that or simply `""`.
-Based on the flags the language standard for a feature is also determined.
-
-2. `comp_gen_header` - It takes two parameters. The first is the name of the feature, must be the same as above.
-The second is code that will be appended to the file. It is used for workarounds.
-If you define macros, wrap them in an `#ifndef ... #endif` and use `${COMP_PREFIX}` as prefix.
-If you define anything else, do it inside namespace `${COMP_NAMESPACE}` or a sub namespace.
-
-3. (optional) `comp_unit_test` - Generates a Catch unit test, takes three parameters.
-The first one is the name of the feature, must be the same as above.
-The second is code that will be inserted into the global scope.
-The third one is code that will be inserted into a Catch TEST_CASE().
-
 Note: Do **not** include `comp_base.cmake!`.
+
+Inside the feature file you should only use the following CMake functions in the given order:
+
+1. `comp_api_version(major[.minor[.patch]])` - checks if the API has the required version. `major` must match exactly, the rest not higher than the API version. If there is a version mismatch, it is an error.
+
+2. `comp_feature(<name> <test_code> <standard> <required...>)` - does the feature check.
+`name` is the name of the feature without the directory, e.g. `constexpr`, not `cpp11_lang/constexpr`.
+`test_code` is the code that will be tested to see if the feature is supported.
+`standard` is the required C++ standard, this must be one of the `COMP_CPPXX_FLAG` values or `COMP_CPP98_FLAG` if no higher standard is needed.
+`required` is a list of requirede featuers that need to be supported in order to support this feature. If any of them isn't, this will not be checked.
+
+3. `comp_workaround(<name> <workaround_code> <standard> <required...>)` - writes workaround code (optional).
+`name` must be the same as in `comp_feature()`.
+`workaround_code` is the workaround code itself.
+It must use `${COMP_PREFIX}` for macros and put anything else into the namespace `${COMP_NAMESPACE]` (variable expansion works there, so write it exactly like that).
+The result of the test is available through `${COMP_PREFIX}HAS_NAME`, e.g. `#if ${COMP_PREFIX}HAS_CONSTEXPR ... #else ... #endif`.
+`standard` is like in `comp_feature()` the standard required for the workaround code (the not-supported case, the supported case gets the standard of `comp_feature()`).
+`required` is a list of required features inside the workaround code. Their headers will be included prior to the workaround making it possible to use other workarounds.
+
+4. `comp_unit_test(<name> <global_code> <test_code>)` - defines a (Catch) unit test for the workaround code (optional).
+`name` must be the same as in `comp_feature()`.
+`global_code` will be put into the global namespace right after the including of the appropriate feature header and catch.
+`test_code` will be put into a Catch `TEST_CASE()`.
+
+The code for feature checking should be minimal and do not depend on any other advanced features (for example, do not use `auto` or `nullptr`) to prevent false failure.
+The workaround shouldn't use advanced features either, it can use other workarounds though.
+
+The testing code should test the workaround. It will be run by the testing framework for both modes, supported and not supported.
+
 Look at a few other files for example implementations.

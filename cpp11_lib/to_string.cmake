@@ -2,16 +2,20 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <string>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(to_string "#include <string>
                     int main()
                     {
                         std::to_string(5);
                         std::to_string(5ul);
                         std::to_string(5.0);
-                    }" to_string "${cpp11_flag}")
-comp_gen_header(to_string
-"
-#include <string>
+                    }" COMP_CPP11_FLAG)
+comp_workaround(to_string
+"#include <string>
 
 #if !${COMP_PREFIX}HAS_TO_STRING
     #include <cfloat>
@@ -86,8 +90,7 @@ namespace ${COMP_NAMESPACE}
         return buf;
     }
 #endif
-}
-")
+}" COMP_CPP98_FLAG)
 comp_unit_test(to_string
 "
 #include <limits>

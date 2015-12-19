@@ -2,10 +2,14 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("int main(){void *ptr = nullptr;}" nullptr "${cpp11_flag}")
-comp_gen_header(nullptr
-"
-#ifndef ${COMP_PREFIX}NULLPTR
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(nullptr "int main(){void *ptr = nullptr;}" COMP_CPP11_FLAG)
+comp_workaround(nullptr
+"#ifndef ${COMP_PREFIX}NULLPTR
     #if ${COMP_PREFIX}HAS_NULLPTR
         #define ${COMP_PREFIX}NULLPTR nullptr
 
@@ -34,8 +38,7 @@ comp_gen_header(nullptr
 
         #define ${COMP_PREFIX}NULLPTR ${COMP_NAMESPACE}::nullptr_t()
     #endif
-#endif
-")
+#endif" COMP_CPP98_FLAG)
 comp_unit_test(nullptr
 "
 struct nullptr_foo

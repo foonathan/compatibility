@@ -2,5 +2,9 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("int main(){int&& rvalue = 5;}" rvalue_ref "${cpp11_flag}")
-comp_gen_header(rvalue_ref "")
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(rvalue_ref "int main(){int&& rvalue = 5;}" COMP_CPP11_FLAG)

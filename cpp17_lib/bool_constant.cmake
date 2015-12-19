@@ -2,15 +2,20 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <type_traits>
-                    int main()
-                    {
-                        std::bool_constant b;
-                    }"
-                    bool_constant "${cpp17_flag}")
-comp_gen_header(bool_constant
-"
-#include <type_traits>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(bool_constant
+                "#include <type_traits>
+                int main()
+                {
+                    std::bool_constant b;
+                }"
+                COMP_CPP17_FLAG)
+comp_workaround(bool_constant
+"#include <type_traits>
 
 namespace ${COMP_NAMESPACE}
 {
@@ -19,5 +24,4 @@ namespace ${COMP_NAMESPACE}
 
     typedef bool_constant<true> true_type;
     typedef bool_constant<false> false_type;
-}
-")
+}" COMP_CPP11_FLAG)

@@ -2,8 +2,14 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
 # small, dumb program using rtti
-comp_check_feature("#include <typeinfo>
+comp_feature(rtti_support
+                    "#include <typeinfo>
                     struct a {virtual ~a() {}};
                     struct b : a {};
                     int main()
@@ -11,10 +17,9 @@ comp_check_feature("#include <typeinfo>
                         a *ptr = new b;
                         b *b_ptr = dynamic_cast<b*>(ptr);
                         bool res = typeid(*b_ptr) == typeid(*ptr);
-                    }" rtti_support "")
-comp_gen_header(rtti_support
-"
-namespace ${COMP_NAMESPACE}
+                    }" COMP_CPP98_FLAG)
+comp_workaround(rtti_support
+"namespace ${COMP_NAMESPACE}
 {
     template <class Derived, class Base>
     Derived polymorphic_downcast(Base *ptr)
@@ -35,5 +40,4 @@ namespace ${COMP_NAMESPACE}
         return static_cast<Derived>(ref);
     #endif
     }
-}
-")
+}" COMP_CPP98_FLAG)

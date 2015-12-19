@@ -2,12 +2,16 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-comp_check_feature("#include <exception>
-                   int main() {std::terminate_handler handler = std::get_terminate();}"
-                   get_terminate ${cpp11_flag})
-comp_gen_header(get_terminate
-"
-#include <exception>
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
+comp_feature(get_terminate "#include <exception>
+                            int main() {std::terminate_handler handler = std::get_terminate();}"
+                            COMP_CPP11_FLAG)
+comp_workaround(get_terminate
+"#include <exception>
 
 namespace ${COMP_NAMESPACE}
 {
@@ -24,5 +28,4 @@ namespace ${COMP_NAMESPACE}
         return h;
     }
 #endif
-}
-")
+}" COMP_CPP98_FLAG)

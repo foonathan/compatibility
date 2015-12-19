@@ -2,8 +2,13 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
+if(NOT COMP_API_VERSION)
+    message(FATAL_ERROR "needs newer comp_base.cmake version")
+endif()
+comp_api_version(1)
+
 # small, dumb program using exceptions
-comp_check_feature("struct my_exception {};
+comp_feature(exception_support "struct my_exception {};
                     int main()
                     {
                         try
@@ -12,10 +17,9 @@ comp_check_feature("struct my_exception {};
                         }
                         catch (my_exception&) {}
                         catch (...) {}
-                    }" exception_support "")
-comp_gen_header(exception_support
-"
-#include <cstdlib>
+                    }" COMP_CPP98_FLAG)
+comp_workaround(exception_support
+"#include <cstdlib>
 
 #ifndef ${COMP_PREFIX}THROW
     #if ${COMP_PREFIX}HAS_EXCEPTION_SUPPORT
@@ -48,5 +52,5 @@ comp_gen_header(exception_support
         #define ${COMP_PREFIX}CATCH_ALL if (false)
     #endif
 #endif
-")
+" COMP_CPP98_FLAG)
 
