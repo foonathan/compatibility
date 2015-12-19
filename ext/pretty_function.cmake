@@ -12,7 +12,7 @@ comp_feature(pretty_function "#include <cstddef>
                             COMP_CPP98_FLAG)
 comp_workaround(pretty_function
 "#ifndef ${COMP_PREFIX}PRETTY_FUNCTION
-    #if ${COMP_PREFIX}HAS_PRETTY_FUNCTION
+    #if ${COMP_PREFIX}HAS_PRETTY_FUNCTION || defined(__GNUC__)
         #define ${COMP_PREFIX}PRETTY_FUNCTION __PRETTY_FUNCTION__
     #elif defined(_MSC_VER)
         #define ${COMP_PREFIX}PRETTY_FUNCTION __FUNCSIG__
