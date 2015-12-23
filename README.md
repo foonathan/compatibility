@@ -238,6 +238,15 @@ shared_mutex|`std::shared_mutex`|no workaround
 uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
 void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
 
+### Technical specifications
+
+The technical specifications for the C++ libraries.
+These features are all in the subdirectory `ts`.
+
+feature name|description|workaround, if any
+------------|-----------|------------------
+pmr|Polymorphic memory resource (N3916)|only `memory_resource` base class
+
 ### Environment
 
 Features regarding the general environment. These features are all in the subdirectory `env`.
