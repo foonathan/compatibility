@@ -53,12 +53,12 @@ namespace ${COMP_NAMESPACE}
         virtual bool do_is_equal(const memory_resource& other) const ${COMP_PREFIX}NOEXCEPT = 0;
     };
 
-    bool operator==(const memory_resource& a, const memory_resource& b) ${COMP_PREFIX}NOEXCEPT
+    inline bool operator==(const memory_resource& a, const memory_resource& b) ${COMP_PREFIX}NOEXCEPT
     {
         return &a == &b || a.is_equal(b);
     }
 
-    bool operator!=(const memory_resource& a, const memory_resource& b) ${COMP_PREFIX}NOEXCEPT
+    inline bool operator!=(const memory_resource& a, const memory_resource& b) ${COMP_PREFIX}NOEXCEPT
     {
         return !(a == b);
     }
