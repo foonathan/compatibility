@@ -23,6 +23,9 @@ comp_workaround(pmr
 
 namespace ${COMP_NAMESPACE}
 {
+#if ${COMP_PREFIX}HAS_PMR
+    using std::experimental::pmr::memory_resource;
+#else
     // see N3916 for documentation
     class memory_resource
     {
@@ -62,4 +65,5 @@ namespace ${COMP_NAMESPACE}
     {
         return !(a == b);
     }
+#endif
 }" COMP_CPP11_FLAG cpp11_lang/alignof cpp11_lang/noexcept cpp11_lib/max_align_t)
