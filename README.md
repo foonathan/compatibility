@@ -204,15 +204,36 @@ variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workar
 
 Get them all by specifying `cpp14_lang`.
 
-### C++14 library features:
+### C++14 library features [complete]:
 
 These features are all in the subdirectory `cpp14_lib`.
 
-feature name|example|workaround, if any
-------------|-------|------------------
-make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
+paper|feature name|example|workaround, if any
+--------|------------|-------|------------------
+[N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3668.htm)|exchange|`std::exchange()`|`comp::exchange()`, own implementation
+[N3421](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3421.html)|generic_operator_functors|`std::greater<>{}`|`comp::greater{}` and the rest, no class templates!
+[N3658](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3658.html)|`std::index_sequence<4>`|`comp::index_sequence<4>` and co, own implementation
+[N3656](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3656.htm)|make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
+[N3654](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3654.html)|`ss >> std::quoted(str)`|no workaround, use boost
+[N3659](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3659.html)shared_lock|`std::shared_lock<std::shared_timed_mutex>`|no workaround
+[N3671](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3671.html)|two_range_algorithm|`std::equal(first1, last1, first2, last2)`|`comp::equal()`/`comp::mismatch()`/`comp::is_permutation()`, own implementation
 
 Get them all by specifying `cpp14_lib`.
+
+The following features are not and will never be supported:
+
+paper|description|reason
+--------|-----------|------
+[N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3669.pdf)|Fixing constexpr member functions without const|workaround not possible, just avoid relying on that behavior
+[N3670](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3670.htm)|Addressing Tuples by Type|just use index version
+[N3462](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3462.html)|std::result_of and SFINAE|impossible to check
+[N3545](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3545.html)|operator() for std::integral_constant|just "syntax" sugar
+[N3642](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3642.pdf)|UDl's for standard library|just "syntax" sugar
+[N3469](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3469.html)|Constexpr for std::chrono|no great workaround possible
+[N3470](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3470.html)|Constexpr for std::array|no great workaround possible
+[N3471](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3471.html)|Constexpr for utilities|no great workaround possible
+[N3657](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3657.html)|Heterogeneous lookup|optimization only, workaround for transparent functors supports this extension
+[N3655](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3655.pdf)|Alias templates for traits|just "syntax" sugar
 
 ### C++17 language features
 
