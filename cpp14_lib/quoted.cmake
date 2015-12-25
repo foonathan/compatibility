@@ -13,7 +13,7 @@ comp_feature(quoted "#include <iomanip>
                      int main()
                      {
                         std::stringstream ss;
-                        std::string foo = "a b";
+                        std::string foo = \"a b\";
                         ss << std::quoted(foo);
                         ss >> std::quoted(foo);
                      }" COMP_CPP14_FLAG)

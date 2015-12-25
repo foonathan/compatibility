@@ -194,4 +194,4 @@ namespace ${COMP_NAMESPACE}
     };
 
     #undef ${COMP_PREFIX}DETAIL_AUTO_RETURN
-}")
+}" COMP_CPP11_FLAG)
