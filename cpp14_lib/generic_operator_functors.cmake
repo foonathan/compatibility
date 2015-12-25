@@ -24,6 +24,8 @@ namespace ${COMP_NAMESPACE}
 
     struct plus
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) + std::forward<U>(u))
@@ -31,6 +33,8 @@ namespace ${COMP_NAMESPACE}
 
     struct minus
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) - std::forward<U>(u))
@@ -38,6 +42,8 @@ namespace ${COMP_NAMESPACE}
 
     struct multiplies
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) * std::forward<U>(u))
@@ -45,6 +51,8 @@ namespace ${COMP_NAMESPACE}
 
     struct divides
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) / std::forward<U>(u))
@@ -52,6 +60,8 @@ namespace ${COMP_NAMESPACE}
 
     struct modulus
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) % std::forward<U>(u))
@@ -59,6 +69,8 @@ namespace ${COMP_NAMESPACE}
 
     struct negate
     {
+        typedef void is_transparent;
+
         template <typename T>
         auto operator()(T&& t) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(-std::forward<T>(t))
@@ -66,6 +78,8 @@ namespace ${COMP_NAMESPACE}
 
     struct equal_to
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) == std::forward<U>(u))
@@ -73,6 +87,8 @@ namespace ${COMP_NAMESPACE}
 
     struct not_equal_to
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) != std::forward<U>(u))
@@ -80,6 +96,8 @@ namespace ${COMP_NAMESPACE}
 
     struct greater
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) > std::forward<U>(u))
@@ -87,6 +105,8 @@ namespace ${COMP_NAMESPACE}
 
     struct greater_equal
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) >= std::forward<U>(u))
@@ -94,6 +114,8 @@ namespace ${COMP_NAMESPACE}
 
     struct less
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) < std::forward<U>(u))
@@ -101,6 +123,8 @@ namespace ${COMP_NAMESPACE}
 
     struct less_equal
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) <= std::forward<U>(u))
@@ -108,6 +132,8 @@ namespace ${COMP_NAMESPACE}
 
     struct logical_and
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) && std::forward<U>(u))
@@ -115,6 +141,8 @@ namespace ${COMP_NAMESPACE}
 
     struct logical_or
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) || std::forward<U>(u))
@@ -122,6 +150,8 @@ namespace ${COMP_NAMESPACE}
 
     struct logical_not
     {
+        typedef void is_transparent;
+
         template <typename T>
         auto operator()(T&& t) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(!std::forward<T>(t))
@@ -129,6 +159,8 @@ namespace ${COMP_NAMESPACE}
 
     struct bit_and
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) & std::forward<U>(u))
@@ -136,6 +168,8 @@ namespace ${COMP_NAMESPACE}
 
     struct bit_or
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) | std::forward<U>(u))
@@ -143,6 +177,8 @@ namespace ${COMP_NAMESPACE}
 
     struct bit_xor
     {
+        typedef void is_transparent;
+
         template <typename T, typename U>
         auto operator()(T&& t, U &&u) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(std::forward<T>(t) ^ std::forward<U>(u))
@@ -150,6 +186,8 @@ namespace ${COMP_NAMESPACE}
 
     struct bit_not
     {
+        typedef void is_transparent;
+
         template <typename T>
         auto operator()(T&& t) const
         -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(~std::forward<T>(t))
