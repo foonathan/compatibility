@@ -17,6 +17,7 @@ comp_feature(integer_sequence
 comp_workaround(integer_sequence
 "
 #include <type_traits>
+#include <utility>
 
 namespace ${COMP_NAMESPACE}
 {
