@@ -80,7 +80,7 @@ namespace ${COMP_NAMESPACE}
     template <class T, class A, class Pred>
     void erase_if(std::list<T, A> &c, Pred p)
     {
-        c.remove_if(pred);
+        c.remove_if(p);
     }
 
     template <class T, class A, class Pred>
@@ -118,13 +118,13 @@ namespace ${COMP_NAMESPACE}
     }
 
     template <class K, class C, class A, class Pred>
-    void erase_if(std::set<K, T, C, A> &c, Pred p)
+    void erase_if(std::set<K, C, A> &c, Pred p)
     {
         detail::erase_if_loop(c, p);
     }
 
     template <class K, class C, class A, class Pred>
-    void erase_if(std::multiset<K, T, C, A> &c, Pred p)
+    void erase_if(std::multiset<K, C, A> &c, Pred p)
     {
         detail::erase_if_loop(c, p);
     }
@@ -211,13 +211,13 @@ namespace ${COMP_NAMESPACE}
     }
 
     template <class K, class C, class A, class U>
-    void erase(std::set<K, T, C, A> &c, const U &value)
+    void erase(std::set<K, C, A> &c, const U &value)
     {
         detail::erase_if_loop(c, detail::erase_value<U>{&value});
     }
 
     template <class K, class C, class A, class U>
-    void erase(std::multiset<K, T, C, A> &c, const U &value)
+    void erase(std::multiset<K, C, A> &c, const U &value)
     {
         detail::erase_if_loop(c, detail::erase_value<U>{&value});
     }
@@ -246,4 +246,4 @@ namespace ${COMP_NAMESPACE}
         detail::erase_if_loop(c, detail::erase_value<U>{&value});
     }
 #endif
-}")
+}" COMP_CPP11_FLAG)

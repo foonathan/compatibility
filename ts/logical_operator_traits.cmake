@@ -40,7 +40,7 @@ namespace ${COMP_NAMESPACE}
     struct conjunction;
 
     template <>
-    struct conjunction
+    struct conjunction<>
     : std::true_type {};
 
     template <class B1>
@@ -56,7 +56,7 @@ namespace ${COMP_NAMESPACE}
     struct disjunction;
 
     template <>
-    struct disjunction
+    struct disjunction<>
     : std::false_type {};
 
     template <class B1>
@@ -67,4 +67,4 @@ namespace ${COMP_NAMESPACE}
     struct disjunction<B1, Bs...>
     : std::conditional<B1::value == false, disjunction<Bs...>, B1> {};
 #endif
-}")
+}" COMP_CPP11_FLAG)
