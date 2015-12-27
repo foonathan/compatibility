@@ -201,17 +201,31 @@ to_string|`std::to_string(54)`|`comp::to_string()`, fallback to `std::sprintf()`
 
 Get them all by specifying `cpp11_lib`.
 
-### C++14 language features
+### C++14 language features \[complete\]
 
 These features are all in the subdirectory `cpp14_lang`.
 
-feature name|alternative name|example|workaround, if any
-------------|----------------|-------|------------------
-deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
-general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
-variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
+paper|feature name|alternative name|example|workaround, if any
+-----|------------|----------------|-------|------------------
+[N3760](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3760.html)|deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
+[N3652](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3652.html)||general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
+[N3638](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3638.html)|return_type_deduction|none|auto return type deduction for normal functions|`AUTO_RETURN` macro
+[N3778](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3778.html)|sized_deallocation|`void operator delete(void *ptr, std::size_t size)`|no workaround
+[N3651](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3651.html)|variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
 
 Get them all by specifying `cpp14_lang`.
+
+The following features are not and will never be supported:
+
+paper|description|reason
+-----|-----------|------
+[N3323](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3323.pdf)|Tweak Certain C++ Contextual Conversions|difficult to check, avoid relying on behavior
+[N3472](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3472.pdf)|Binary Literals|syntax sugar only
+[N3648](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3648.html)|Generalized Lambda Capture|lambdas are syntax sugar only
+[N3649](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3649.html)|Generic Lambdas|lambdas are syntax sugar only
+[N3653](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3653.html)|Member initializers and aggregates|difficult to check, no big user impact
+[N3664](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3664.html)|Clarifying Memory Allocation|wording change only
+[N3781](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3781.pdf)|Digit seperator for literals|syntax sugar only
 
 ### C++14 library features \[complete\]
 
@@ -232,7 +246,7 @@ Get them all by specifying `cpp14_lib`.
 The following features are not and will never be supported:
 
 paper|description|reason
---------|-----------|------
+-----|-----------|------
 [N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3669.pdf)|Fixing constexpr member functions without const|workaround not possible, just avoid relying on that behavior
 [N3670](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3670.htm)|Addressing Tuples by Type|just use index version
 [N3462](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3462.html)|std::result_of and SFINAE|impossible to check
@@ -279,7 +293,7 @@ paper|description|reason
 [N4089](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4089.pdf)|Conversion for `std::unique_ptr<T[]>`|difficult to check, avoid relying on behavior
 [N4277](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4277.html)|TriviallyCopyable `std::reference_wrapper`|difficult to check, avoid relying on behavior
 [N4258](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4258.pdf)|Cleaning-up `noexcept`|difficult to check, no big impact on user
-[N4266](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4266.html)|Missing SFINAE rule in `std::unique_ptr`|difficult to check, no big impact on code, aovid relying on behavior
+[N4266](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4266.html)|Missing SFINAE rule in `std::unique_ptr`|difficult to check, no big impact on code, avoid relying on behavior
 [N4387](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4387.html)|Improving constructor `std::pair` and `std::tuple`|difficult to check, avoid relying on behavior
 [N4510](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4510.html)|Minimal incomplete type support for containers|difficult to check, avoid relying on behavior
 

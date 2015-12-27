@@ -4,4 +4,6 @@
 
 comp_fetch_include(cpp14_lang/deprecated)
 comp_fetch_include(cpp14_lang/general_constexpr)
+comp_fetch_include(cpp14_lang/return_type_deduction)
+comp_fetch_include(cpp14_lang/sized_deallocation)
 comp_fetch_include(cpp14_lang/variable_template)
