@@ -276,12 +276,22 @@ paper|description|reason
 
 ### Technical specifications
 
-The technical specifications for the C++ libraries.
+The technical specifications for the C++ standard library.
 These features are all in the subdirectory `ts`.
 
-feature name|description|workaround, if any
-------------|-----------|------------------
-pmr|Polymorphic memory resource (N3916)|only `memory_resource` base class
+paper|feature name|description|workaround, if any
+-----|------------|-----------|------------------
+[N3804](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3804.html)|any|`std::experimental::any` class|none, use boost or other implementation
+[N3915](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3915.pdf)|apply|`std::experimental::apply(f, tuple)`|`comp::apply()`, own implementation
+[N4273](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4273.htm)|container_erausre|`std::experimental::erase_if(vector, pred)`|`comp::erase_if()`/`comp::erase()`, own implementation
+[P0013R1](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/p0013r1.html)|logical_operator_traits|`std::experimental::disjunction`|`comp::conjunction`/`comp::disjunction`/`comp::negation`, own implementation
+[N4391](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4391.html)|make_array|`std::experimental::make_array()`|`comp::make_array()`/`comp::to_array()`, own implementation
+[N4076](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4076.html)|not_fn|`std::experimental::not_fn()`|`comp::not_fn()`, own implementation
+[N3793](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3793.html)|optional|`std::experimental::optional`|none, use boost or other implementation
+[N3916](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3916.pdf)|pmr|Polymorphic memory resource|only `comp::memory_resource` base class
+[N3921](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3921.html)|string_view|`std::experimental::string_view`| none, use other implementation
+
+Get them all by specifying `ts`.
 
 ### Environment
 
