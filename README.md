@@ -107,6 +107,9 @@ or if the test is poorly written (please contact me in this case!)
 * a header named `comp/xxx.hpp`.
 The header contains at least a macro `<PREFIX>HAS_XXX` with the same value as the CMake option
 and often workaround macros or functions that can be used instead of the feature.
+The workaround uses either the feature, if it is available, or own code.
+This allows using many new features already, without support.
+If the compiler gets support, you will be automatically using the native feature or the standard library implementation.
 
 To use the generated header files, it is recommended to create a single header,
 which includes `cstddef` (important!), followed by all the other headers.
@@ -149,12 +152,16 @@ Those macros often use compiler extensions.
 If there is none (or a lacking implementation...), an error message will be emmitted.
 To prevent this, simply define the macro as no-op or as you want prior to including the file.
 
+There are often workaround functions for library features. Those are defined in a namespace and either use the own implementation or the standard library implementation, if it is available.
+
 Prefix and namespace name can be controlled via parameters, see above.
 
 This library currently tests for the following features.
 The code below assumes no prefix and a namespace name of `comp`.
 
-### C++11 language features:
+*A feature will only be included if it is not a pure syntactic feature (like `auto` or lambdas which can be avoided) but if there is either sensible workaround code, e.g. through to compiler extensions or through reimplementing (small!) standard library functionality, or there can be conditional compilation based on the existense, e.g. optional literal definitions or move constructors.*
+
+### C++11 language features
 
 These features are all in the subdirectory `cpp11_lang`.
 
@@ -177,9 +184,11 @@ rvalue_ref|cxx_rvalue_references|`int&& a = 4;`|no workaround
 static_assert|cxx_static_assert|`static_assert(std::is_integral<T>::value, "");`|`STATIC_ASSERT(Expr, Msg)`, fallback to simple undefined struct technique
 thread_local|cxx_thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to `__thread` extension or similar, if available - **does not call constructors or destructors!**
 
+*Note: In general, it assumes proper C++11 support. The workarounds defined in this library rely on all common C++ features that can not be easily avoided (like `auto` or lambdas), except those listed here with a proper fallback (like `noexcept`, `constexpr`, ...).*
+
 Get them all by specifying `cpp11_lang`..
 
-### C++11 library features:
+### C++11 library features
 
 These features are all in the subdirectory `cpp11_lib`.
 
@@ -190,29 +199,66 @@ get_terminate|`std::get_terminate()`|`comp::get_terminate()`, same as above
 max_align_t|`std::max_align_t`|`comp::max_align_t`, fallback to `::max_align_t` or a struct with a `long double` and `long long`
 to_string|`std::to_string(54)`|`comp::to_string()`, fallback to `std::sprintf()`
 
+*Note: It only checks for minor features where an easy workaround implementation is feasible in the scope of this library.*
+
 Get them all by specifying `cpp11_lib`.
 
-### C++14 language features:
+### C++14 language features \[complete\]
 
 These features are all in the subdirectory `cpp14_lang`.
 
-feature name|alternative name|example|workaround, if any
-------------|----------------|-------|------------------
-deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
-general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
-variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
+paper|feature name|alternative name|example|workaround, if any
+-----|------------|----------------|-------|------------------
+[N3760](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3760.html)|deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
+[N3652](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3652.html)||general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
+[N3638](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3638.html)|return_type_deduction|none|auto return type deduction for normal functions|`AUTO_RETURN` macro
+[N3778](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3778.html)|sized_deallocation|`void operator delete(void *ptr, std::size_t size)`|no workaround
+[N3651](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3651.html)|variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
 
 Get them all by specifying `cpp14_lang`.
 
-### C++14 library features:
+The following features are not and will never be supported:
+
+paper|description|reason
+-----|-----------|------
+[N3323](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3323.pdf)|Tweak Certain C++ Contextual Conversions|difficult to check, avoid relying on behavior
+[N3472](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3472.pdf)|Binary Literals|syntax sugar only
+[N3648](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3648.html)|Generalized Lambda Capture|lambdas are syntax sugar only
+[N3649](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3649.html)|Generic Lambdas|lambdas are syntax sugar only
+[N3653](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3653.html)|Member initializers and aggregates|difficult to check, no big user impact
+[N3664](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3664.html)|Clarifying Memory Allocation|wording change only
+[N3781](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3781.pdf)|Digit seperator for literals|syntax sugar only
+
+### C++14 library features \[complete\]
 
 These features are all in the subdirectory `cpp14_lib`.
 
-feature name|example|workaround, if any
-------------|-------|------------------
-make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
+paper|feature name|example|workaround, if any
+--------|------------|-------|------------------
+[N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3668.htm)|exchange|`std::exchange()`|`comp::exchange()`, own implementation
+[N3421](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3421.html)|generic_operator_functors|`std::greater<>{}`|`comp::greater{}` and the rest, no class templates!
+[N3658](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3658.html)|`std::index_sequence<4>`|`comp::index_sequence<4>` and co, own implementation
+[N3656](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3656.htm)|make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
+[N3654](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3654.html)|`ss >> std::quoted(str)`|no workaround, use boost
+[N3659](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3659.html)shared_lock|`std::shared_lock<std::shared_timed_mutex>`|no workaround
+[N3671](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3671.html)|two_range_algorithm|`std::equal(first1, last1, first2, last2)`|`comp::equal()`/`comp::mismatch()`/`comp::is_permutation()`, own implementation
 
 Get them all by specifying `cpp14_lib`.
+
+The following features are not and will never be supported:
+
+paper|description|reason
+-----|-----------|------
+[N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3669.pdf)|Fixing constexpr member functions without const|workaround not possible, just avoid relying on that behavior
+[N3670](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3670.htm)|Addressing Tuples by Type|just use index version
+[N3462](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3462.html)|std::result_of and SFINAE|impossible to check
+[N3545](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3545.html)|operator() for std::integral_constant|just "syntax" sugar
+[N3642](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3642.pdf)|UDl's for standard library|just "syntax" sugar
+[N3469](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3469.html)|Constexpr for std::chrono|no great workaround possible
+[N3470](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3470.html)|Constexpr for std::array|no great workaround possible
+[N3471](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3471.html)|Constexpr for utilities|no great workaround possible
+[N3657](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3657.html)|Heterogeneous lookup|optimization only, workaround for transparent functors supports this extension
+[N3655](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3655.pdf)|Alias templates for traits|just "syntax" sugar
 
 ### C++17 language features
 
@@ -224,28 +270,53 @@ fold_expressions|`return (args && ....);`|no workaround
 terse_static_assert|`static_assert(condition);`|`TERSE_STATIC_ASSERT(Cond)` macro
 utf8_char_literal|`char c = u8'A';`|`UTF8_ChAR_LITERAL(Str)` macro taking a normal string, appending `u8` prefix and converting it to a character
 
-### C++17 library features
+### C++17 library features \[up-to-date\]
 
 These features are all in the subdirectory `cpp17_lib`.
 
-feature name|example|workaround, if any
-------------|-------|------------------
-bool_constant|`std::bool_constant`|`comp::bool_constant`
-container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
-invoke|`std::invoke(f)`|`comp::invoke(f)`
-map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
-shared_mutex|`std::shared_mutex`|no workaround
-uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
-void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
+paper|feature name|example|workaround, if any
+-----|------------|-------|------------------
+[N4389](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4389.html)bool_constant|`std::bool_constant`|`comp::bool_constant`
+[N4280](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4280.pdf)|container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
+[N4169](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4169.html)|invoke|`std::invoke(f)`|`comp::invoke(f)`
+[N4279](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4279.html)|map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
+[N4508](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4508.html)|shared_mutex|`std::shared_mutex`|no workaround
+[N4259](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4259.pdf)uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
+[N3911](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3911.pdf)|void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
+
+Get them all by specifying `cpp17_lib`.
+
+The following features are not and will never be supported:
+
+paper|description|reason
+-----|-----------|------
+[N4190](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n34190.htm)|Removing deprecated things|removal, just don't use it
+[N4284](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4284)|Contiguous iterator|no actual code change
+[N4089](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4089.pdf)|Conversion for `std::unique_ptr<T[]>`|difficult to check, avoid relying on behavior
+[N4277](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4277.html)|TriviallyCopyable `std::reference_wrapper`|difficult to check, avoid relying on behavior
+[N4258](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4258.pdf)|Cleaning-up `noexcept`|difficult to check, no big impact on user
+[N4266](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4266.html)|Missing SFINAE rule in `std::unique_ptr`|difficult to check, no big impact on code, avoid relying on behavior
+[N4387](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4387.html)|Improving constructor `std::pair` and `std::tuple`|difficult to check, avoid relying on behavior
+[N4510](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4510.html)|Minimal incomplete type support for containers|difficult to check, avoid relying on behavior
 
 ### Technical specifications
 
-The technical specifications for the C++ libraries.
+The technical specifications for the C++ standard library.
 These features are all in the subdirectory `ts`.
 
-feature name|description|workaround, if any
-------------|-----------|------------------
-pmr|Polymorphic memory resource (N3916)|only `memory_resource` base class
+paper|feature name|description|workaround, if any
+-----|------------|-----------|------------------
+[N3804](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3804.html)|any|`std::experimental::any` class|none, use boost or other implementation
+[N3915](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3915.pdf)|apply|`std::experimental::apply(f, tuple)`|`comp::apply()`, own implementation
+[N4273](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4273.htm)|container_erausre|`std::experimental::erase_if(vector, pred)`|`comp::erase_if()`/`comp::erase()`, own implementation
+[P0013R1](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/p0013r1.html)|logical_operator_traits|`std::experimental::disjunction`|`comp::conjunction`/`comp::disjunction`/`comp::negation`, own implementation
+[N4391](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4391.html)|make_array|`std::experimental::make_array()`|`comp::make_array()`/`comp::to_array()`, own implementation
+[N4076](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4076.html)|not_fn|`std::experimental::not_fn()`|`comp::not_fn()`, own implementation
+[N3793](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3793.html)|optional|`std::experimental::optional`|none, use boost or other implementation
+[N3916](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3916.pdf)|pmr|Polymorphic memory resource|only `comp::memory_resource` base class
+[N3921](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3921.html)|string_view|`std::experimental::string_view`| none, use other implementation
+
+Get them all by specifying `ts`.
 
 ### Environment
 
@@ -274,7 +345,7 @@ Get them all by specifying `ext.cmake`.
 
 ## Contribution
 
-As you probably noted, there are *many* features missing.
+As you probably noted, there are features missing.
 I wrote this library in a few hours and concentrated on the most important features for me.
 If you want to extend it or improve a workaround, please don't hesitate to fork and PR
 (or just write an issue and let me take care of it, when I have time, if you're lazy).
