@@ -154,7 +154,7 @@ Prefix and namespace name can be controlled via parameters, see above.
 This library currently tests for the following features.
 The code below assumes no prefix and a namespace name of `comp`.
 
-### C++11 language features:
+### C++11 language features
 
 These features are all in the subdirectory `cpp11_lang`.
 
@@ -179,7 +179,7 @@ thread_local|cxx_thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to 
 
 Get them all by specifying `cpp11_lang`..
 
-### C++11 library features:
+### C++11 library features
 
 These features are all in the subdirectory `cpp11_lib`.
 
@@ -192,7 +192,7 @@ to_string|`std::to_string(54)`|`comp::to_string()`, fallback to `std::sprintf()`
 
 Get them all by specifying `cpp11_lib`.
 
-### C++14 language features:
+### C++14 language features
 
 These features are all in the subdirectory `cpp14_lang`.
 
@@ -204,7 +204,7 @@ variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workar
 
 Get them all by specifying `cpp14_lang`.
 
-### C++14 library features [complete]:
+### C++14 library features \[complete\]
 
 These features are all in the subdirectory `cpp14_lib`.
 
@@ -245,19 +245,34 @@ fold_expressions|`return (args && ....);`|no workaround
 terse_static_assert|`static_assert(condition);`|`TERSE_STATIC_ASSERT(Cond)` macro
 utf8_char_literal|`char c = u8'A';`|`UTF8_ChAR_LITERAL(Str)` macro taking a normal string, appending `u8` prefix and converting it to a character
 
-### C++17 library features
+### C++17 library features \[up-to-date\]
 
 These features are all in the subdirectory `cpp17_lib`.
 
-feature name|example|workaround, if any
-------------|-------|------------------
-bool_constant|`std::bool_constant`|`comp::bool_constant`
-container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
-invoke|`std::invoke(f)`|`comp::invoke(f)`
-map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
-shared_mutex|`std::shared_mutex`|no workaround
-uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
-void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
+paper|feature name|example|workaround, if any
+-----|------------|-------|------------------
+[N4389](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4389.html)bool_constant|`std::bool_constant`|`comp::bool_constant`
+[N4280](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4280.pdf)|container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
+[N4169](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4169.html)|invoke|`std::invoke(f)`|`comp::invoke(f)`
+[N4279](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4279.html)|map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
+[N4508](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4508.html)|shared_mutex|`std::shared_mutex`|no workaround
+[N4259](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4259.pdf)uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
+[N3911](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3911.pdf)|void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
+
+Get them all by specifying `cpp17_lib`.
+
+The following features are not and will never be supported:
+
+paper|description|reason
+-----|-----------|------
+[N4190](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n34190.htm)|Removing deprecated things|removal, just don't use it
+[N4284](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4284)|Contiguous iterator|no actual code change
+[N4089](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4089.pdf)|Conversion for `std::unique_ptr<T[]>`|difficult to check, avoid relying on behavior
+[N4277](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4277.html)|TriviallyCopyable `std::reference_wrapper`|difficult to check, avoid relying on behavior
+[N4258](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4258.pdf)|Cleaning-up `noexcept`|difficult to check, no big impact on user
+[N4266](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4266.html)|Missing SFINAE rule in `std::unique_ptr`|difficult to check, no big impact on code, aovid relying on behavior
+[N4387](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4387.html)|Improving constructor `std::pair` and `std::tuple`|difficult to check, avoid relying on behavior
+[N4510](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4510.html)|Minimal incomplete type support for containers|difficult to check, avoid relying on behavior
 
 ### Technical specifications
 
