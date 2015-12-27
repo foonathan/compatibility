@@ -182,6 +182,8 @@ rvalue_ref|cxx_rvalue_references|`int&& a = 4;`|no workaround
 static_assert|cxx_static_assert|`static_assert(std::is_integral<T>::value, "");`|`STATIC_ASSERT(Expr, Msg)`, fallback to simple undefined struct technique
 thread_local|cxx_thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to `__thread` extension or similar, if available - **does not call constructors or destructors!**
 
+*Note: In general, it assumes proper C++11 support. The workarounds defined in this library rely on all common C++ features that can not be easily avoided (like `auto` or lambdas), except those listed here with a proper fallback (like `noexcept`, `constexpr`, ...).*
+
 Get them all by specifying `cpp11_lang`..
 
 ### C++11 library features
@@ -194,6 +196,8 @@ get_new_handler|`std::get_new_handler()`|`comp::get_new_handler()`, fallback to 
 get_terminate|`std::get_terminate()`|`comp::get_terminate()`, same as above
 max_align_t|`std::max_align_t`|`comp::max_align_t`, fallback to `::max_align_t` or a struct with a `long double` and `long long`
 to_string|`std::to_string(54)`|`comp::to_string()`, fallback to `std::sprintf()`
+
+*Note: It only checks for minor features where an easy workaround implementation is feasible in the scope of this library.*
 
 Get them all by specifying `cpp11_lib`.
 
