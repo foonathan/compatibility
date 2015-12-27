@@ -159,6 +159,8 @@ Prefix and namespace name can be controlled via parameters, see above.
 This library currently tests for the following features.
 The code below assumes no prefix and a namespace name of `comp`.
 
+*A feature will only be included if it is not a pure syntactic feature (like `auto` or lambdas which can be avoided) but if there is either sensible workaround code, e.g. through to compiler extensions or through reimplementing (small!) standard library functionality, or there can be conditional compilation based on the existense, e.g. optional literal definitions or move constructors.*
+
 ### C++11 language features
 
 These features are all in the subdirectory `cpp11_lang`.
