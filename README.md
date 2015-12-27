@@ -107,6 +107,9 @@ or if the test is poorly written (please contact me in this case!)
 * a header named `comp/xxx.hpp`.
 The header contains at least a macro `<PREFIX>HAS_XXX` with the same value as the CMake option
 and often workaround macros or functions that can be used instead of the feature.
+The workaround uses either the feature, if it is available, or own code.
+This allows using many new features already, without support.
+If the compiler gets support, you will be automatically using the native feature or the standard library implementation.
 
 To use the generated header files, it is recommended to create a single header,
 which includes `cstddef` (important!), followed by all the other headers.
@@ -148,6 +151,8 @@ For some features, macros are generated that can be used instead (i.e. for `noex
 Those macros often use compiler extensions.
 If there is none (or a lacking implementation...), an error message will be emmitted.
 To prevent this, simply define the macro as no-op or as you want prior to including the file.
+
+There are often workaround functions for library features. Those are defined in a namespace and either use the own implementation or the standard library implementation, if it is available.
 
 Prefix and namespace name can be controlled via parameters, see above.
 
@@ -320,7 +325,7 @@ Get them all by specifying `ext.cmake`.
 
 ## Contribution
 
-As you probably noted, there are *many* features missing.
+As you probably noted, there are features missing.
 I wrote this library in a few hours and concentrated on the most important features for me.
 If you want to extend it or improve a workaround, please don't hesitate to fork and PR
 (or just write an issue and let me take care of it, when I have time, if you're lazy).
