@@ -31,20 +31,18 @@ namespace ${COMP_NAMESPACE}
 #if ${COMP_PREFIX}HAS_APPLY
     using std::experimental::apply;
 #else
-    #define ${COMP_PREFIX}DETAIl_AUTO_RETURN(x) decltype(x) {return x;}
+    #define ${COMP_PREFIX}DETAIL_AUTO_RETURN(...) decltype(__VA_ARGS__) {return (__VA_ARGS__);}
 
     namespace detail
     {
         template <typename F, class Tuple, std::size_t... I>
         ${COMP_PREFIX}CONSTEXPR auto apply(F &&f, Tuple &&t, ${COMP_NAMESPACE}::index_sequence<I...>)
-        -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(${COMP_NAMESPACE}::invoke
-                (std::forward<F>(f), std::get<I>(std::forward<Tuple>(t))...))
+        -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(${COMP_NAMESPACE}::invoke(std::forward<F>(f), std::get<I>(std::forward<Tuple>(t))...))
     }
 
     template <typename F, class Tuple>
     ${COMP_PREFIX}CONSTEXPR auto apply(F &&f, Tuple &&t)
-    -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(detail::apply(std::forward<F>(f), std::forward<Tuple>(t),
-                ${COMP_NAMESPACE}::make_index_sequence<std::tuple_size<typename std::decay<Tuple>::type>::value>{}))
+    -> ${COMP_PREFIX}DETAIL_AUTO_RETURN(detail::apply(std::forward<F>(f), std::forward<Tuple>(t),${COMP_NAMESPACE}::make_index_sequence<std::tuple_size<typename std::decay<Tuple>::type>::value>{}))
 
     #undef ${COMP_PREFIX}DETAIL_AUTO_RETURN
 #endif

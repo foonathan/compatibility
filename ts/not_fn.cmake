@@ -45,7 +45,7 @@ namespace ${COMP_NAMESPACE}
     }
 
     template <typename F>
-    notter<typename std::decay<F>::type> not_fn(F &&f)
+    detail::notter<typename std::decay<F>::type> not_fn(F &&f)
     {
         return {std::forward<F>(f)};
     }

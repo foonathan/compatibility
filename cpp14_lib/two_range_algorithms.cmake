@@ -44,13 +44,13 @@ namespace ${COMP_NAMESPACE}
         return std::mismatch(first1, last1, first2, last2, pred);
 #else
         // taken from cppreference.com
-        while (first1 != last1 && first2 != last2 && pred(*firstt, *first2))
+        while (first1 != last1 && first2 != last2 && pred(*first1, *first2))
             ++first1, ++first2;
         return std::make_pair(first1, first2);
 #endif
     }
 
-#if ${COMP_PREFIX}HAS_TWO_RANGE_ALGORITHMS
+#if !${COMP_PREFIX}HAS_TWO_RANGE_ALGORITHMS
     namespace detail
     {
         template <class Iter1, class Iter2>
@@ -104,8 +104,8 @@ namespace ${COMP_NAMESPACE}
 #if ${COMP_PREFIX}HAS_TWO_RANGE_ALGORITHMS
         return std::equal(first1, last1, first2, last2);
 #else
-        return detail::equal(std::iterator_traits<Iter1>::iterator_category{}, first1, last1,
-                             std::iterator_traits<Iter2>::iterator_category{}, first2, last2);
+        return detail::equal(typename std::iterator_traits<Iter1>::iterator_category{}, first1, last1,
+                             typename std::iterator_traits<Iter2>::iterator_category{}, first2, last2);
 #endif
     }
 
@@ -115,8 +115,8 @@ namespace ${COMP_NAMESPACE}
 #if ${COMP_PREFIX}HAS_TWO_RANGE_ALGORITHMS
         return std::equal(first1, last1, first2, last2, pred);
 #else
-        return detail::equal(std::iterator_traits<Iter1>::iterator_category{}, first1, last1,
-                             std::iterator_traits<Iter2>::iterator_category{}, first2, last2,
+        return detail::equal(typename std::iterator_traits<Iter1>::iterator_category{}, first1, last1,
+                             typename std::iterator_traits<Iter2>::iterator_category{}, first2, last2,
                              pred);
 #endif
     }
