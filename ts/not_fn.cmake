@@ -37,9 +37,9 @@ namespace ${COMP_NAMESPACE}
 
             template <typename ... Args>
             auto operator()(Args&&... args)
-            -> decltype(${COMP_NAMESPACE}::invoke(f, std::forward<Args>(args)...))
+            -> decltype(!${COMP_NAMESPACE}::invoke(f, std::forward<Args>(args)...))
             {
-                return ${COMP_NAMESPACE}::invoke(f, std::forward<Args>(args)...);
+                return !${COMP_NAMESPACE}::invoke(f, std::forward<Args>(args)...);
             }
         };
     }
