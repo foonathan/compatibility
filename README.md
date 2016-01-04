@@ -210,9 +210,9 @@ These features are all in the subdirectory `cpp14_lang`.
 paper|feature name|alternative name|example|workaround, if any
 -----|------------|----------------|-------|------------------
 [N3760](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3760.html)|deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
-[N3652](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3652.html)||general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
+[N3652](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3652.html)|general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
 [N3638](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3638.html)|return_type_deduction|none|auto return type deduction for normal functions|`AUTO_RETURN` macro
-[N3778](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3778.html)|sized_deallocation|`void operator delete(void *ptr, std::size_t size)`|no workaround
+[N3778](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3778.html)|sized_deallocation|none|`void operator delete(void *ptr, std::size_t size)`|no workaround
 [N3651](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3651.html)|variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
 
 Get them all by specifying `cpp14_lang`.
@@ -237,10 +237,10 @@ paper|feature name|example|workaround, if any
 --------|------------|-------|------------------
 [N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3668.htm)|exchange|`std::exchange()`|`comp::exchange()`, own implementation
 [N3421](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3421.html)|generic_operator_functors|`std::greater<>{}`|`comp::greater{}` and the rest, no class templates!
-[N3658](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3658.html)|`std::index_sequence<4>`|`comp::index_sequence<4>` and co, own implementation
+[N3658](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3658.html)|integer_sequence|`std::index_sequence<4>`|`comp::index_sequence<4>` and co, own implementation
 [N3656](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3656.htm)|make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
-[N3654](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3654.html)|`ss >> std::quoted(str)`|no workaround, use boost
-[N3659](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3659.html)shared_lock|`std::shared_lock<std::shared_timed_mutex>`|no workaround
+[N3654](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3654.html)|quoted|`ss >> std::quoted(str)`|no workaround, use boost
+[N3659](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3659.html)|shared_lock|`std::shared_lock<std::shared_timed_mutex>`|no workaround
 [N3671](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3671.html)|two_range_algorithm|`std::equal(first1, last1, first2, last2)`|`comp::equal()`/`comp::mismatch()`/`comp::is_permutation()`, own implementation
 
 Get them all by specifying `cpp14_lib`.
@@ -276,12 +276,12 @@ These features are all in the subdirectory `cpp17_lib`.
 
 paper|feature name|example|workaround, if any
 -----|------------|-------|------------------
-[N4389](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4389.html)bool_constant|`std::bool_constant`|`comp::bool_constant`
+[N4389](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4389.html)|bool_constant|`std::bool_constant`|`comp::bool_constant`
 [N4280](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4280.pdf)|container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
 [N4169](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4169.html)|invoke|`std::invoke(f)`|`comp::invoke(f)`
 [N4279](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4279.html)|map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
 [N4508](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4508.html)|shared_mutex|`std::shared_mutex`|no workaround
-[N4259](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4259.pdf)uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
+[N4259](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4259.pdf)|uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
 [N3911](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3911.pdf)|void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
 
 Get them all by specifying `cpp17_lib`.
