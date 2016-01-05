@@ -13,3 +13,7 @@ comp_feature(shared_lock "#include <shared_mutex>
                     std::shared_timed_mutex m;
                     std::shared_lock<std::shared_timed_mutex> lock(m);
                 }" COMP_CPP14_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(shared_lock __cpp_lib_shared_timed_mutex 201402)
+endif()

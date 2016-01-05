@@ -24,3 +24,7 @@ comp_workaround(constexpr
         #define ${COMP_PREFIX}CONSTEXPR_FNC inline
     #endif
 #endif" COMP_CPP98_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(constexpr __cpp_constexpr 200704)
+endif()

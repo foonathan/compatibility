@@ -42,3 +42,7 @@ namespace ${COMP_NAMESPACE}
   }
 #endif
 }" COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(invoke __cpp_lib_invoke 201411)
+endif()

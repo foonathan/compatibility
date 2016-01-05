@@ -10,3 +10,7 @@ comp_api_version(1)
 comp_feature(literal_op "#include <cstddef>
                    int operator\"\"_foo(const char *, std::size_t){return 0;} int main(){}"
                    COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(literal_op __cpp_user_defined_literals 200809)
+endif()

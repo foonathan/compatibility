@@ -195,3 +195,7 @@ namespace ${COMP_NAMESPACE}
 
     #undef ${COMP_PREFIX}DETAIL_AUTO_RETURN
 }" COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(generic_operator_functors __cpp_lib_transparent_operators 201210)
+endif()

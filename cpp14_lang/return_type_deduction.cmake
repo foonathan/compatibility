@@ -19,3 +19,7 @@ comp_workaround(return_type_deduction
 "#ifndef ${COMP_PREFIX}AUTO_RETURN
     #define ${COMP_PREFIX}AUTO_RETURN(...) decltype(__VA_ARGS__) {return (__VA_ARGS__);}
 #endif" COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(return_type_deduction __cpp_return_type_deduction 201304)
+endif()

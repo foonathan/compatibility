@@ -8,3 +8,7 @@ endif()
 comp_api_version(1)
 
 comp_feature(rvalue_ref "int main(){int&& rvalue = 5;}" COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(rvalue_ref __cpp_rvalue_references 200610)
+endif()

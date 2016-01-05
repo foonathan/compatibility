@@ -12,3 +12,7 @@ comp_feature(alias_template
                template <typename A> using bar = foo<A, int>;
                int main(){}"
               COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(alias_template __cpp_alias_template 200704)
+endif()

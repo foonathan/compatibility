@@ -13,3 +13,7 @@ comp_workaround(utf8_char_literal
     #define ${COMP_PREFIX}UTF8_CHAR_LITERAL_IMPL(Str) u8##Str[0]
     #define ${COMP_PREFIX}UTF8_CHAR_LITERAL(Str) ${COMP_PREFIX}UTF8_CHAR_LITERAL_IMPL(Str)
 #endif" COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(utf8_char_literal __cpp_unicode_characters 201411)
+endif()
