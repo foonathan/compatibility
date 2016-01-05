@@ -209,11 +209,11 @@ These features are all in the subdirectory `cpp14_lang`.
 
 paper|feature name|alternative name|example|workaround, if any
 -----|------------|----------------|-------|------------------
-[N3760](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3760.html)|deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
-[N3652](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3652.html)|general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
-[N3638](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3638.html)|return_type_deduction|none|auto return type deduction for normal functions|`AUTO_RETURN` macro
-[N3778](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3778.html)|sized_deallocation|none|`void operator delete(void *ptr, std::size_t size)`|no workaround
-[N3651](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3651.html)|variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
+[N3760](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3760.html)|deprecated|cxx_attribute_deprecated|`[[deprecated]] int foo();`|`DEPRECATED` and `DEPRECATED(Msg)`, fallback to compiler attribute, if available
+[N3652](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3652.html)|general_constexpr|cxx_relaxed_constexpr|generalized constexpr|no workaround
+[N3638](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3638.html)|return_type_deduction|none|auto return type deduction for normal functions|`AUTO_RETURN` macro
+[N3778](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3778.html)|sized_deallocation|none|`void operator delete(void *ptr, std::size_t size)`|no workaround
+[N3651](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3651.html)|variable_template|cxx_variable_templates|`template <typename T> T pi;`|no workaround
 
 Get them all by specifying `cpp14_lang`.
 
@@ -221,13 +221,13 @@ The following features are not and will never be supported:
 
 paper|description|reason
 -----|-----------|------
-[N3323](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3323.pdf)|Tweak Certain C++ Contextual Conversions|difficult to check, avoid relying on behavior
-[N3472](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3472.pdf)|Binary Literals|syntax sugar only
-[N3648](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3648.html)|Generalized Lambda Capture|lambdas are syntax sugar only
-[N3649](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3649.html)|Generic Lambdas|lambdas are syntax sugar only
-[N3653](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3653.html)|Member initializers and aggregates|difficult to check, no big user impact
-[N3664](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3664.html)|Clarifying Memory Allocation|wording change only
-[N3781](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3781.pdf)|Digit seperator for literals|syntax sugar only
+[N3323](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3323.pdf)|Tweak Certain C++ Contextual Conversions|difficult to check, avoid relying on behavior
+[N3472](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3472.pdf)|Binary Literals|syntax sugar only
+[N3648](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3648.html)|Generalized Lambda Capture|lambdas are syntax sugar only
+[N3649](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3649.html)|Generic Lambdas|lambdas are syntax sugar only
+[N3653](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3653.html)|Member initializers and aggregates|difficult to check, no big user impact
+[N3664](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3664.html)|Clarifying Memory Allocation|wording change only
+[N3781](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3781.pdf)|Digit seperator for literals|syntax sugar only
 
 ### C++14 library features \[complete\]
 
@@ -235,13 +235,13 @@ These features are all in the subdirectory `cpp14_lib`.
 
 paper|feature name|example|workaround, if any
 --------|------------|-------|------------------
-[N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3668.htm)|exchange|`std::exchange()`|`comp::exchange()`, own implementation
-[N3421](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3421.html)|generic_operator_functors|`std::greater<>{}`|`comp::greater{}` and the rest, no class templates!
-[N3658](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3658.html)|integer_sequence|`std::index_sequence<4>`|`comp::index_sequence<4>` and co, own implementation
-[N3656](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3656.htm)|make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
-[N3654](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3654.html)|quoted|`ss >> std::quoted(str)`|no workaround, use boost
-[N3659](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3659.html)|shared_lock|`std::shared_lock<std::shared_timed_mutex>`|no workaround
-[N3671](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3671.html)|two_range_algorithm|`std::equal(first1, last1, first2, last2)`|`comp::equal()`/`comp::mismatch()`/`comp::is_permutation()`, own implementation
+[N3668](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3668.htm)|exchange|`std::exchange()`|`comp::exchange()`, own implementation
+[N3421](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3421.html)|generic_operator_functors|`std::greater<>{}`|`comp::greater{}` and the rest, no class templates!
+[N3658](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3658.html)|integer_sequence|`std::index_sequence<4>`|`comp::index_sequence<4>` and co, own implementation
+[N3656](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3656.htm)|make_unique|`std::make_unique()`|`comp::make_unique`, own implementation
+[N3654](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3654.html)|quoted|`ss >> std::quoted(str)`|no workaround, use boost
+[N3659](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3659.html)|shared_lock|`std::shared_lock<std::shared_timed_mutex>`|no workaround
+[N3671](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3671.html)|two_range_algorithm|`std::equal(first1, last1, first2, last2)`|`comp::equal()`/`comp::mismatch()`/`comp::is_permutation()`, own implementation
 
 Get them all by specifying `cpp14_lib`.
 
@@ -249,26 +249,26 @@ The following features are not and will never be supported:
 
 paper|description|reason
 -----|-----------|------
-[N3668](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3669.pdf)|Fixing constexpr member functions without const|workaround not possible, just avoid relying on that behavior
-[N3670](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3670.htm)|Addressing Tuples by Type|just use index version
-[N3462](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3462.html)|std::result_of and SFINAE|impossible to check
-[N3545](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3545.html)|operator() for std::integral_constant|just "syntax" sugar
-[N3642](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3642.pdf)|UDl's for standard library|just "syntax" sugar
-[N3469](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3469.html)|Constexpr for std::chrono|no great workaround possible
-[N3470](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3470.html)|Constexpr for std::array|no great workaround possible
-[N3471](www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3471.html)|Constexpr for utilities|no great workaround possible
-[N3657](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3657.html)|Heterogeneous lookup|optimization only, workaround for transparent functors supports this extension
-[N3655](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3655.pdf)|Alias templates for traits|just "syntax" sugar
+[N3668](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3669.pdf)|Fixing constexpr member functions without const|workaround not possible, just avoid relying on that behavior
+[N3670](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3670.htm)|Addressing Tuples by Type|just use index version
+[N3462](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3462.html)|std::result_of and SFINAE|impossible to check
+[N3545](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3545.html)|operator() for std::integral_constant|just "syntax" sugar
+[N3642](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3642.pdf)|UDl's for standard library|just "syntax" sugar
+[N3469](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3469.html)|Constexpr for std::chrono|no great workaround possible
+[N3470](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3470.html)|Constexpr for std::array|no great workaround possible
+[N3471](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2012/n3471.html)|Constexpr for utilities|no great workaround possible
+[N3657](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3657.html)|Heterogeneous lookup|optimization only, workaround for transparent functors supports this extension
+[N3655](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3655.pdf)|Alias templates for traits|just "syntax" sugar
 
 ### C++17 language features
 
 These features are all in the subdirectory `cpp17_lang`.
 
-feature name|example|workaround, if any
-------------|-------|------------------
-fold_expressions|`return (args && ....);`|no workaround
-terse_static_assert|`static_assert(condition);`|`TERSE_STATIC_ASSERT(Cond)` macro
-utf8_char_literal|`char c = u8'A';`|`UTF8_ChAR_LITERAL(Str)` macro taking a normal string, appending `u8` prefix and converting it to a character
+paper|feature name|example|workaround, if any
+-----|------------|-------|------------------
+[N4295](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4295.html)|fold_expressions|`return (args && ....);`|no workaround
+[N3928](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3928.pdf)|terse_static_assert|`static_assert(condition);`|`TERSE_STATIC_ASSERT(Cond)` macro
+[N4267](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4267.html)|utf8_char_literal|`char c = u8'A';`|`UTF8_ChAR_LITERAL(Str)` macro taking a normal string, appending `u8` prefix and converting it to a character
 
 ### C++17 library features \[up-to-date\]
 
@@ -276,13 +276,13 @@ These features are all in the subdirectory `cpp17_lib`.
 
 paper|feature name|example|workaround, if any
 -----|------------|-------|------------------
-[N4389](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4389.html)|bool_constant|`std::bool_constant`|`comp::bool_constant`
-[N4280](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4280.pdf)|container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
-[N4169](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4169.html)|invoke|`std::invoke(f)`|`comp::invoke(f)`
-[N4279](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4279.html)|map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
-[N4508](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4508.html)|shared_mutex|`std::shared_mutex`|no workaround
-[N4259](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4259.pdf)|uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
-[N3911](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3911.pdf)|void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
+[N4389](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4389.html)|bool_constant|`std::bool_constant`|`comp::bool_constant`
+[N4280](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4280.pdf)|container_access|`std::size(cont)`|`comp::size(cont)`, likewise for `std::empty()`/`std::data()`
+[N4169](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4169.html)|invoke|`std::invoke(f)`|`comp::invoke(f)`
+[N4279](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4279.html)|map_insertion|`m.try_emplace(key, value)`|`comp::try_emplace(m, key, value)`, likewise for `insert_or_assign()`
+[N4508](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4508.html)|shared_mutex|`std::shared_mutex`|no workaround
+[N4259](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4259.pdf)|uncaught_exceptions|`std::uncaught_exceptions()`|no workaround, note the plural!
+[N3911](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3911.pdf)|void_t|`std::void_t<int, char>`|`comp::void_t<int, char>`
 
 Get them all by specifying `cpp17_lib`.
 
@@ -290,14 +290,14 @@ The following features are not and will never be supported:
 
 paper|description|reason
 -----|-----------|------
-[N4190](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n34190.htm)|Removing deprecated things|removal, just don't use it
-[N4284](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4284)|Contiguous iterator|no actual code change
-[N4089](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4089.pdf)|Conversion for `std::unique_ptr<T[]>`|difficult to check, avoid relying on behavior
-[N4277](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4277.html)|TriviallyCopyable `std::reference_wrapper`|difficult to check, avoid relying on behavior
-[N4258](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4258.pdf)|Cleaning-up `noexcept`|difficult to check, no big impact on user
-[N4266](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4266.html)|Missing SFINAE rule in `std::unique_ptr`|difficult to check, no big impact on code, avoid relying on behavior
-[N4387](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4387.html)|Improving constructor `std::pair` and `std::tuple`|difficult to check, avoid relying on behavior
-[N4510](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4510.html)|Minimal incomplete type support for containers|difficult to check, avoid relying on behavior
+[N4190](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n34190.htm)|Removing deprecated things|removal, just don't use it
+[N4284](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4284)|Contiguous iterator|no actual code change
+[N4089](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4089.pdf)|Conversion for `std::unique_ptr<T[]>`|difficult to check, avoid relying on behavior
+[N4277](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4277.html)|TriviallyCopyable `std::reference_wrapper`|difficult to check, avoid relying on behavior
+[N4258](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4258.pdf)|Cleaning-up `noexcept`|difficult to check, no big impact on user
+[N4266](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4266.html)|Missing SFINAE rule in `std::unique_ptr`|difficult to check, no big impact on code, avoid relying on behavior
+[N4387](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4387.html)|Improving constructor `std::pair` and `std::tuple`|difficult to check, avoid relying on behavior
+[N4510](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4510.html)|Minimal incomplete type support for containers|difficult to check, avoid relying on behavior
 
 ### Technical specifications
 
@@ -306,15 +306,15 @@ These features are all in the subdirectory `ts`.
 
 paper|feature name|description|workaround, if any
 -----|------------|-----------|------------------
-[N3804](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3804.html)|any|`std::experimental::any` class|none, use boost or other implementation
-[N3915](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3915.pdf)|apply|`std::experimental::apply(f, tuple)`|`comp::apply()`, own implementation
-[N4273](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4273.htm)|container_erausre|`std::experimental::erase_if(vector, pred)`|`comp::erase_if()`/`comp::erase()`, own implementation
-[P0013R1](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/p0013r1.html)|logical_operator_traits|`std::experimental::disjunction`|`comp::conjunction`/`comp::disjunction`/`comp::negation`, own implementation
-[N4391](www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4391.html)|make_array|`std::experimental::make_array()`|`comp::make_array()`/`comp::to_array()`, own implementation
-[N4076](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4076.html)|not_fn|`std::experimental::not_fn()`|`comp::not_fn()`, own implementation
-[N3793](www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3793.html)|optional|`std::experimental::optional`|none, use boost or other implementation
-[N3916](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3916.pdf)|pmr|Polymorphic memory resource|only `comp::memory_resource` base class
-[N3921](www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3921.html)|string_view|`std::experimental::string_view`| none, use other implementation
+[N3804](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3804.html)|any|`std::experimental::any` class|none, use boost or other implementation
+[N3915](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3915.pdf)|apply|`std::experimental::apply(f, tuple)`|`comp::apply()`, own implementation
+[N4273](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4273.htm)|container_erausre|`std::experimental::erase_if(vector, pred)`|`comp::erase_if()`/`comp::erase()`, own implementation
+[P0013R1](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/p0013r1.html)|logical_operator_traits|`std::experimental::disjunction`|`comp::conjunction`/`comp::disjunction`/`comp::negation`, own implementation
+[N4391](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2015/n4391.html)|make_array|`std::experimental::make_array()`|`comp::make_array()`/`comp::to_array()`, own implementation
+[N4076](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n4076.html)|not_fn|`std::experimental::not_fn()`|`comp::not_fn()`, own implementation
+[N3793](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2013/n3793.html)|optional|`std::experimental::optional`|none, use boost or other implementation
+[N3916](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3916.pdf)|pmr|Polymorphic memory resource|only `comp::memory_resource` base class
+[N3921](http://www.open-std.org/JTC1/sc22/WG21/docs/papers/2014/n3921.html)|string_view|`std::experimental::string_view`| none, use other implementation
 
 Get them all by specifying `ts`.
 
