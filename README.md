@@ -173,7 +173,7 @@ delete_fnc|cxx_deleted_functions|`void foo() = delete;`|no workaround
 explicit_conversion_op|cxx_explicit_conversion|`explicit operator bool()`|no workaround
 final|cxx_final|`void bar() final;`|no workaround
 literal_op|cxx_user_literals|`operator""`|no workaround
-noexcept|cxx_noexcept|`void foo() noexcept;`|`NOEXCEPT`, fallback to nothing; `NOEXCEPT_OP(x)`, fallback to `false`
+noexcept|cxx_noexcept|`void foo() noexcept;`|`NOEXCEPT`, fallback to nothing; `NOEXCEPT_IF(x)`, fallback to nothing; `NOEXCEPT_OP(x)`, fallback to `false`
 noreturn|none|`[[noreturn]] void foo();`|`NORETURN`, fallback to compiler extension, if available
 nullptr|cxx_nullptr|`void* ptr = nullptr;`|`NULLPTR`, fallback to [null pointer idiom](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/nullptr); also `comp::nullptr_t`
 override|cxx_override|`void bar() override;`|`OVERRIDE`, fallback to nothing
@@ -323,7 +323,7 @@ Note: These checks here aren't that great, it is recommended to set option expli
 feature name|description|workaround, if any
 ------------|-------|------------------
 exception_support|support for exception handling|`THROW(Ex)`, `RETHROW_EX`, fallback to `std::abort()`; `TRY`, fallback to `if (true)`, CATCH_ALL, fallback to `if (false)`
-hosted_implementation|freestanding vs hosted|no workaround, but alias macro `HOSTED_IMPLEMENTATION`, since `HAS_HOSTED_IMPLEMENTATION` doesn't sound nice
+hosted_implementation|freestanding vs hosted|alias macro `HOSTED_IMPLEMENTATION`, implementation of `std::swap()` and `std::move()`/`std::forward()` (if rvalue references are supported); those are otherwise not available
 rtti_support|support for RTTI|`comp::polymorhpic_cast`, fallback to `static_cast`
 threading_support|support for threading|no workaround
 

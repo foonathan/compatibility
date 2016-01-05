@@ -17,6 +17,14 @@ comp_workaround(noexcept
     #endif
 #endif
 
+#ifndef ${COMP_PREFIX}NOEXCEPT_IF
+    #if ${COMP_PREFIX}HAS_NOEXCEPT
+        #define ${COMP_PREFIX}NOEXCEPT_IF(x) noexcept(x)
+    #else
+        #define ${COMP_PREFIX}NOEXCEPT_IF(x)
+    #endif
+#endif
+
 #ifndef ${COMP_PREFIX}NOEXCEPT_OP
     #if ${COMP_PREFIX}HAS_NOEXCEPT
         #define ${COMP_PREFIX}NOEXCEPT_OP(x) noexcept(x)
