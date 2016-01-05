@@ -344,6 +344,7 @@ These features are all in the subdirectory `ext`.
 feature name|example|workaround, if any
 ------------|-------|------------------
 counter|`__COUNTER__`|no workaround
+has_include|`__has_include(header)`|`HAS_INCLUDE(x)`, fallback to always `0`
 pretty_function|`__PRETTY_FUNCTION__`|`PRETTY_FUNCTION`, fallback to `__FUNCSIG__` on MSVC
 
 Get them all by specifying `ext.cmake`.
