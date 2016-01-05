@@ -329,6 +329,9 @@ function(comp_unit_test name global code)
     set(${name}_test_global "${global}" PARENT_SCOPE)
 endfunction()
 
+# EXTERNAL; feature module
+# writes SD-6 feature macro with given name and value
+# overrides existing value if given one is greater or macro COMP_OVERRIDE_SD6 is defined
 function(comp_sd6_macro name sd6_name value)
     string(TOUPPER "${name}" macro_name)
 
