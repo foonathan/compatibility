@@ -27,20 +27,16 @@ include(your/dir/to/comp_base.cmake) # only file you need to download, rest is t
 comp_target_features(tgt PUBLIC cpp11_lang/constexpr cpp11_lang/noexcept cpp11_lib/max_align_t env/rtti_support)
 ```
 
-Then we define a header, let's name it `config.hpp`:
+For convenience we include all generated files in a header named `config.hpp`:
 
 ```cpp
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include <cstddef> // required!
-
-#define COMP_IN_PARENT_HEADER // headers can only be included when this is defined
 #include <comp/constexpr.hpp>
 #include <comp/noexcept.hpp>
 #include <comp/max_align_t.hpp>
 #include <comp/rtti_support.hpp>
-#undef COMP_IN_PARENT_HEADER // undefine it, to prevent accidentally including them elsewhere
 
 #endif
 ```
@@ -111,11 +107,7 @@ The workaround uses either the feature, if it is available, or own code.
 This allows using many new features already, without support.
 If the compiler gets support, you will be automatically using the native feature or the standard library implementation.
 
-To use the generated header files, it is recommended to create a single header,
-which includes `cstddef` (important!), followed by all the other headers.
-To prevent accidentally including the generated headers somewhere else,
-they can only be included if the macro `COMP_IN_PARENT_HEADER` is defined,
-so define it prior the first `#include` and undefine it afterwards.
+To use the generated header files, simply `#include` them inside your code, the search path is set automatically.
 
 What `comp_target_features` function actually does is the following:
 

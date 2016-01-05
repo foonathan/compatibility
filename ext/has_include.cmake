@@ -19,4 +19,4 @@ comp_workaround(has_include
     #else
         #define ${COMP_PREFIX}HAS_INCLUDE(x) 0
     #endif
-#endif")
+#endif" COMP_CPP98_FLAG)
