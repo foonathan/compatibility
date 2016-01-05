@@ -147,6 +147,8 @@ The latter is useful for `INTERFACE` libraries which are only there to run the t
 
 A feature named `dir/xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `{PREFIX}HAS_XXX` in a file named `comp/xxx.hpp`.
 
+There are also alternative names for the CMake `target_compile_features()` and SD-6 Feature Test Recommondations that are automatically translated.
+
 For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `{PREFIX}XXX`.
 Those macros often use compiler extensions.
 If there is none (or a lacking implementation...), an error message will be emmitted.
