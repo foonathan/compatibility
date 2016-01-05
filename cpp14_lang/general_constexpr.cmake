@@ -10,3 +10,7 @@ comp_api_version(1)
 comp_feature(general_constexpr
              "constexpr int foo() {int i = 0; return i;} int main() {}" COMP_CPP14_FLAG
              cpp11_lang/constexpr)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(general_constexpr __cpp_constexpr 201304)
+endif()

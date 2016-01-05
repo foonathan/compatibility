@@ -145,6 +145,11 @@ namespace ${COMP_NAMESPACE}
 #endif
     }
 }" COMP_CPP98_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(two_range_algorithms __cpp_lib_robust_nonmodifying_seq_ops 201304)
+endif()
+
 comp_unit_test(two_range_algorithms
 ""
 "

@@ -31,3 +31,7 @@ comp_workaround(exchange
     }
 #endif
 }"  COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(exchange __cpp_lib_exchange_function 201304)
+endif()

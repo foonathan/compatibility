@@ -88,3 +88,7 @@ namespace ${COMP_NAMESPACE}
         }
     #endif
 }" COMP_CPP11_FLAG cpp11_lang/constexpr cpp11_lang/noexcept)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(container_access __cpp_lib_nonmember_container_access 201411)
+endif()

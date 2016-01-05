@@ -15,3 +15,7 @@ comp_feature(fold_expressions
                         bool b = all(true, true, false, true);
                     }"
                    COMP_CPP17_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(fold_expressions __cpp_fold_expressions 201411)
+endif()

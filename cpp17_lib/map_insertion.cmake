@@ -96,6 +96,14 @@ namespace ${COMP_NAMESPACE}
     }
 #endif
 }" COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(map_insertion __cpp_lib_map_insertion 201411)
+    comp_sd6_macro(map_insertion __cpp_lib_unordered_map_insertion 201411)
+    comp_sd6_macro(map_insertion __cpp_lib_map_try_emplace 201411)
+    comp_sd6_macro(map_insertion __cpp_lib_unordered_map_try_emplace 201411)
+endif()
+
 comp_unit_test(map_insertion
 "
 #include <map>

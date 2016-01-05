@@ -24,3 +24,7 @@ comp_workaround(noexcept
         #define ${COMP_PREFIX}NOEXCEPT_OP(x) false
     #endif
 #endif" COMP_CPP98_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(noexcept __cpp_noexcept 201003)
+endif()

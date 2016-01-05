@@ -13,3 +13,7 @@ comp_feature(sized_deallocation
             void *ptr = 0;
             ::operator delete(ptr, 0);
         }" COMP_CPP14_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(sized_deallocation __cpp_sized_deallocation 201309)
+endif()

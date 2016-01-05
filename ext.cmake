@@ -3,4 +3,5 @@
 # found in the top-level directory of this distribution.
 
 comp_fetch_include(ext/counter)
+comp_fetch_include(ext/has_include)
 comp_fetch_include(ext/pretty_function)

@@ -13,3 +13,7 @@ comp_feature(uncaught_exceptions
                     {
                         int count = std::uncaught_exceptions();
                     }" COMP_CPP17_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(uncaught_exceptions __cpp_uncaught_exceptions 201411)
+endif()

@@ -69,3 +69,7 @@ namespace ${COMP_NAMESPACE}
     using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 #endif
 }" COMP_CPP11_FLAG cpp11_lang/constexpr)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(integer_sequence __cpp_lib_integer_sequence 201304)
+endif()

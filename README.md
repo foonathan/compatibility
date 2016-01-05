@@ -147,6 +147,11 @@ The latter is useful for `INTERFACE` libraries which are only there to run the t
 
 A feature named `dir/xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `{PREFIX}HAS_XXX` in a file named `comp/xxx.hpp`.
 
+There are also alternative names for the CMake `target_compile_features()` and SD-6 Feature Test Recommondations that are automatically translated.
+Where appropriate, it will also generate the SD-6 feature macro as specified.
+This will override the existing value if the new one is greater or the macro `COMP_OVERRIDE_SD6` is defined.
+If a feature is not supported, it will not change or define anything.
+
 For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `{PREFIX}XXX`.
 Those macros often use compiler extensions.
 If there is none (or a lacking implementation...), an error message will be emmitted.
@@ -339,6 +344,7 @@ These features are all in the subdirectory `ext`.
 feature name|example|workaround, if any
 ------------|-------|------------------
 counter|`__COUNTER__`|no workaround
+has_include|`__has_include(header)`|`HAS_INCLUDE(x)`, fallback to always `0`
 pretty_function|`__PRETTY_FUNCTION__`|`PRETTY_FUNCTION`, fallback to `__FUNCSIG__` on MSVC
 
 Get them all by specifying `ext.cmake`.
@@ -371,7 +377,11 @@ The result of the test is available through `${COMP_PREFIX}HAS_NAME`, e.g. `#if 
 `standard` is like in `comp_feature()` the standard required for the workaround code (the not-supported case, the supported case gets the standard of `comp_feature()`).
 `required` is a list of required features inside the workaround code. Their headers will be included prior to the workaround making it possible to use other workarounds.
 
-4. `comp_unit_test(<name> <global_code> <test_code>)` - defines a (Catch) unit test for the workaround code (optional).
+4. `comp_sd6_macro(<name> <sd6_name> <value>)` - writes SD 6 macro (optional, since 1.1).
+`name` must be the same as in `comp_feature()`.
+`sd6_name` is the SD-6 macro name and `value` its value.
+
+5. `comp_unit_test(<name> <global_code> <test_code>)` - defines a (Catch) unit test for the workaround code (optional).
 `name` must be the same as in `comp_feature()`.
 `global_code` will be put into the global namespace right after the including of the appropriate feature header and catch.
 `test_code` will be put into a Catch `TEST_CASE()`.

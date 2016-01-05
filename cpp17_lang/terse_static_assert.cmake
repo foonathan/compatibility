@@ -18,3 +18,7 @@ comp_workaround(terse_static_assert
         #define ${COMP_PREFIX}TERSE_STATIC_ASSERT(Expr) static_assert(Expr, #Expr)
     #endif
 #endif" COMP_CPP11_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(terse_static_assert __cpp_static_assert 201411)
+endif()

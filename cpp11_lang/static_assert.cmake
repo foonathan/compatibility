@@ -25,3 +25,7 @@ comp_workaround(static_assert
         #define ${COMP_PREFIX}STATIC_ASSERT(Expr, Msg) ${COMP_NAMESPACE}::detail::static_assert_impl<(Expr)>()
     #endif
 #endif" COMP_CPP98_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(static_assert __cpp_static_assert 200410)
+endif()

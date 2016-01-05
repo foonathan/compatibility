@@ -28,3 +28,7 @@ namespace ${COMP_NAMESPACE}
     template <typename ... Ts>
     using void_t = typename detail::voider<Ts...>::type;
 }" COMP_CPP1_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(void_t __cpp_lib_void_t 201411)
+endif()

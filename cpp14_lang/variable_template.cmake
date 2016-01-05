@@ -8,3 +8,7 @@ endif()
 comp_api_version(1)
 
 comp_feature(variable_template "template <typename T> T def = T(); int main() {}" COMP_CPP14_FLAG)
+
+if(COMP_API_VERSION VERSION_GREATER 1.0)
+    comp_sd6_macro(variable_template __cpp_variable_templates 201304)
+endif()
