@@ -10,7 +10,7 @@ include(CMakeParseArguments)
 
 # EXTERNAL
 # the current API version
-set(COMP_API_VERSION 1 CACHE STRING "compatibility api version" FORCE)
+set(COMP_API_VERSION 1.1 CACHE STRING "compatibility api version" FORCE)
 
 # EXTERNAL; feature module
 # requires a certain API version
@@ -172,19 +172,22 @@ function(_comp_gen_files feature)
     else()
         set(result "0")
     endif()
+
     file(WRITE ${COMP_INCLUDE_PATH}/comp/${name}.hpp
-            "#ifndef COMP_IN_PARENT_HEADER
-            #error \"Don't include this file directly, only into a proper parent header.\"
-            #endif
-            #ifndef COMP_${macro_name}_HPP_INCLUDED
-            #define COMP_${macro_name}_HPP_INCLUDED
+"#ifndef COMP_IN_PARENT_HEADER
+    #error \"Don't include this file directly, only into a proper parent header.\"
+#endif
+#ifndef COMP_${macro_name}_HPP_INCLUDED
+#define COMP_${macro_name}_HPP_INCLUDED
 
-            #define ${COMP_PREFIX}HAS_${macro_name} ${result}
+#define ${COMP_PREFIX}HAS_${macro_name} ${result}
 
-            ${${name}_requires}
-            ${${name}_workaround}
+${${name}_sd6_macro}
+${${name}_requires}
+${${name}_workaround}
 
-            #endif")
+#endif
+")
     if(${name}_test_code)
         file(WRITE ${_COMP_TEST}/${name}.cpp
                 "#define COMP_IN_PARENT_HEADER
@@ -324,6 +327,24 @@ function(comp_unit_test name global code)
     endif()
     set(${name}_test_code "${code}" PARENT_SCOPE)
     set(${name}_test_global "${global}" PARENT_SCOPE)
+endfunction()
+
+function(comp_sd6_macro name sd6_name value)
+    string(TOUPPER "${name}" macro_name)
+
+    set(${name}_sd6_macro
+"${${name}_sd6_macro}
+#if ${COMP_PREFIX}HAS_${macro_name}
+    #if !defined(${sd6_name})
+        #define ${sd6_name} ${value}
+    #elif ${value} > ${sd6_name}
+        #undef ${sd6_name}
+        #define ${sd6_name} ${value}
+    #elif defined(COMP_OVERRIDE_SD6)
+        #undef ${sd6_name}
+        #define ${sd6_name} ${value}
+    #endif
+#endif" PARENT_SCOPE)
 endfunction()
 
 # EXTERNAL; umbrella feature module
