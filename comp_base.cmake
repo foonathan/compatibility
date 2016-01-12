@@ -178,8 +178,8 @@ function(_comp_gen_files feature)
 // See https://github.com/foonathan/compatibility for further information.
 // Do not edit manually!
 
-#ifndef COMP_${macro_name}_HPP_INCLUDED
-#define COMP_${macro_name}_HPP_INCLUDED
+#ifndef COMP_${COMP_PREFIX}${macro_name}_HPP_INCLUDED
+#define COMP_${COMP_PREFIX}${macro_name}_HPP_INCLUDED
 
 #include <cstddef>
 
