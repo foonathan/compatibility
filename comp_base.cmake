@@ -64,8 +64,17 @@ macro(_comp_parse_arguments)
                                 "" ${ARGN})
     if(COMP_NOPREFIX)
         set(COMP_PREFIX "")
+        set(COMP_ID "")
     elseif(NOT DEFINED COMP_PREFIX)
         set(COMP_PREFIX "COMP_")
+        set(COMP_ID "comp")
+    elseif(${COMP_PREFIX} MATCHES "^.*_$")
+        string(TOLOWER "${COMP_PREFIX}" COMP_ID)
+        string(LENGTH "${COMP_ID}" length)
+        math(EXPR length "${length} - 1")
+        string(SUBSTRING "${COMP_ID}" 0 ${length} COMP_ID)
+    else()
+        string(TOLOWER "${COMP_PREFIX}" COMP_ID)
     endif()
 
     if(NOT DEFINED COMP_NAMESPACE)
@@ -77,7 +86,9 @@ macro(_comp_parse_arguments)
     endif()
 
     if(NOT DEFINED COMP_INCLUDE_PATH)
-        set(COMP_INCLUDE_PATH "${CMAKE_BINARY_DIR}")
+        set(COMP_INCLUDE_PATH "${CMAKE_BINARY_DIR}/comp.generated")
+    else()
+        set(COMP_INCLUDE_PATH "${COMP_INCLUDE_PATH}/comp.generated")
     endif()
 endmacro()
 
@@ -198,7 +209,7 @@ ${${name}_workaround}
                 #include <cstddef>
                 #include <comp/${name}.hpp>
 
-                #include <catch.hpp>
+                #include \"catch.hpp\"
 
                 ${${name}_test_global}
 
@@ -225,8 +236,6 @@ endmacro()
 # setups certain features for a target
 function(comp_target_features target include_policy)
     _comp_parse_arguments(${ARGN})
-    set(COMP_INCLUDE_PATH "${COMP_INCLUDE_PATH}/comp.generated")
-    set(COMP_ID "${COMP_PREFIX}${COMP_NAMESPACE}")
 
     # these variables are modified/accessed by the feature modules
     # deprecated
@@ -237,6 +246,7 @@ function(comp_target_features target include_policy)
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
         _comp_handle_feature(${feature})
     endforeach()
+    target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
     target_compile_definitions(${target} ${include_policy} ${headers})
 
     if(COMP_NOFLAGS)
