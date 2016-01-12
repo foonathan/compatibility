@@ -73,11 +73,11 @@ macro(_comp_parse_arguments)
     endif()
 
     if(NOT DEFINED COMP_CMAKE_PATH)
-        set(COMP_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+        set(COMP_CMAKE_PATH "${CMAKE_BINARY_DIR}")
     endif()
 
     if(NOT DEFINED COMP_INCLUDE_PATH)
-        set(COMP_INCLUDE_PATH "${CMAKE_CURRENT_BINARY_DIR}")
+        set(COMP_INCLUDE_PATH "${CMAKE_BINARY_DIR}")
     endif()
 endmacro()
 
