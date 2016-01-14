@@ -8,10 +8,10 @@ endif()
 comp_api_version(1)
 
 comp_feature(has_include "#include <cstddef>
-                          int main()
-                          {
-                            int i = __has_include(<cstddef>);
-                          }" COMP_CPP98_FLAG)
+                          #if !__has_include(<cstddef>)
+                            #error \"not supported\"
+                          #endif
+                          int main() {}" COMP_CPP98_FLAG)
 comp_workaround(has_include
 "#ifndef ${COMP_PREFIX}HAS_INCLUDE
     #if ${COMP_PREFIX}HAS_HAS_INCLUDE
