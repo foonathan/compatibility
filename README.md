@@ -116,6 +116,7 @@ To use the generated header files, simply write `#include <PREFIX>_XXX_HEADER` i
 What `comp_target_features` function actually does is the following:
 
 * For each feature, it downloads the latest version of the test file from Github, if it doesn't exist yet.
+The remote url can be set via the option `COMP_REMOTE_URL`.
 
 * For each feature, it calls `include(feature.cmake)` after some set up. This runs the test and generates the header file.
 

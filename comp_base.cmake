@@ -12,6 +12,11 @@ include(CMakeParseArguments)
 # the current API version
 set(COMP_API_VERSION 1.1 CACHE STRING "compatibility api version" FORCE)
 
+# EXTERNAL
+# download location for feature files, the feature file name will be appended
+# to circumvent download process, manually place the files at the CMAKE_PATH
+set(COMP_REMOTE_URL "https://raw.githubusercontent.com/foonathan/compatibility/master/" CACHE STRING "url of remote repository to be used for downloading the feature files")
+
 # EXTERNAL; feature module
 # requires a certain API version
 function(comp_api_version version)
@@ -165,7 +170,7 @@ endfunction()
 # downloads the file for a feature
 function(_comp_fetch_feature path feature)
     if(NOT EXISTS "${path}/${feature}.cmake")
-        file(DOWNLOAD https://raw.githubusercontent.com/foonathan/compatibility/master/${feature}.cmake
+        file(DOWNLOAD ${COMP_REMOTE_URL}${feature}.cmake
                      ${path}/${feature}.cmake
                      SHOW_PROGESS
                      STATUS status
