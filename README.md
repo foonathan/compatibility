@@ -27,16 +27,17 @@ include(your/dir/to/comp_base.cmake) # only file you need to download, rest is t
 comp_target_features(tgt PUBLIC cpp11_lang/constexpr cpp11_lang/noexcept cpp11_lib/max_align_t env/rtti_support)
 ```
 
-For convenience we include all generated files in a header named `config.hpp`:
+For convenience we include all generated files in a header named `config.hpp`.
+The filenames are made available through macros.
 
 ```cpp
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include <comp/constexpr.hpp>
-#include <comp/noexcept.hpp>
-#include <comp/max_align_t.hpp>
-#include <comp/rtti_support.hpp>
+#include COMP_CONSTEXPR_HEADER
+#include COMP_NOEXCEPT_HEADER
+#include COMP_MAX_ALIGN_T_HEADER
+#include COMP_RTTI_SUPPORT_HEADER
 
 #endif
 ```
@@ -93,30 +94,34 @@ It takes a list of features to activate for a certain target.
 A features is a file in this repository without the `.cmake` extension, e.g. `cpp11_lang` for all C++11 language features,
 or `cpp14_lang/deprecated` for the C++14 deprecated features.
 
-A feature file with name `dir/xxx.cmake` belonging to a feature `dir/xxx` consists of the following:
+A feature file with name `dir/xxx.cmake` belonging to a feature `dir/xxx` consists of the following,
+where `dir` is the category of the feature, `xxx` the feature name in lowercase, `XXX` the feature name in upper case `<PREFIX>` the prefix as given to the function, `<prefix>` the prefix in lowercase and without a trailing underscore:
 
 * a test testing whether or not the compiler supports this feature
 
 * a CMake option with name `COMP_HAS_XXX` to override its result, useful if you want to act like it doesn't support a feature,
 or if the test is poorly written (please contact me in this case!)
 
-* a header named `comp/xxx.hpp`.
+* a header named `<prefix>/xxx.hpp`.
 The header contains at least a macro `<PREFIX>HAS_XXX` with the same value as the CMake option
 and often workaround macros or functions that can be used instead of the feature.
 The workaround uses either the feature, if it is available, or own code.
 This allows using many new features already, without support.
 If the compiler gets support, you will be automatically using the native feature or the standard library implementation.
 
-To use the generated header files, simply `#include` them inside your code, the search path is set automatically.
+* a globally available macro named `<PREFIX>_XXX_HEADER` to include the header file.
+
+To use the generated header files, simply write `#include <PREFIX>_XXX_HEADER` inside your code, the macro is made available automatically (you could also `#incluce` the file directly but this is not recommended).
 
 What `comp_target_features` function actually does is the following:
 
 * For each feature, it downloads the latest version of the test file from Github, if it doesn't exist yet.
 
-* For each feature, it calls `include(feature.cmake)`. This runs the test and generates the header file.
+* For each feature, it calls `include(feature.cmake)` after some set up. This runs the test and generates the header file.
 
-* It calls `target_include_directories` to allow including the generated header files.
-The `INTERFACE/PUBLIC/PRIVATE` specifier are only used in this call.
+* It calls `target_include_directories` to allow including the generated header files
+and `target_compile_definitions` for the file macro.
+The `INTERFACE/PUBLIC/PRIVATE` specifier are only used in these calls.
 
 * Activates the right C++ standard. E.g., if a feature requires C++11, it will be activated if it is available. If it is not, it will only activate the C++ standard required by the workaround code. This activation is always `PRIVATE`.
 
@@ -124,11 +129,11 @@ The behavior can be customized with the other options:
 
 * `NOPREFIX`/`PREFIX`: The prefix of any generated macros or none if `NOPREFIX` is set. Default is `COMP_`.
 
-* `NAMESPACE`: The namespace name of any generated code, default is `comp`.
+* `NAMESPACE`: The namespace name of any generated code, default is `comp`. A given prefix must always use the same namespace name!
 
 * `CMAKE_PATH`/`INCLUDE_PATH`: The download destination for the CMake files/the destination of the generated headers,
-default is `${CMAKE_CURRENT_BINARY_DIR}` for both.
-`INCLUDE_PATH` is also given to `target_include_directories()`, but note that the generated headers are in a subfolder `comp`.
+default is `${CMAKE_BINARY_DIR}/comp.downloaded` for cmake and `${CMAKE_BINARY_DIR}/comp.generated` for the headers.
+`INCLUDE_PATH` is also given to `target_include_directories()`, but note that the generated headers are in a subfolder `<prefix>` (this cannot be changed).
 
 * `NOFLAGS`/`CPP11`/`CPP14`/`CPP17`: Override for the standard detection, if you want to have a newer standard than deduced from the features,
 or a lower (not recommended). They have priority over the deduction, C++17 over C++14 over C++11.
@@ -137,14 +142,14 @@ The latter is useful for `INTERFACE` libraries which are only there to run the t
 
 ## Feature Reference
 
-A feature named `dir/xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `{PREFIX}HAS_XXX` in a file named `comp/xxx.hpp`.
+A feature named `dir/xxx` is tested in `xxx.cmake`, defines an override CMake option `COMP_HAS_XXX` and a macro `<PREFIX>HAS_XXX` in a file named `<prefix>/xxx.hpp` (where `prefix` is `<PREFIX>` in lowercase without a trailing underscore), filename also made available over the global macro `<PREFIX>XXX_HEADER`.
 
 There are also alternative names for the CMake `target_compile_features()` and SD-6 Feature Test Recommondations that are automatically translated.
 Where appropriate, it will also generate the SD-6 feature macro as specified.
 This will override the existing value if the new one is greater or the macro `COMP_OVERRIDE_SD6` is defined.
 If a feature is not supported, it will not change or define anything.
 
-For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `{PREFIX}XXX`.
+For some features, macros are generated that can be used instead (i.e. for `noexcept`), they have the form `<PREFIX>XXX`.
 Those macros often use compiler extensions.
 If there is none (or a lacking implementation...), an error message will be emmitted.
 To prevent this, simply define the macro as no-op or as you want prior to including the file.
@@ -152,6 +157,7 @@ To prevent this, simply define the macro as no-op or as you want prior to includ
 There are often workaround functions for library features. Those are defined in a namespace and either use the own implementation or the standard library implementation, if it is available.
 
 Prefix and namespace name can be controlled via parameters, see above.
+A given prefix must always use the same namespace name on each call.
 
 This library currently tests for the following features.
 The code below assumes no prefix and a namespace name of `comp`.
