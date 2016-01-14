@@ -89,13 +89,11 @@ macro(_comp_parse_arguments)
     endif()
 
     if(NOT DEFINED COMP_CMAKE_PATH)
-        set(COMP_CMAKE_PATH "${CMAKE_BINARY_DIR}")
+        set(COMP_CMAKE_PATH "${CMAKE_BINARY_DIR}/comp.downloaded")
     endif()
 
     if(NOT DEFINED COMP_INCLUDE_PATH)
         set(COMP_INCLUDE_PATH "${CMAKE_BINARY_DIR}/comp.generated")
-    else()
-        set(COMP_INCLUDE_PATH "${COMP_INCLUDE_PATH}/comp.generated")
     endif()
 endmacro()
 
