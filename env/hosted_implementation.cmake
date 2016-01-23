@@ -20,6 +20,10 @@ comp_workaround(hosted_implementation
 
 #include <type_traits>
 
+#if ${COMP_PREFIX}HOSTED_IMPLEMENTATION
+    #include <utility>
+#endif
+
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_RVALUE_REF
@@ -46,22 +50,26 @@ namespace ${COMP_NAMESPACE}
     }
 #endif
 
-#if ${COMP_PREFIX}HAS_RVALUE_REFERENCES
-    template <typename T>
-    void swap(T &a, T &b) ${COMP_PREFIX}NOEXCEPT_IF(std::is_nothrow_move_assignable<T>::value
-                                               && std::is_nothrow_move_constructible<T>::value)
-    {
-        T tmp = move(a);
-        a = move(b);
-        b = move(tmp);
-    }
+#if ${COMP_PREFIX}HOSTED_IMPLEMENTATION
+    using std::swap;
 #else
-    template <typename T>
-    void swap(T &a, T &b)
-    {
-        T tmp(a);
-        a = b;
-        b = tmp;
-    }
+    #if ${COMP_PREFIX}HAS_RVALUE_REF
+        template <typename T>
+        void swap(T &a, T &b) ${COMP_PREFIX}NOEXCEPT_IF(std::is_nothrow_move_assignable<T>::value
+                                                   && std::is_nothrow_move_constructible<T>::value)
+       {
+           T tmp = move(a);
+           a = move(b);
+           b = move(tmp);
+        }
+    #else
+        template <typename T>
+        void swap(T &a, T &b)
+        {
+            T tmp(a);
+            a = b;
+            b = tmp;
+        }
+    #endif
 #endif
 }" COMP_CPP98_FLAG cpp11_lang/noexcept cpp11_lang/rvalue_ref)
