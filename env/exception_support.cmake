@@ -7,8 +7,16 @@ if(NOT COMP_API_VERSION)
 endif()
 comp_api_version(1)
 
-# small, dumb program using exceptions
-comp_feature(exception_support "struct my_exception {};
+comp_feature(exception_support
+                    "#include <cstddef>
+
+                    #if defined(__GNUC__) && !defined(__EXCEPTIONS)
+                        #error \"no exception support\"
+                    #elif defined(_MSC_VER) && !_HAS_EXCEPTIONS
+                        #error \"no exception support\"
+                    #endif
+
+                    struct my_exception {};
                     int main()
                     {
                         try
