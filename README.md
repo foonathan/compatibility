@@ -178,7 +178,8 @@ constexpr|cxx_constexpr|`constexpr int foo()`|`CONSTEXPR`, fallback to `const`; 
 decltype|cxx_decltype|`decltype(a)`|`DECLTYPE(x)`, fallback to `typeof` extension, if available
 delete_fnc|cxx_deleted_functions|`void foo() = delete;`|no workaround
 explicit_conversion_op|cxx_explicit_conversion|`explicit operator bool()`|no workaround
-final|cxx_final|`void bar() final;`|no workaround
+final|cxx_final|`void bar() final;`|`FINAL` macro, workaround expands to nothing
+inline_namespace|none|`inline namespace foo {...}`|no workaround
 literal_op|cxx_user_literals|`operator""`|no workaround
 noexcept|cxx_noexcept|`void foo() noexcept;`|`NOEXCEPT`, fallback to nothing; `NOEXCEPT_IF(x)`, fallback to nothing; `NOEXCEPT_OP(x)`, fallback to `false`
 noreturn|none|`[[noreturn]] void foo();`|`NORETURN`, fallback to compiler extension, if available
