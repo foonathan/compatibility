@@ -10,11 +10,17 @@ comp_api_version(1)
 comp_feature(clz
         "#include <cstddef>
 
+        template <int i>
+        struct foo {};
+
         int main()
         {
             int a = __builtin_clz(4);
             int b = __builtin_clzl(4);
             int c = __builtin_clzll(4);
+
+            // require constant expression
+            foo<__builtin_clz(4)> f;
         }" COMP_CPP98_FLAG)
 comp_workaround(clz
 "
@@ -22,27 +28,13 @@ comp_workaround(clz
 #include <cstdint>
 #include <type_traits>
 
-#if !${COMP_PREFIX}HAS_CLZ && defined(_MSC_VER)
-    #include <intrin.h>
-#endif
-
 // a function clz() that returns the number of leading zeros in an integer
 // overloaded for each of the fixed-sized integers, uundefined for input value 0!
-// for up to 32bit:
 // * if builtin available: the smallest integer version that is fitting
-// * MSVC: _BitScanReverse()
 // * otherwise: binary search implementation w/ lookup table for last 4 bits
-// for 64bit:
-// * if builtin available: the smallest integer version that is fitting
-// * MSVC 64Bit: _BitScanReverse64()
-// * otherwise: divides into two 32bit numbers and forwards to 32bit version
-// defines ${COMP_PREFIX}CLZ_BINARY_SEARCH/${COMP_PREFIX}CLZ_BINARY_SEARCH64 if using fallback for 32/64 bits
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_CLZ
-    #define ${COMP_PREFIX}CLZ_BINARY_SEARCH 0
-    #define ${COMP_PREFIX}CLZ_BINARY_SEARCH64 0
-
     namespace detail
     {
         // prioritized tag dispatching to choose smallest integer that fits
@@ -53,121 +45,84 @@ namespace ${COMP_NAMESPACE}
         // also subtracts the number of addtional 0s that occur because the target type is smaller
         template <typename T,
                   typename = typename std::enable_if<sizeof(T) <= sizeof(unsigned int)>::type>
-        unsigned clz(clz_tag, T x)
+        ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(clz_tag, T x)
         {
             return __builtin_clz(x) - (sizeof(unsigned int) * CHAR_BIT - sizeof(T) * CHAR_BIT);
         }
 
         template <typename T,
                   typename = typename std::enable_if<sizeof(T) <= sizeof(unsigned long)>::type>
-        unsigned clz(clzl_tag, T x)
+        ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(clzl_tag, T x)
         {
             return __builtin_clzl(x) - (sizeof(unsigned long) * CHAR_BIT - sizeof(T) * CHAR_BIT);
         }
 
         template <typename T,
                   typename = typename std::enable_if<sizeof(T) <= sizeof(unsigned long long)>::type>
-        unsigned clz(clzll_tag, T x)
+        ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(clzll_tag, T x)
         {
             return __builtin_clzll(x) - (sizeof(unsigned long long) * CHAR_BIT - sizeof(T) * CHAR_BIT);
         }
     }
 
-    inline unsigned clz(std::uint8_t x)
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint8_t x)
     {
         return detail::clz(detail::clz_tag{}, x);
     }
 
-    inline unsigned clz(std::uint16_t x)
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint16_t x)
     {
         return detail::clz(detail::clz_tag{}, x);;
     }
 
-    inline unsigned clz(std::uint32_t x)
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint32_t x)
     {
         return detail::clz(detail::clz_tag{}, x);
     }
 
-    inline unsigned clz(std::uint64_t x)
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint64_t x)
     {
         return detail::clz(detail::clz_tag{}, x);
     }
 #else
-    #if defined(_MSC_VER)
-        #define ${COMP_PREFIX}CLZ_BINARY_SEARCH 0
+    namespace detail
+    {
+        static ${COMP_PREFIX}CONSTEXPR_FNC std::uint8_t clz_lookup[16]
+                        = { 4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-        inline unsigned clz(std::uint32_t x)
+        ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz_base(std::uint8_t higher, std::uint8_t lower)
         {
-            unsigned long res;
-            _BitScanReverse(&res, x);
-            return 31 - res;
+            return higher ? clz_lookup[higher] : 4 + clz_lookup[lower];
         }
 
-        inline unsigned clz(std::uint8_t x)
+        template <std::size_t Bits, typename T>
+        ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(T higher, T lower)
         {
-            return clz(std::uint32_t(x)) - 24;
+            return higher ? clz(higher) : Bits + clz(lower);
         }
+    }
 
-        inline unsigned clz(std::uint16_t x)
-        {
-            return clz(std::uint32_t(x)) - 16;
-        }
-    #else
-        #define ${COMP_PREFIX}CLZ_BINARY_SEARCH 1
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint8_t x)
+    {
+        return detail::clz_base(x >> 4, x & 0x0Fu);
+    }
 
-        inline unsigned clz(std::uint8_t x)
-        {
-            static const char lookup[16] = { 4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-            auto higher = (x >> 4), lower = (x & Ox0Fu);
-            if (higher)
-                return lookup[higher];
-            else
-                return 4 + lookup[lower];
-        }
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint16_t x)
+    {
+        return detail::clz<8>(std::uint8_t(x >> 8), std::uint8_t(x & OxFFu));
+    }
 
-        inline unsigned clz(std::uint16_t x)
-        {
-            std::uint8_t higher = (x >> 8), lower = (x & OxFFu);
-            if (higher)
-                return clz(higher);
-            else
-                return 8 + clz(lower);
-        }
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint32_t x)
+    {
+        return detail::clz<16>(std::uint16_t(x >> 16), std::uint16_t(x & OxFFFFu));
+    }
 
-        inline unsigned clz(std::uint32_t x)
-        {
-            std::uint16_t higher = (x >> 16), lower = (x & OxFFFFu);
-            if (higher)
-                return clz(higher);
-            else
-                return 16 + clz(lower);
-        }
-    #endif
-
-    // 64bit version
-    #if defined(_MSC_VER) && defined(_M_X64)
-        #define ${COMP_PREFIX}CLZ_BINARY_SEARCH64 0
-
-        inline unsigned clz(std::uint64_t x)
-        {
-            unsigned long res;
-            _BitScanReverse64(&res, x);
-            return 63 - res;
-        }
-    #else
-        #define ${COMP_PREFIX}CLZ_BINARY_SEARCH64 1
-
-        inline unsigned clz(std::uint64_t x)
-        {
-            std::uint32_t higher = (x >> 32), lower = (x & OxFFFFFFFFul);
-            if (higher)
-                return clz(higher);
-            else
-                return 32 + clz(lower);
-        }
-    #endif
+    ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint64_t x)
+    {
+        return detail::clz<32>(std::uint32_t(x >> 32), std::uint32_t(x & OxFFFFFFFFul));
+    }
 #endif
-}" COMP_CPP11_FLAG)
+}" COMP_CPP11_FLAG cpp11_lang/constexpr)
 comp_unit_test(clz
 "#include <cstdint>"
 "
