@@ -47,27 +47,88 @@ namespace ${COMP_NAMESPACE}
         return __builtin_popcountll(x);
     }
 #else
+    // warning: ugly bit hacks incoming
+    // adapted from Hacker's Delight, p. 66, and https://en.wikipedia.org/wiki/Hamming_weight, popcount_2
+
+    namespace detail
+    {
+        // step 1)
+        // look at each pair of bits and put count of ones there
+        ${COMP_PREFIX}CONSTEXPR_FNC std::uint32_t popcount_2er(std::uint32_t x)
+        {
+            return x - ((x >> 1) & 0x55555555u);
+        }
+
+        ${COMP_PREFIX}CONSTEXPR_FNC std::uint64_t popcount_2er(std::uint64_t x)
+        {
+            return x - ((x >> 1) & 0x5555555555555555u);
+        }
+
+        // step 2)
+        // look at each 4er pack of bits and put count of ones there
+        ${COMP_PREFIX}CONSTEXPR_FNC std::uint32_t popcount_4er(std::uint32_t x)
+        {
+            return (x & 0x33333333u) + ((x >> 2) & 0x33333333u);
+        }
+
+        ${COMP_PREFIX}CONSTEXPR_FNC std::uint64_t popcount_4er(std::uint64_t x)
+        {
+            return (x & 0x3333333333333333u) + ((x >> 2) & 0x3333333333333333u);
+        }
+
+        // step 3)
+        // look at each 8er pack of bits and put count of ones there
+        ${COMP_PREFIX}CONSTEXPR_FNC std::uint32_t popcount_8er(std::uint32_t x)
+        {
+            return (x + (x >> 4)) & 0x0F0F0F0Fu;
+        }
+
+        ${COMP_PREFIX}CONSTEXPR_FNC std::uint64_t popcount_8er(std::uint64_t x)
+        {
+            return (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0Fu;
+        }
+
+        // step 4)
+        // look at each 16er pack of bits and put count of ones there
+        template <typename T>
+        ${COMP_PREFIX}CONSTEXPR_FNC T popcount_16er(T x)
+        {
+            return x + (x >> 8);
+        }
+
+        // step 5)
+        // look at each 32er pack of bits and put count of ones there
+        template <typename T>
+        ${COMP_PREFIX}CONSTEXPR_FNC T popcount_32er(T x)
+        {
+            return x + (x >> 16);
+        }
+
+        // performs step 1-5
+        template <typename T>
+        ${COMP_PREFIX}CONSTEXPR_FNC T popcount_upto_32er(T x)
+        {
+            return popcount_32er(popcount_16er(popcount_8er(popcount_4er(popcount_2er(x)))));
+        }
+
+        // step 6) (64bit only)
+        // look at each 64er pack of bits and put count of ones there
+        ${COMP_PREFIX}CONSTEXPR_FNC std::uint64_t popcount_64er(std::uint64_t x)
+        {
+            return x + (x >> 32);
+        }
+    }
+
     ${COMP_PREFIX}CONSTEXPR_FNC unsigned popcount(std::uint32_t x)
     {
-        // from Hacker's Delight, p. 66
-        x -= (x >> 1) & 0x55555555u;
-        x = (x & 0x33333333u) + ((x >> 2) & 0x33333333u);
-        x = (x + (x >> 4)) & 0x0F0F0F0Fu;
-        x += x >> 8;
-        x += x >> 16;
-        return x & 0x3Fu;
+        // count bits and mask of higher bits
+        return detail::popcount_upto_32er(x) & 0x3Fu;
     }
 
     ${COMP_PREFIX}CONSTEXPR_FNC unsigned popcount(std::uint64_t x)
     {
-        // adapted from https://en.wikipedia.org/wiki/Hamming_weight, popcount_2
-        x -= (x >> 1) & 0x5555555555555555ul;
-        x = (x & 0x3333333333333333ul) + ((x >> 2) & 0x3333333333333333ul);
-        x = (x + (x >> 4)) & 0x0F0F0F0F0F0F0F0Ful;
-        x += x >> 8;
-        x += x >> 16;
-        x += x >> 32;
-        return x & 0x7Fu;
+        // count bits (including 64er) and mask of higher bits
+        return detail::popcount_64er(detail::popcount_upto_32er(x)) & 0x7Fu;
     }
 #endif
 }" COMP_CPP11_FLAG cpp11_lang/constexpr)
