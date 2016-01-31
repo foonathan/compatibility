@@ -29,7 +29,7 @@ comp_workaround(clz
 #include <type_traits>
 
 // a function clz() that returns the number of leading zeros in an integer
-// overloaded for each of the fixed-sized integers, uundefined for input value 0!
+// overloaded for each of the fixed-sized integers, undefined for input value 0!
 // * if builtin available: the smallest integer version that is fitting
 // * otherwise: binary search implementation w/ lookup table for last 4 bits
 namespace ${COMP_NAMESPACE}
@@ -87,18 +87,11 @@ namespace ${COMP_NAMESPACE}
 #else
     namespace detail
     {
-        static ${COMP_PREFIX}CONSTEXPR_FNC std::uint8_t clz_lookup[16]
-                        = { 4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+        ${COMP_PREFIX}CONSTEXPR std::uint8_t clz_lookup[16] = { 4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
 
         ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz_base(std::uint8_t higher, std::uint8_t lower)
         {
             return higher ? clz_lookup[higher] : 4 + clz_lookup[lower];
-        }
-
-        template <std::size_t Bits, typename T>
-        ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(T higher, T lower)
-        {
-            return higher ? clz(higher) : Bits + clz(lower);
         }
     }
 
@@ -109,17 +102,17 @@ namespace ${COMP_NAMESPACE}
 
     ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint16_t x)
     {
-        return detail::clz<8>(std::uint8_t(x >> 8), std::uint8_t(x & OxFFu));
+        return x >> 8 ? clz(std::uint8_t(x >> 8)) : 8 + clz(std::uint8_t(x & 0xFFu));
     }
 
     ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint32_t x)
     {
-        return detail::clz<16>(std::uint16_t(x >> 16), std::uint16_t(x & OxFFFFu));
+        return x >> 16 ? clz(std::uint16_t(x >> 16)) : 16 + clz(std::uint16_t(x & 0xFFFFu));
     }
 
     ${COMP_PREFIX}CONSTEXPR_FNC unsigned clz(std::uint64_t x)
     {
-        return detail::clz<32>(std::uint32_t(x >> 32), std::uint32_t(x & OxFFFFFFFFul));
+        return x >> 32 ? clz(std::uint32_t(x >> 32)) : 32 + clz(std::uint32_t(x & 0xFFFFFFFFul));
     }
 #endif
 }" COMP_CPP11_FLAG cpp11_lang/constexpr)
