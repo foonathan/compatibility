@@ -28,8 +28,8 @@ comp_workaround(ctz
 
 // a function ctz() that returns the number of trailing zeros in an integer
 // undefined for input value 0!
-// * if builtin available: the smallest integer version that is fitting
-// * otherwise: binary search implementation w/ lookup table for last 4 bits (requires fixed-sized integers)
+// * if builtin available: overloaded for each builtin version
+// * otherwise: binary search implementation w/ lookup table for last 4 bits, overloaded for each fixed-sized integers
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_CTZ

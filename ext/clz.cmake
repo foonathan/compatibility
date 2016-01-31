@@ -30,7 +30,7 @@ comp_workaround(clz
 
 // a function clz() that returns the number of leading zeros in an integer
 // overloaded for each of the fixed-sized integers, undefined for input value 0!
-// * if builtin available: the smallest integer version that is fitting
+// * if builtin available: uses the smallest integer version that is fitting
 // * otherwise: binary search implementation w/ lookup table for last 4 bits
 namespace ${COMP_NAMESPACE}
 {
