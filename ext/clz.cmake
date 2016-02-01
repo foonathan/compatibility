@@ -21,7 +21,7 @@ comp_feature(clz
 
             // require constant expression
             foo<__builtin_clz(4)> f;
-        }" COMP_CPP98_FLAG)
+        }" COMP_CPP11_FLAG)
 comp_workaround(clz
 "
 #include <climits>
