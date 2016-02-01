@@ -344,9 +344,20 @@ These features are all in the subdirectory `ext`.
 
 feature name|example|workaround, if any
 ------------|-------|------------------
-counter|`__COUNTER__`|no workaround
+assume|`__assume(cond)` (from MSVC)|`ASSUME(x)`, fallback to nothing
+bswap|`__builtin_bswap(x)` (from GCC)|``comp::bswap(x)` (for unsigned fixed-sized integers), fallback to manual swap (constexpr)
+clz|`__builtin_clz(x)` (from GCC)|`comp::clz(x)` (for unsigned fixed-sized integers), fallback to binary search (constexpr)
+counter|`__COUNTER__` (most compilers)|no workaround
+ctz|`__builtin_ctz(x)` (from GCC)|`comp::ctz(x)` (for unsigned integers), fallback to binary search (constexpr)
+expect|`__builtin_expect(x, val)` (from GCC)|`EXPECT(x, val)` (and `LIKELY(cond)`,`UNLIKELY(cond)`), fallback to value itself
+extension|`__extension__` (from GCC, marks extensions to silence warnings)|`EXTENSION`, fallback to nothing
+fallthrough|`[[clang::fallthrough]]` (from clang)|`FALLTHROUGH`, fallback to nothing
 has_include|`__has_include(header)`|`HAS_INCLUDE(x)`, fallback to always `0`
-pretty_function|`__PRETTY_FUNCTION__`|`PRETTY_FUNCTION`, fallback to `__FUNCSIG__` on MSVC
+int128|`__int128` (from GCC)|`comp::(u)int128_t`, no workaround, just convenience typedefs
+popcount|`__builtin_popcount(x)` (from GCC)|`comp::popcount(x)` (for unsigned integers), fallback to bithacks (constexpr)
+pretty_function|`__PRETTY_FUNCTION__` (from GCC)|`PRETTY_FUNCTION`, fallback to `__FUNCSIG__` on MSVC
+unreachable|`__builtin_unreachable()` (from GCC)|`UNREACHABLE`, fallback to `__assume(0)` under MSVC, otherwise nothing
+unused|`[[gnu::unused]]` (from GCC)|`UNUSED`, fallback to nothing; also `MAKE_UNUSED(expr)` that uses `(void)` trick
 
 Get them all by specifying `ext.cmake`.
 
