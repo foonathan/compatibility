@@ -201,6 +201,7 @@ feature name|example|workaround, if any
 ------------|-------|------------------
 get_new_handler|`std::get_new_handler()`|`comp::get_new_handler()`, fallback to old `std::set_new_handler(nullptr)` technique - **not thread safe**
 get_terminate|`std::get_terminate()`|`comp::get_terminate()`, same as above
+is_trivially|`std::is_trivially_XXX<T>`|`comp::is_trivially_XXX`, workaround uses `std::is_XXX` combined with `std::is_trivial`
 max_align_t|`std::max_align_t`|`comp::max_align_t`, fallback to `::max_align_t` or a struct with a `long double` and `long long`
 mutex|`std::mutex`/`std::lock_guard`/`std::unique_lock`|no workaround
 to_string|`std::to_string(54)`|`comp::to_string()`, fallback to `std::sprintf()`
