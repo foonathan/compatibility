@@ -21,6 +21,10 @@ comp_feature(pmr
 comp_workaround(pmr
 "#include <cstddef>
 
+#if ${COMP_PREFIX}HAS_PMR
+    #include <experimental/memory_resource>
+#endif
+
 namespace ${COMP_NAMESPACE}
 {
 #if ${COMP_PREFIX}HAS_PMR
