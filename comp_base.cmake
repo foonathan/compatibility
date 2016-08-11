@@ -257,23 +257,30 @@ function(comp_target_features target include_policy)
     target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
     target_compile_definitions(${target} ${include_policy} ${headers})
 
-    if(COMP_NOFLAGS)
-        return()
-    endif()
-
     # first explicit option, then implicit; 17 over 14 over 11
     if(COMP_CPP17)
-        target_compile_options(${target} PRIVATE ${COMP_CPP17_FLAG})
+        set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP17_FLAG}
+            CACHE STRING "required compile options for target")
     elseif(COMP_CPP14)
-        target_compile_options(${target} PRIVATE ${COMP_CPP14_FLAG})
+        set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
+            CACHE STRING "required compile options for target")
     elseif(COMP_CPP11)
-        target_compile_options(${target} PRIVATE ${COMP_CPP11_FLAG})
+        set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
+            CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP17_FLAG)
-        target_compile_options(${target} PRIVATE ${COMP_CPP17_FLAG})
+        set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP17_FLAG}
+            CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP14_FLAG)
-        target_compile_options(${target} PRIVATE ${COMP_CPP14_FLAG})
+        set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
+            CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP11_FLAG)
-        target_compile_options(${target} PRIVATE ${COMP_CPP11_FLAG})
+        set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP11_FLAG}
+            CACHE STRING "required compile options for target")
+    endif()
+
+    # actually set option
+    if (NOT COMP_NOFLAGS)
+        target_compile_options(${target} PRIVATE ${${target}_COMP_COMPILE_OPTIONS})
     endif()
 endfunction()
 

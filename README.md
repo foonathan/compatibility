@@ -124,7 +124,7 @@ The remote url can be set via the option `COMP_REMOTE_URL`.
 and `target_compile_definitions` for the file macro.
 The `INTERFACE/PUBLIC/PRIVATE` specifier are only used in these calls.
 
-* Activates the right C++ standard. E.g., if a feature requires C++11, it will be activated if it is available. If it is not, it will only activate the C++ standard required by the workaround code. This activation is always `PRIVATE`.
+* Activates the right C++ standard. E.g., if a feature requires C++11, it will be activated if it is available. If it is not, it will only activate the C++ standard required by the workaround code. This activation is always `PRIVATE`. The flag is exposed through the CACHE variable `${target}_COMP_COMPILE_OPTIONS`.
 
 The behavior can be customized with the other options:
 
