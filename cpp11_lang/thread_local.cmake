@@ -7,7 +7,7 @@ if(NOT COMP_API_VERSION)
 endif()
 comp_api_version(1)
 
-comp_feature(thread_local "int main() {thread_local int i;}" COMP_CPP11_FLAG)
+comp_feature(thread_local "thread_local int i; int main() {auto ptr = &i;}" COMP_CPP11_FLAG)
 comp_workaround(thread_local
 "#ifndef ${COMP_PREFIX}THREAD_LOCAL
     #if ${COMP_PREFIX}HAS_THREAD_LOCAL
