@@ -12,10 +12,13 @@ include(CMakeParseArguments)
 # the current API version
 set(COMP_API_VERSION 1.1 CACHE STRING "compatibility api version" FORCE)
 
+set(COMP_REMOTE_REPO "foonathan/compatibility" CACHE STRING "Github Repository to pull from")
+set(COMP_REMOTE_BRANCH "master" CACHE STRING "Git branch on COMP_REMOTE_REPO")
+
 # EXTERNAL
 # download location for feature files, the feature file name will be appended
 # to circumvent download process, manually place the files at the CMAKE_PATH
-set(COMP_REMOTE_URL "https://raw.githubusercontent.com/foonathan/compatibility/master/" CACHE STRING "url of remote repository to be used for downloading the feature files")
+set(COMP_REMOTE_URL "https://raw.githubusercontent.com/${COMP_REMOTE_REPO}/${COMP_REMOTE_BRANCH}/" CACHE STRING "url of remote repository to be used for downloading the feature files")
 
 # EXTERNAL; feature module
 # requires a certain API version
@@ -109,11 +112,15 @@ function(_comp_translate_feature feature)
     set(_cxx_alignas cpp11_lang/alignas)
     set(_cxx_alignof cpp11_lang/alignof)
     set(_cxx_attribute_deprecated cpp14_lang/deprecated)
+    set(_cxx_auto_type cpp11_lang/auto_type)
     set(_cxx_constexpr cpp11_lang/constexpr)
     set(_cxx_decltype cpp11_lang/decltype)
+    set(_cxx_decltype_auto cpp14/return_type_deduction)
     set(_cxx_deleted_functions cpp11_lang/delete_fnc)
+    set(_cxx_default_function_template_args cpp11_lang/default_function_template_args)
     set(_cxx_explicit_conversions cpp11_lang/explicit_conversion_op)
     set(_cxx_final cpp11_lang/final)
+    set(_cxx_lambdas cpp11_lang/lambdas)
     set(_cxx_noexcept cpp11_lang/noexcept)
     set(_cxx_nullptr cpp11_lang/nullptr)
     set(_cxx_override cpp11_lang/override)
@@ -233,12 +240,12 @@ endfunction()
 
 # INTERNAL
 # handles a feature file
-macro(_comp_handle_feature feature)
+function(_comp_handle_feature feature)
     _comp_translate_feature(${feature})
     _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
     include(${COMP_CMAKE_PATH}/${feature}.cmake)
     _comp_gen_files(${feature})
-endmacro()
+endfunction()
 
 # EXTERNAL; user
 # setups certain features for a target
@@ -254,7 +261,7 @@ function(comp_target_features target include_policy)
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
         _comp_handle_feature(${feature})
     endforeach()
-    target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
+    target_include_directories(${target} ${include_policy} $<BUILD_INTERFACE:${COMP_INCLUDE_PATH}>)
     target_compile_definitions(${target} ${include_policy} ${headers})
 
     # first explicit option, then implicit; 17 over 14 over 11
