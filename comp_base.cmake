@@ -134,6 +134,7 @@ function(_comp_translate_feature feature)
     set(_cxx_thread_local cpp11_lang/thread_local CACHE INTERNAL "")
     set(_cxx_user_literals cpp11_lang/literal_op CACHE INTERNAL "")
     set(_cxx_variable_templates cpp14_lang/variable_template CACHE INTERNAL "")
+    set(_cxx_variadic_templates cpp11_lang/parameter_pack CACHE INTERNAL "")
 
     # note: triple underscore at beginning!
     set(___cpp_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")

@@ -7,10 +7,18 @@ if(NOT COMP_API_VERSION)
 endif()
 comp_api_version(1)
 
-comp_feature(range_for "int main()
-{ 
-    int array[3] = { 1, 2, 3 }; 
-    for (int& x : array) 
-        x *= 2; 
-}" COMP_CPP11_FLAG)
+comp_feature(parameter_pack "template <typename... Tn>
+void f(const Tn&... args);
+
+template <typename T, typename... Tn>
+void f(const T& t, const Tn&... rest)
+{ (void)t; f(rest...); }
+
+template <>
+void f()
+{ }
+
+int main()
+{ f(1, 2); f(\"one\", 2); f(1); f(); }
+" COMP_CPP11_FLAG)
 
