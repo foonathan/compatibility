@@ -68,7 +68,7 @@ _comp_check_flags(COMP_CPP17_FLAG "C++17" std_cpp17_flag -std=c++17 std_cpp1z_fl
 # parses arguments for comp_compile_features
 macro(_comp_parse_arguments)
     cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14;CPP17;NOFLAGS" # no arg
-                               "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" # single arg
+                               "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH;SINGLE_HEADER" # single arg
                                 "" ${ARGN})
     if(COMP_NOPREFIX)
         set(COMP_PREFIX "")
@@ -103,11 +103,16 @@ macro(_comp_parse_arguments)
     if(NOT DEFINED COMP_INCLUDE_PATH)
         set(COMP_INCLUDE_PATH "${CMAKE_BINARY_DIR}/comp.generated")
     endif()
+
+    if(NOT DEFINED COMP_SINGLE_HEADER)
+        set(COMP_SINGLE_HEADER off)
+    endif()
 endmacro()
 
 # INTERNAL
 # translates feature names
 function(_comp_translate_feature feature)
+    # Use a function so these don't bleed out of scope 
     set(_cxx_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")
     set(_cxx_alignas cpp11_lang/alignas CACHE INTERNAL "")
     set(_cxx_alignof cpp11_lang/alignof CACHE INTERNAL "")
@@ -301,6 +306,28 @@ function(comp_target_features target include_policy)
     # actually set option
     if (NOT COMP_NOFLAGS)
         target_compile_options(${target} PRIVATE ${${target}_COMP_COMPILE_OPTIONS})
+    endif()
+
+    if(COMP_SINGLE_HEADER)
+        set(include_lines )
+        foreach(header ${headers})
+            string(REGEX REGEX REPLACE ".+=" "" header_path header)
+            list(APPEND include_lines "#include \"${header_path}\"")
+        endforeach()
+
+        string(REPLACE ";" "\n" include_lines ${include_lines})
+
+        file(WRITE ${COMP_INCLUDE_PATH}/${COMP_ID}/config.hpp
+        "#pragma once
+#ifndef COMP_${COMP_PREFIX}CONFIG_HPP_INCLUDED
+#define COMP_${COMP_PREFIX}CONFIG_HPP_INCLUDED
+
+// Do not edit! File is generated!
+
+${include_lines}
+
+#endif")
+
     endif()
 endfunction()
 
