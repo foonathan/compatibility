@@ -12,10 +12,13 @@ include(CMakeParseArguments)
 # the current API version
 set(COMP_API_VERSION 1.1 CACHE STRING "compatibility api version" FORCE)
 
+set(COMP_REMOTE_REPO "foonathan/compatibility" CACHE STRING "Github Repository to pull from")
+set(COMP_REMOTE_BRANCH "master" CACHE STRING "Git branch on COMP_REMOTE_REPO")
+
 # EXTERNAL
 # download location for feature files, the feature file name will be appended
 # to circumvent download process, manually place the files at the CMAKE_PATH
-set(COMP_REMOTE_URL "https://raw.githubusercontent.com/foonathan/compatibility/master/" CACHE STRING "url of remote repository to be used for downloading the feature files")
+set(COMP_REMOTE_URL "https://raw.githubusercontent.com/${COMP_REMOTE_REPO}/${COMP_REMOTE_BRANCH}/" CACHE STRING "url of remote repository to be used for downloading the feature files")
 
 # EXTERNAL; feature module
 # requires a certain API version
@@ -105,57 +108,66 @@ endmacro()
 # INTERNAL
 # translates feature names
 function(_comp_translate_feature feature)
-    set(_cxx_alias_templates cpp11_lang/alias_template)
-    set(_cxx_alignas cpp11_lang/alignas)
-    set(_cxx_alignof cpp11_lang/alignof)
-    set(_cxx_attribute_deprecated cpp14_lang/deprecated)
-    set(_cxx_constexpr cpp11_lang/constexpr)
-    set(_cxx_decltype cpp11_lang/decltype)
-    set(_cxx_deleted_functions cpp11_lang/delete_fnc)
-    set(_cxx_explicit_conversions cpp11_lang/explicit_conversion_op)
-    set(_cxx_final cpp11_lang/final)
-    set(_cxx_noexcept cpp11_lang/noexcept)
-    set(_cxx_nullptr cpp11_lang/nullptr)
-    set(_cxx_override cpp11_lang/override)
-    set(_cxx_relaxed_constexpr cpp14_lang/general_constexpr)
-    set(_cxx_rvalue_references cpp11_lang/rvalue_ref)
-    set(_cxx_static_assert cpp11_lang/static_assert)
-    set(_cxx_thread_local cpp11_lang/thread_local)
-    set(_cxx_user_literals cpp11_lang/literal_op)
-    set(_cxx_variable_templates cpp14_lang/variable_template)
+    set(_cxx_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")
+    set(_cxx_alignas cpp11_lang/alignas CACHE INTERNAL "")
+    set(_cxx_alignof cpp11_lang/alignof CACHE INTERNAL "")
+    set(_cxx_attribute_deprecated cpp14_lang/deprecated CACHE INTERNAL "")
+    set(_cxx_auto_type cpp11_lang/auto_type CACHE INTERNAL "")
+    set(_cxx_constexpr cpp11_lang/constexpr CACHE INTERNAL "")
+    set(_cxx_decltype cpp11_lang/decltype CACHE INTERNAL "")
+    set(_cxx_decltype_auto cpp14_lang/return_type_deduction CACHE INTERNAL "")
+    set(_cxx_deleted_functions cpp11_lang/delete_fnc CACHE INTERNAL "")
+    set(_cxx_default_function_template_args cpp11_lang/default_function_template_args CACHE INTERNAL "")
+    set(_cxx_explicit_conversions cpp11_lang/explicit_conversion_op CACHE INTERNAL "")
+    set(_cxx_final cpp11_lang/final CACHE INTERNAL "")
+    set(_cxx_lambdas cpp11_lang/lambdas CACHE INTERNAL "")
+    set(_cxx_noexcept cpp11_lang/noexcept CACHE INTERNAL "")
+    set(_cxx_nullptr cpp11_lang/nullptr CACHE INTERNAL "")
+    set(_cxx_override cpp11_lang/override CACHE INTERNAL "")
+    set(_cxx_relaxed_constexpr cpp14_lang/general_constexpr CACHE INTERNAL "")
+    set(_cxx_range_for cpp11_lang/range_for CACHE INTERNAL "")
+    set(_cxx_return_type_deduction cpp14_lang/return_type_deduction CACHE INTERNAL "")
+    set(_cxx_right_angle_brackets cpp11_lang/right_angle_brackets CACHE INTERNAL "")
+    set(_cxx_rvalue_references cpp11_lang/rvalue_ref CACHE INTERNAL "")
+    set(_cxx_static_assert cpp11_lang/static_assert CACHE INTERNAL "")
+    set(_cxx_strong_enums cpp11_lang/enum_class CACHE INTERNAL "")
+    set(_cxx_thread_local cpp11_lang/thread_local CACHE INTERNAL "")
+    set(_cxx_user_literals cpp11_lang/literal_op CACHE INTERNAL "")
+    set(_cxx_variable_templates cpp14_lang/variable_template CACHE INTERNAL "")
+    set(_cxx_variadic_templates cpp11_lang/parameter_pack CACHE INTERNAL "")
 
     # note: triple underscore at beginning!
-    set(___cpp_alias_templates cpp11_lang/alias_template)
-    set(___cpp_constexpr cpp11_lang/constexpr)
-    set(___cpp_decltype cpp11_lang/decltype)
-    set(___cpp_user_defined_literals cpp11_lang/literal_op)
-    set(___cpp_noexcept cpp11_lang/noexcept)
-    set(___cpp_rvalue_references cpp11_lang/rvalue_ref)
-    set(___cpp_static_assert cpp11_lang/static_assert)
+    set(___cpp_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")
+    set(___cpp_constexpr cpp11_lang/constexpr CACHE INTERNAL "")
+    set(___cpp_decltype cpp11_lang/decltype CACHE INTERNAL "")
+    set(___cpp_user_defined_literals cpp11_lang/literal_op CACHE INTERNAL "")
+    set(___cpp_noexcept cpp11_lang/noexcept CACHE INTERNAL "")
+    set(___cpp_rvalue_references cpp11_lang/rvalue_ref CACHE INTERNAL "")
+    set(___cpp_static_assert cpp11_lang/static_assert CACHE INTERNAL "")
 
-    set(___cpp_return_type_deduction cpp14_lang/return_type_deduction)
-    set(___cpp_sized_deallocation cpp14_lang/sized_deallocation)
-    set(___cpp_variable_templates cpp14_lang/variable_template)
+    set(___cpp_return_type_deduction cpp14_lang/return_type_deduction CACHE INTERNAL "")
+    set(___cpp_sized_deallocation cpp14_lang/sized_deallocation CACHE INTERNAL "")
+    set(___cpp_variable_templates cpp14_lang/variable_template CACHE INTERNAL "")
 
-    set(___cpp_lib_exchange_function cpp14_lib/exchange)
-    set(___cpp_lib_transparent_operators cpp14_lib/generic_operator_functors)
-    set(___cpp_lib_integer_sequence cpp14_lib/integer_sequence)
-    set(___cpp_lib_make_unique cpp14_lib/make_unique)
-    set(___cpp_lib_quoted_string_io cpp14_lib/quoted)
-    set(___cpp_lib_shared_timed_mutex cpp14_lib/shared_lock)
-    set(___cpp_lib_robust_nonmodifying_seq_ops cpp14_lib/two_range_algorithms)
+    set(___cpp_lib_exchange_function cpp14_lib/exchange CACHE INTERNAL "")
+    set(___cpp_lib_transparent_operators cpp14_lib/generic_operator_functors CACHE INTERNAL "")
+    set(___cpp_lib_integer_sequence cpp14_lib/integer_sequence CACHE INTERNAL "")
+    set(___cpp_lib_make_unique cpp14_lib/make_unique CACHE INTERNAL "")
+    set(___cpp_lib_quoted_string_io cpp14_lib/quoted CACHE INTERNAL "")
+    set(___cpp_lib_shared_timed_mutex cpp14_lib/shared_lock CACHE INTERNAL "")
+    set(___cpp_lib_robust_nonmodifying_seq_ops cpp14_lib/two_range_algorithms CACHE INTERNAL "")
 
-    set(___cpp_fold_expressions cpp17_lang/fold_expressions)
-    set(___cpp_unicode_characters cpp17_lang/utf8_char_literal)
+    set(___cpp_fold_expressions cpp17_lang/fold_expressions CACHE INTERNAL "")
+    set(___cpp_unicode_characters cpp17_lang/utf8_char_literal CACHE INTERNAL "")
 
-    set(___cpp_lib_nonmember_container_access cpp17_lib/container_access)
-    set(___cpp_lib_invoke cpp17_lib/invoke)
-    set(___cpp_lib_map_insertion cpp17_lib/map_insertion)
-    set(___cpp_lib_unordered_map_insertion cpp17_lib/map_insertion)
-    set(___cpp_lib_map_try_emplace cpp17_lib/map_insertion)
-    set(___cpp_lib_unordered_map_try_emplace cpp17_lib/map_insertion)
-    set(___cpp_lib_uncaught_exceptions cpp17_lib/uncaught_exceptions)
-    set(___cpp_lib_void_t cpp17_lib/void_t)
+    set(___cpp_lib_nonmember_container_access cpp17_lib/container_access CACHE INTERNAL "")
+    set(___cpp_lib_invoke cpp17_lib/invoke CACHE INTERNAL "")
+    set(___cpp_lib_map_insertion cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_unordered_map_insertion cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_map_try_emplace cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_unordered_map_try_emplace cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_uncaught_exceptions cpp17_lib/uncaught_exceptions CACHE INTERNAL "")
+    set(___cpp_lib_void_t cpp17_lib/void_t CACHE INTERNAL "")
 
     if(DEFINED _${feature})
         set(feature "${_${feature}}" PARENT_SCOPE)
@@ -195,7 +207,8 @@ function(_comp_gen_files feature)
         set(result "0")
     endif()
 
-    set(headers ${headers} ${COMP_PREFIX}${macro_name}_HEADER="${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp" PARENT_SCOPE)
+    list(APPEND _COMP_HEADERS ${COMP_PREFIX}${macro_name}_HEADER="${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp")
+    set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
     file(WRITE ${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp
 "// This file was autogenerated using foonathan/compatibility.
 // See https://github.com/foonathan/compatibility for further information.
@@ -233,12 +246,15 @@ endfunction()
 
 # INTERNAL
 # handles a feature file
-macro(_comp_handle_feature feature)
+function(_comp_handle_feature feature)
     _comp_translate_feature(${feature})
     _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
     include(${COMP_CMAKE_PATH}/${feature}.cmake)
     _comp_gen_files(${feature})
-endmacro()
+
+    # propagate variables up
+    set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
+endfunction()
 
 # EXTERNAL; user
 # setups certain features for a target
@@ -254,28 +270,32 @@ function(comp_target_features target include_policy)
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
         _comp_handle_feature(${feature})
     endforeach()
-    target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
-    target_compile_definitions(${target} ${include_policy} ${headers})
+    
+    target_include_directories(${target} ${include_policy} $<BUILD_INTERFACE:${COMP_INCLUDE_PATH}>)
+
+    if(NOT COMP_SINGLE_HEADER)
+        target_compile_definitions(${target} ${include_policy} ${_COMP_HEADERS})
+    endif()
 
     # first explicit option, then implicit; 17 over 14 over 11
     if(COMP_CPP17)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP17_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(COMP_CPP14)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(COMP_CPP11)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP17_FLAG)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP17_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP14_FLAG)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP11_FLAG)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP11_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     endif()
 
     # actually set option
@@ -346,7 +366,7 @@ function(comp_workaround name workaround standard)
         _comp_handle_feature(${feature})
     endforeach()
     set(${name}_requires ${requires} PARENT_SCOPE)
-    set(headers "${headers}" PARENT_SCOPE)
+    set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
 endfunction()
 
 # EXTERNAL; feature module

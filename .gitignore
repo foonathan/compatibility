@@ -1,0 +1,10 @@
+build*/
+
+CMakeCache.txt
+CMakeFiles/
+
+#vscode
+.vscode/
+
+# Jetbrains
+.idea/
