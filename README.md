@@ -163,7 +163,9 @@ A given prefix must always use the same namespace name on each call.
 This library currently tests for the following features.
 The code below assumes no prefix and a namespace name of `comp`.
 
-*A feature will only be included if it is not a pure syntactic feature (like `auto` or lambdas which can be avoided) but if there is either sensible workaround code, e.g. through to compiler extensions or through reimplementing (small!) standard library functionality, or there can be conditional compilation based on the existense, e.g. optional literal definitions or move constructors.*
+*A feature will only be included (by me) if it is not a pure syntactic feature (like `auto` or lambdas which can be avoided) but if there is either sensible workaround code, e.g. through to compiler extensions or through reimplementing (small!) standard library functionality, or there can be conditional compilation based on the existense, e.g. optional literal definitions or move constructors.
+
+Note that I'm open to PRs of any kind :)*
 
 ### C++11 language features
 
@@ -174,24 +176,31 @@ feature name|alternative name|example|workaround, if any
 alias_template|cxx_alias_templas|`template <typename T> using my_map = std::map<int, T>;`|no workaround
 alignas|cxx_alignas|`alignas(int) char c`|`ALIGNAS(x)`, fallback to compiler extension, if available
 alignof|cxx_alignof|`alignof(int)`|`ALIGNOF(x)`, fallback to compiler extension, if available
+auto_type|cxx_auto_type|`auto var = 0`|no workaround
 constexpr|cxx_constexpr|`constexpr int foo()`|`CONSTEXPR`, fallback to `const`; `CONSTEXPR_FNC`, fallback to `inline`
 decltype|cxx_decltype|`decltype(a)`|`DECLTYPE(x)`, fallback to `typeof` extension, if available
+default_function_template_args|cxx_default_function_template_args|`template <typename T = int> void foo();`| no workaround
 delete_fnc|cxx_deleted_functions|`void foo() = delete;`|no workaround
+enum_class|cxx_strong_enum|`enum class foo {}`|no workaround
 explicit_conversion_op|cxx_explicit_conversion|`explicit operator bool()`|no workaround
 final|cxx_final|`void bar() final;`|`FINAL` macro, workaround expands to nothing
 inline_namespace|none|`inline namespace foo {...}`|no workaround
+lambdas|cxx_lambdas|`[](){}`|no workaround
 literal_op|cxx_user_literals|`operator""`|no workaround
 noexcept|cxx_noexcept|`void foo() noexcept;`|`NOEXCEPT`, fallback to nothing; `NOEXCEPT_IF(x)`, fallback to nothing; `NOEXCEPT_OP(x)`, fallback to `false`
 noreturn|none|`[[noreturn]] void foo();`|`NORETURN`, fallback to compiler extension, if available
 nullptr|cxx_nullptr|`void* ptr = nullptr;`|`NULLPTR`, fallback to [null pointer idiom](https://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/nullptr); also `comp::nullptr_t`
 override|cxx_override|`void bar() override;`|`OVERRIDE`, fallback to nothing
+parameter_pack|cxx_parameter_pack|`template <typename ... T> void f(T... ts);`|no workaround
+range_for|cxx_range_for|`for (auto var : container)`|no workaround
+right_angle_brackets|cxx_right_angle_brackets|`std::vector<std::vector<int>>`|no workaround
 rvalue_ref|cxx_rvalue_references|`int&& a = 4;`|no workaround
 static_assert|cxx_static_assert|`static_assert(std::is_integral<T>::value, "");`|`STATIC_ASSERT(Expr, Msg)`, fallback to simple undefined struct technique
 thread_local|cxx_thread_local|`thread_local int i;`|`THREAD_LOCAL`, fallback to `__thread` extension or similar, if available - **does not call constructors or destructors!**
 
-*Note: In general, it assumes proper C++11 support. The workarounds defined in this library rely on all common C++ features that can not be easily avoided (like `auto` or lambdas), except those listed here with a proper fallback (like `noexcept`, `constexpr`, ...).*
+*Note: In general, it assumes proper C++11 support. The workarounds defined in this library rely on all common C++ features that can not be easily avoided except those listed here with a proper fallback (like `noexcept`, `constexpr`, ...).*
 
-Get them all by specifying `cpp11_lang`..
+Get them all by specifying `cpp11_lang`.
 
 ### C++11 library features
 
