@@ -7,5 +7,5 @@ if(NOT COMP_API_VERSION)
 endif()
 comp_api_version(1)
 
-comp_feature(auto_type "enum class Colour: unsigned int { Red = 1, Blue = 3 };
+comp_feature(enum_class "enum class Colour: unsigned int { Red = 1, Blue = 3 };
 int main() { const Colour c = Colour::Red; }" COMP_CPP11_FLAG)
