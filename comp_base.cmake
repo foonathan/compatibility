@@ -3,6 +3,9 @@
 # found in the top-level directory of this distribution.
 
 # comp_base.cmake - base functionality for all compatibility files
+if(${CMAKE_MINIMUM_REQUIRED_VERSION} VERSION_LESS 3.0)
+    message(FATAL_ERROR "compat requires CMake version 3.0+")
+endif()
 
 include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
@@ -10,7 +13,7 @@ include(CMakeParseArguments)
 
 # EXTERNAL
 # the current API version
-set(COMP_API_VERSION 1.1 CACHE STRING "compatibility api version" FORCE)
+set(COMP_API_VERSION 1.1 CACHE INTERNAL "compatibility api version" FORCE)
 
 set(COMP_REMOTE_REPO "foonathan/compatibility" CACHE STRING "Github Repository to pull from")
 set(COMP_REMOTE_BRANCH "master" CACHE STRING "Git branch on COMP_REMOTE_REPO")
@@ -19,6 +22,60 @@ set(COMP_REMOTE_BRANCH "master" CACHE STRING "Git branch on COMP_REMOTE_REPO")
 # download location for feature files, the feature file name will be appended
 # to circumvent download process, manually place the files at the CMAKE_PATH
 set(COMP_REMOTE_URL "https://raw.githubusercontent.com/${COMP_REMOTE_REPO}/${COMP_REMOTE_BRANCH}/" CACHE STRING "url of remote repository to be used for downloading the feature files")
+
+set(_COMP_LOG_LVL_DEBUG     3       CACHE INTERNAL "Logging Level: Debug")
+set(_COMP_LOG_LVL_INFO      2       CACHE INTERNAL "Logging Level: Info")
+set(_COMP_LOG_LVL_QUIET     1       CACHE INTERNAL "Logging Level: Quiet")
+set(_COMP_LOG_LVL_SILENT    0       CACHE INTERNAL "Logging Level: Silent")
+set(_COMP_LOG_LVL_ALL       100     CACHE INTERNAL "Logging Level: ALL")
+
+set(COMP_LOG_LEVEL "INFO" CACHE STRING "Default logging level used within all calls (default: INFO)")
+
+macro(_comp_adjust_log_level VARIABLE LEVEL)
+    if(${LEVEL} MATCHES "(0|1|2|3|100)")
+        set(${VARIABLE} ${LEVEL})
+    elseif(${LEVEL} MATCHES "(DEBUG|INFO|QUIET|SILENT|ALL)")
+        set(${VARIABLE} ${_COMP_LOG_LVL_${VARIABLE}})
+    else()
+        message(WARNING "Tried to set ${VARIABLE} to ${LEVEL}, defaulting to INFO.")
+        comp_set_log_level(${VARIABLE} INFO)
+    endif()
+endmacro()
+
+# External; Sets the `COMP_LOG_LEVEL` variable using either the `_COMP_LOG_LVL_XX` 
+# variables or string versions. 
+function(comp_set_log_level LEVEL)
+    _comp_adjust_log_level(log_level ${LEVEL})
+    set(COMP_LOG_LEVEL ${log_level} CACHE STRING "Default logging level used within all calls (default: INFO)")
+endfunction()
+
+if(NOT COMP_LOG_LEVEL)
+    comp_set_log_level(INFO)
+else()
+    comp_set_log_level(${COMP_LOG_LEVEL})
+endif()
+
+# Internal;
+# Log a message based on the current log level
+function(_comp_log level out_message)
+    cmake_parse_arguments(log "EXACT" "" "" ${ARGN})
+    
+    set(log off)
+    if(NOT DEFINED COMP_LOG_LVL OR (${level} STREQUAL "ALL" OR COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_ALL}))
+        set(log on)
+    elseif(LOG_EXACT )
+        if(COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_${level}})
+            set(log on) 
+        endif()
+    elseif(COMP_LOG_LVL GREATER ${_COMP_LOG_LVL_${level}} 
+            OR COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_${level}})
+        set(log on)
+    endif()
+
+    if(log)
+        message(STATUS ${out_message})
+    endif()
+endfunction()
 
 # EXTERNAL; feature module
 # requires a certain API version
@@ -39,7 +96,13 @@ endfunction()
 # first matching flag will be used!
 # result is written into named cache option
 function(_comp_check_flags result standard_name)
-    message(STATUS "Checking flags for ${standard_name}")
+    if(DEFINED ${result})
+        # If its defined, it likely means the library was included multiple times and we already
+        # searched for it. 
+        return()
+    endif()
+    
+    _comp_log(INFO "Checking flags for ${standard_name}")
     foreach(flag ${ARGN})
         if(NOT DEFINED name)
             set(name ${flag})
@@ -47,8 +110,16 @@ function(_comp_check_flags result standard_name)
             set(CMAKE_REQUIRED_QUIET ON)
             check_cxx_compiler_flag("${flag}" ${name})
             if(${name})
-                message(STATUS "Checking flags for ${standard_name} - Found: ${flag}")
-                set(${result} ${flag} CACHE STRING "Flag to activate ${standard_name}")
+                _comp_log(ALWAYS "Checking flags for ${standard_name} - Found: ${flag}")
+                set(${result} ${flag} CACHE INTERNAL "Flag to activate ${standard_name}")
+                return()
+            elseif(MSVC)
+                # MSVC < 2016 does *not* support the -std flag. 
+                if(NOT _COMP_MSVC_FLAG_${standard_name}_MSG_SHOWN)
+                    set(_COMP_MSVC_FLAG_${standard_name}_MSG_SHOWN TRUE CACHE INTERNAL '')
+                    _comp_log(INFO "Tried to check for ${standard_name}, but MSVC does not support flags.")
+                endif()
+                set(${result} "" CACHE INTERNAL "Flag to activate ${standard_name} (MSVC defaulted to ON)")
                 return()
             endif()
             unset(name)
@@ -56,10 +127,10 @@ function(_comp_check_flags result standard_name)
     endforeach()
     message(WARNING "Checking flags for ${standard_name} - No required ${standard_name} flag found,\
                     this could either be the case or missing support for your compiler.")
-    set(${result} "" CACHE STRING "Flag to activate ${standard_name}")
+    set(${result} "" CACHE INTERNAL "Flag to activate ${standard_name}")
 endfunction()
 
-set(COMP_CPP98_FLAG "" CACHE STRING "Flag to activate C++98")
+set(COMP_CPP98_FLAG "" CACHE INTERNAL "Flag to activate C++98")
 _comp_check_flags(COMP_CPP11_FLAG "C++11" std_cpp11_flag -std=c++11 std_cpp0x_flag -std=c++0x)
 _comp_check_flags(COMP_CPP14_FLAG "C++14" std_cpp14_flag -std=c++14 std_cpp1y_flag -std=c++1y)
 _comp_check_flags(COMP_CPP17_FLAG "C++17" std_cpp17_flag -std=c++17 std_cpp1z_flag -std=c++1z)
@@ -68,7 +139,7 @@ _comp_check_flags(COMP_CPP17_FLAG "C++17" std_cpp17_flag -std=c++17 std_cpp1z_fl
 # parses arguments for comp_compile_features
 macro(_comp_parse_arguments)
     cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14;CPP17;NOFLAGS" # no arg
-                               "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" # single arg
+                               "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH;LOG;SINGLE_HEADER" # single arg
                                 "" ${ARGN})
     if(COMP_NOPREFIX)
         set(COMP_PREFIX "")
@@ -83,6 +154,15 @@ macro(_comp_parse_arguments)
         string(SUBSTRING "${COMP_ID}" 0 ${length} COMP_ID)
     else()
         string(TOLOWER "${COMP_PREFIX}" COMP_ID)
+    endif()
+
+    if(COMP_LOG)
+        _comp_adjust_log_level(COMP_LOG ${COMP_LOG})
+        set(COMP_LOG_LVL ${COMP_LOG})
+    endif()
+
+    if(NOT DEFINED COMP_LOG_LVL)
+        set(COMP_LOG_LVL ${COMP_LOG_LEVEL})
     endif()
 
     if(NOT DEFINED COMP_NAMESPACE)
@@ -103,11 +183,16 @@ macro(_comp_parse_arguments)
     if(NOT DEFINED COMP_INCLUDE_PATH)
         set(COMP_INCLUDE_PATH "${CMAKE_BINARY_DIR}/comp.generated")
     endif()
+
+    if(NOT DEFINED COMP_SINGLE_HEADER)
+        set(COMP_SINGLE_HEADER off)
+    endif()
 endmacro()
 
 # INTERNAL
 # translates feature names
 function(_comp_translate_feature feature)
+    # Use a function so these don't bleed out of scope 
     set(_cxx_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")
     set(_cxx_alignas cpp11_lang/alignas CACHE INTERNAL "")
     set(_cxx_alignof cpp11_lang/alignof CACHE INTERNAL "")
@@ -182,15 +267,21 @@ endfunction()
 # downloads the file for a feature
 function(_comp_fetch_feature path feature)
     if(NOT EXISTS "${path}/${feature}.cmake")
+        if(${COMP_LOG_LVL} GREATER ${_COMP_LOG_LVL_INFO})
+            set(show_progress_flag "SHOW_PROGRESS")
+        else()
+            set(show_progress_flag "")
+        endif()
+
         file(DOWNLOAD ${COMP_REMOTE_URL}${feature}.cmake
                      ${path}/${feature}.cmake
-                     SHOW_PROGESS
+                     ${show_progress_flag}
                      STATUS status
                      LOG log)
         list(GET status 0 status_code)
         list(GET status 1 status_string)
         if(NOT status_code EQUAL 0)
-            message(FATAL_ERROR "error downloading feature file ${feature}.cmake: ${status_string} - ${log}")
+            message(FATAL_ERROR "error downloading feature file ${feature}.cmake: ${status_string}. Check spelling of feature.\n${log}")
         endif()
     endif()
 endfunction()
@@ -209,6 +300,7 @@ function(_comp_gen_files feature)
 
     list(APPEND _COMP_HEADERS ${COMP_PREFIX}${macro_name}_HEADER="${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp")
     set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
+
     file(WRITE ${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp
 "// This file was autogenerated using foonathan/compatibility.
 // See https://github.com/foonathan/compatibility for further information.
@@ -264,9 +356,11 @@ function(comp_target_features target include_policy)
     # these variables are modified/accessed by the feature modules
     # deprecated
     set(cpp11_flag ${COMP_CPP11_FLAG})
-    set(cpp14_flag ${COMP_CPP14_FLAG})
+    set(cpp14_flag ${COMP_CPP14_FLAG}) 
     set(cpp17_flag ${COMP_CPP17_FLAG})
 
+    list(LENGTH COMP_UNPARSED_ARGUMENTS _args_len)
+    _comp_log(QUIET "Checking ${_args_len} features" EXACT)
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
         _comp_handle_feature(${feature})
     endforeach()
@@ -302,6 +396,32 @@ function(comp_target_features target include_policy)
     if (NOT COMP_NOFLAGS)
         target_compile_options(${target} PRIVATE ${${target}_COMP_COMPILE_OPTIONS})
     endif()
+
+    if(COMP_SINGLE_HEADER)
+        set(include_lines )
+        foreach(header ${headers})
+            string(REGEX REPLACE ".+=\"(.+)\"" "\\1" header_path ${header})
+            file(RELATIVE_PATH header_path ${COMP_INCLUDE_PATH} ${header_path})
+            list(APPEND include_lines "#include \"${header_path}\"\n")
+        endforeach()
+
+        string(REPLACE ";" "" include_lines "${include_lines}")
+
+        file(WRITE ${COMP_INCLUDE_PATH}/${COMP_ID}/${COMP_SINGLE_HEADER}
+        "#pragma once
+#ifndef COMP_${COMP_PREFIX}CONFIG_HPP_INCLUDED
+#define COMP_${COMP_PREFIX}CONFIG_HPP_INCLUDED
+
+// Do not edit! File is generated!
+
+${include_lines}
+
+#endif")
+
+    endif()
+
+    list(LENGTH COMP_UNPARSED_ARGUMENTS _args_len)
+    _comp_log(QUIET "Checking ${_args_len} features -- Completed" EXACT)
 endfunction()
 
 # EXTERNAL; feature module
@@ -310,16 +430,20 @@ endfunction()
 # additional arguments are required other features, if they are not supported, it will be neither
 function(comp_feature name test_code standard)
     string(TOUPPER "${name}" macro_name)
-    message(STATUS "Checking for feature ${name}")
+
+    _comp_log(DEBUG "Checking for feature ${name}")
 
     if(_COMP_TEST_WORKAROUND)
-        set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "" FORCE)
+        set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "whether or not ${name} is available" FORCE)
     elseif(DEFINED COMP_HAS_${macro_name})
-        message(STATUS "Checking for feature ${name} - overriden")
+        
+        _comp_log(INFO "Checking for feature ${name} - overriden")
+        
         if(COMP_HAS_${macro_name})
             set(need_${standard} TRUE PARENT_SCOPE)
         endif()
     else()
+
         set(result ON)
         foreach(feature ${ARGN})
             _comp_handle_feature(${feature})
@@ -327,7 +451,7 @@ function(comp_feature name test_code standard)
             string(TOUPPER "${cur_name}" cur_name)
             if(NOT COMP_HAS_${cur_name})
                 set(result OFF)
-                message(STATUS "Checking for feature ${name} - Requirement failure: ${feature}")
+                _comp_log(ALL "Checking for feature ${name} - Requirement failure: ${feature}")
             endif()
         endforeach()
 
@@ -337,15 +461,15 @@ function(comp_feature name test_code standard)
             check_cxx_source_compiles("${test_code}" has_${name})
 
             if(has_${name})
-                option(COMP_HAS_${macro_name} "whether or not ${name} is available" ON)
+                set(COMP_HAS_${macro_name} ON CACHE INTERNAL "whether or not ${name} is available")
                 set(need_${standard} TRUE PARENT_SCOPE)
-                message(STATUS "Checking for feature ${name} - Success")
+                _comp_log(INFO "Checking for feature ${name} - overriden")
             else()
-                option(COMP_HAS_${macro_name} "whether or not ${name} is available" OFF)
-                message(STATUS "Checking for feature ${name} - Failed")
+                set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "whether or not ${name} is available")
+                _comp_log(ALL "Checking for feature ${name} - Failed")
             endif()
         else()
-            option(COMP_HAS_${macro_name} "whether or not ${name} is available" OFF)
+            set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "whether or not ${name} is available")
         endif()
     endif()
 endfunction()
@@ -365,6 +489,8 @@ function(comp_workaround name workaround standard)
         set(requires "${requires}#include \"${header}.hpp\"\n")
         _comp_handle_feature(${feature})
     endforeach()
+
+    # Parent vars
     set(${name}_requires ${requires} PARENT_SCOPE)
     set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
 endfunction()
@@ -377,6 +503,7 @@ function(comp_unit_test name global code)
     if (NOT _COMP_TEST)
         return()
     endif()
+
     set(${name}_test_code "${code}" PARENT_SCOPE)
     set(${name}_test_global "${global}" PARENT_SCOPE)
 endfunction()

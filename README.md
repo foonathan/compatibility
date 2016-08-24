@@ -87,7 +87,8 @@ It also provides the following function:
     comp_target_features(<target> <PRIVATE|PUBLIC|INTERFACE> <features...>
                          [NOPREFIX | PREFIX <prefix] [NAMESPACE <namespace>]
                          [CMAKE_PATH <path>] [INCLUDE_PATH <include_path>]
-                         [NOFLAGS | CPP11 | CPP14 | CPP17])
+                         [NOFLAGS | CPP11 | CPP14 | CPP17] 
+                         [LOG <DEBUG | INFO | QUIET | SILENT | ALL>])
 
 Ignoring all the other options, it is like `target_compile_features()`.
 It takes a list of features to activate for a certain target.
@@ -140,6 +141,10 @@ default is `${CMAKE_BINARY_DIR}/comp.downloaded` for cmake and `${CMAKE_BINARY_D
 or a lower (not recommended). They have priority over the deduction, C++17 over C++14 over C++11.
 Specify `NOFLAGS` if you do not want to have any compiler flags set.
 The latter is useful for `INTERFACE` libraries which are only there to run the tests and generate the options and headers.
+
+* `LOG`: Turn down or up the logging for features. There is no default value, but it is fairly verbose by default.
+  * Possible options: `DEBUG`, `INFO`, `QUIET`, `SILENT`, `ALL` 
+  * Additionally, setting `COMP_LOG_LEVEL` at the global level behaves the same way, except any option passed here will *override* for the current run
 
 ## Feature Reference
 
