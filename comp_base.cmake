@@ -42,8 +42,8 @@ macro(_comp_adjust_log_level VARIABLE LEVEL)
     endif()
 endmacro()
 
-# External; Sets the `COMP_LOG_LEVEL` variable using either the `_COMP_LOG_LVL_XX` 
-# variables or string versions. 
+# External; Sets the `COMP_LOG_LEVEL` variable using either the `_COMP_LOG_LVL_XX`
+# variables or string versions.
 function(comp_set_log_level LEVEL)
     _comp_adjust_log_level(log_level ${LEVEL})
     set(COMP_LOG_LEVEL ${log_level} CACHE STRING "Default logging level used within all calls (default: INFO)")
@@ -59,15 +59,15 @@ endif()
 # Log a message based on the current log level
 function(_comp_log level out_message)
     cmake_parse_arguments(log "EXACT" "" "" ${ARGN})
-    
+
     set(log off)
     if(NOT DEFINED COMP_LOG_LVL OR (${level} STREQUAL "ALL" OR COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_ALL}))
         set(log on)
     elseif(LOG_EXACT )
         if(COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_${level}})
-            set(log on) 
+            set(log on)
         endif()
-    elseif(COMP_LOG_LVL GREATER ${_COMP_LOG_LVL_${level}} 
+    elseif(COMP_LOG_LVL GREATER ${_COMP_LOG_LVL_${level}}
             OR COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_${level}})
         set(log on)
     endif()
@@ -98,10 +98,10 @@ endfunction()
 function(_comp_check_flags result standard_name)
     if(DEFINED ${result})
         # If its defined, it likely means the library was included multiple times and we already
-        # searched for it. 
+        # searched for it.
         return()
     endif()
-    
+
     _comp_log(INFO "Checking flags for ${standard_name}")
     foreach(flag ${ARGN})
         if(NOT DEFINED name)
@@ -114,7 +114,7 @@ function(_comp_check_flags result standard_name)
                 set(${result} ${flag} CACHE INTERNAL "Flag to activate ${standard_name}")
                 return()
             elseif(MSVC)
-                # MSVC < 2016 does *not* support the -std flag. 
+                # MSVC < 2016 does *not* support the -std flag.
                 if(NOT _COMP_MSVC_FLAG_${standard_name}_MSG_SHOWN)
                     set(_COMP_MSVC_FLAG_${standard_name}_MSG_SHOWN TRUE CACHE INTERNAL '')
                     _comp_log(INFO "Tried to check for ${standard_name}, but MSVC does not support flags.")
@@ -138,7 +138,7 @@ _comp_check_flags(COMP_CPP17_FLAG "C++17" std_cpp17_flag -std=c++17 std_cpp1z_fl
 # INTERNAL
 # parses arguments for comp_compile_features
 macro(_comp_parse_arguments)
-    cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14;CPP17;NOFLAGS" # no arg
+    cmake_parse_arguments(COMP "NOPREFIX;NO_HEADER_MACROS;CPP11;CPP14;CPP17;NOFLAGS" # no arg
                                "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH;LOG;SINGLE_HEADER" # single arg
                                 "" ${ARGN})
     if(COMP_NOPREFIX)
@@ -187,12 +187,16 @@ macro(_comp_parse_arguments)
     if(NOT DEFINED COMP_SINGLE_HEADER)
         set(COMP_SINGLE_HEADER off)
     endif()
+
+    if(NOT DEFINED COMP_NO_HEADER_MACROS)
+        set(COMP_NO_HEADER_MACROS off)
+    endif()
 endmacro()
 
 # INTERNAL
 # translates feature names
 function(_comp_translate_feature feature)
-    # Use a function so these don't bleed out of scope 
+    # Use a function so these don't bleed out of scope
     set(_cxx_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")
     set(_cxx_alignas cpp11_lang/alignas CACHE INTERNAL "")
     set(_cxx_alignof cpp11_lang/alignof CACHE INTERNAL "")
@@ -356,7 +360,7 @@ function(comp_target_features target include_policy)
     # these variables are modified/accessed by the feature modules
     # deprecated
     set(cpp11_flag ${COMP_CPP11_FLAG})
-    set(cpp14_flag ${COMP_CPP14_FLAG}) 
+    set(cpp14_flag ${COMP_CPP14_FLAG})
     set(cpp17_flag ${COMP_CPP17_FLAG})
 
     list(LENGTH COMP_UNPARSED_ARGUMENTS _args_len)
@@ -364,10 +368,10 @@ function(comp_target_features target include_policy)
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
         _comp_handle_feature(${feature})
     endforeach()
-    
+
     target_include_directories(${target} ${include_policy} $<BUILD_INTERFACE:${COMP_INCLUDE_PATH}>)
 
-    if(NOT COMP_SINGLE_HEADER)
+    if((NOT COMP_SINGLE_HEADER) AND (NOT COMP_NO_HEADER_MACROS))
         target_compile_definitions(${target} ${include_policy} ${_COMP_HEADERS})
     endif()
 
@@ -437,9 +441,9 @@ function(comp_feature name test_code standard)
     if(_COMP_TEST_WORKAROUND)
         set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "whether or not ${name} is available" FORCE)
     elseif(DEFINED COMP_HAS_${macro_name})
-        
+
         _comp_log(INFO "Checking for feature ${name} - overriden")
-        
+
         if(COMP_HAS_${macro_name})
             set(need_${standard} TRUE PARENT_SCOPE)
         endif()

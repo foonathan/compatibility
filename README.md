@@ -88,7 +88,8 @@ It also provides the following function:
                          [NOPREFIX | PREFIX <prefix] [NAMESPACE <namespace>]
                          [CMAKE_PATH <path>] [INCLUDE_PATH <include_path>]
                          [NOFLAGS | CPP11 | CPP14 | CPP17] 
-                         [LOG <DEBUG | INFO | QUIET | SILENT | ALL>])
+                         [LOG <DEBUG | INFO | QUIET | SILENT | ALL>]
+                         [NO_HEADER_MACROS] [SINGLE_HEADER <name>])
 
 Ignoring all the other options, it is like `target_compile_features()`.
 It takes a list of features to activate for a certain target.
@@ -145,6 +146,10 @@ The latter is useful for `INTERFACE` libraries which are only there to run the t
 * `LOG`: Turn down or up the logging for features. There is no default value, but it is fairly verbose by default.
   * Possible options: `DEBUG`, `INFO`, `QUIET`, `SILENT`, `ALL` 
   * Additionally, setting `COMP_LOG_LEVEL` at the global level behaves the same way, except any option passed here will *override* for the current run
+ 
+* `NO_HEADER_MACROS`: Disables the definition of the macros that contain the header file location.
+
+* `SINGLE_HEADER`: Generate a single header file with that name that will include all generated headers.
 
 ## Feature Reference
 
