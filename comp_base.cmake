@@ -3,6 +3,9 @@
 # found in the top-level directory of this distribution.
 
 # comp_base.cmake - base functionality for all compatibility files
+if(${CMAKE_MINIMUM_REQUIRED_VERSION} VERSION_LESS 3.0)
+    message(FATAL_ERROR "compat requires CMake version 3.0+")
+endif()
 
 include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
@@ -10,12 +13,69 @@ include(CMakeParseArguments)
 
 # EXTERNAL
 # the current API version
-set(COMP_API_VERSION 1.1 CACHE STRING "compatibility api version" FORCE)
+set(COMP_API_VERSION 1.1 CACHE INTERNAL "compatibility api version" FORCE)
+
+set(COMP_REMOTE_REPO "foonathan/compatibility" CACHE STRING "Github Repository to pull from")
+set(COMP_REMOTE_BRANCH "master" CACHE STRING "Git branch on COMP_REMOTE_REPO")
 
 # EXTERNAL
 # download location for feature files, the feature file name will be appended
 # to circumvent download process, manually place the files at the CMAKE_PATH
-set(COMP_REMOTE_URL "https://raw.githubusercontent.com/foonathan/compatibility/master/" CACHE STRING "url of remote repository to be used for downloading the feature files")
+set(COMP_REMOTE_URL "https://raw.githubusercontent.com/${COMP_REMOTE_REPO}/${COMP_REMOTE_BRANCH}/" CACHE STRING "url of remote repository to be used for downloading the feature files")
+
+set(_COMP_LOG_LVL_DEBUG     3       CACHE INTERNAL "Logging Level: Debug")
+set(_COMP_LOG_LVL_INFO      2       CACHE INTERNAL "Logging Level: Info")
+set(_COMP_LOG_LVL_QUIET     1       CACHE INTERNAL "Logging Level: Quiet")
+set(_COMP_LOG_LVL_SILENT    0       CACHE INTERNAL "Logging Level: Silent")
+set(_COMP_LOG_LVL_ALL       100     CACHE INTERNAL "Logging Level: ALL")
+
+set(COMP_LOG_LEVEL "INFO" CACHE STRING "Default logging level used within all calls (default: INFO)")
+
+macro(_comp_adjust_log_level VARIABLE LEVEL)
+    if(${LEVEL} MATCHES "(0|1|2|3|100)")
+        set(${VARIABLE} ${LEVEL})
+    elseif(${LEVEL} MATCHES "(DEBUG|INFO|QUIET|SILENT|ALL)")
+        set(${VARIABLE} ${_COMP_LOG_LVL_${VARIABLE}})
+    else()
+        message(WARNING "Tried to set ${VARIABLE} to ${LEVEL}, defaulting to INFO.")
+        comp_set_log_level(${VARIABLE} INFO)
+    endif()
+endmacro()
+
+# External; Sets the `COMP_LOG_LEVEL` variable using either the `_COMP_LOG_LVL_XX`
+# variables or string versions.
+function(comp_set_log_level LEVEL)
+    _comp_adjust_log_level(log_level ${LEVEL})
+    set(COMP_LOG_LEVEL ${log_level} CACHE STRING "Default logging level used within all calls (default: INFO)")
+endfunction()
+
+if(NOT COMP_LOG_LEVEL)
+    comp_set_log_level(INFO)
+else()
+    comp_set_log_level(${COMP_LOG_LEVEL})
+endif()
+
+# Internal;
+# Log a message based on the current log level
+function(_comp_log level out_message)
+    cmake_parse_arguments(log "EXACT" "" "" ${ARGN})
+
+    set(log off)
+    if(NOT DEFINED COMP_LOG_LVL OR (${level} STREQUAL "ALL" OR COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_ALL}))
+        set(log on)
+    elseif(LOG_EXACT )
+        if(COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_${level}})
+            set(log on)
+        endif()
+    elseif(COMP_LOG_LVL GREATER ${_COMP_LOG_LVL_${level}}
+            OR COMP_LOG_LVL EQUAL ${_COMP_LOG_LVL_${level}})
+        set(log on)
+    endif()
+
+    if(log)
+        message(STATUS ${out_message})
+    endif()
+endfunction()
 
 # EXTERNAL; feature module
 # requires a certain API version
@@ -36,7 +96,13 @@ endfunction()
 # first matching flag will be used!
 # result is written into named cache option
 function(_comp_check_flags result standard_name)
-    message(STATUS "Checking flags for ${standard_name}")
+    if(DEFINED ${result})
+        # If its defined, it likely means the library was included multiple times and we already
+        # searched for it.
+        return()
+    endif()
+
+    _comp_log(INFO "Checking flags for ${standard_name}")
     foreach(flag ${ARGN})
         if(NOT DEFINED name)
             set(name ${flag})
@@ -44,8 +110,16 @@ function(_comp_check_flags result standard_name)
             set(CMAKE_REQUIRED_QUIET ON)
             check_cxx_compiler_flag("${flag}" ${name})
             if(${name})
-                message(STATUS "Checking flags for ${standard_name} - Found: ${flag}")
-                set(${result} ${flag} CACHE STRING "Flag to activate ${standard_name}")
+                _comp_log(ALWAYS "Checking flags for ${standard_name} - Found: ${flag}")
+                set(${result} ${flag} CACHE INTERNAL "Flag to activate ${standard_name}")
+                return()
+            elseif(MSVC)
+                # MSVC < 2016 does *not* support the -std flag.
+                if(NOT _COMP_MSVC_FLAG_${standard_name}_MSG_SHOWN)
+                    set(_COMP_MSVC_FLAG_${standard_name}_MSG_SHOWN TRUE CACHE INTERNAL '')
+                    _comp_log(INFO "Tried to check for ${standard_name}, but MSVC does not support flags.")
+                endif()
+                set(${result} "" CACHE INTERNAL "Flag to activate ${standard_name} (MSVC defaulted to ON)")
                 return()
             endif()
             unset(name)
@@ -53,10 +127,10 @@ function(_comp_check_flags result standard_name)
     endforeach()
     message(WARNING "Checking flags for ${standard_name} - No required ${standard_name} flag found,\
                     this could either be the case or missing support for your compiler.")
-    set(${result} "" CACHE STRING "Flag to activate ${standard_name}")
+    set(${result} "" CACHE INTERNAL "Flag to activate ${standard_name}")
 endfunction()
 
-set(COMP_CPP98_FLAG "" CACHE STRING "Flag to activate C++98")
+set(COMP_CPP98_FLAG "" CACHE INTERNAL "Flag to activate C++98")
 _comp_check_flags(COMP_CPP11_FLAG "C++11" std_cpp11_flag -std=c++11 std_cpp0x_flag -std=c++0x)
 _comp_check_flags(COMP_CPP14_FLAG "C++14" std_cpp14_flag -std=c++14 std_cpp1y_flag -std=c++1y)
 _comp_check_flags(COMP_CPP17_FLAG "C++17" std_cpp17_flag -std=c++17 std_cpp1z_flag -std=c++1z)
@@ -64,8 +138,8 @@ _comp_check_flags(COMP_CPP17_FLAG "C++17" std_cpp17_flag -std=c++17 std_cpp1z_fl
 # INTERNAL
 # parses arguments for comp_compile_features
 macro(_comp_parse_arguments)
-    cmake_parse_arguments(COMP "NOPREFIX;CPP11;CPP14;CPP17;NOFLAGS" # no arg
-                               "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH" # single arg
+    cmake_parse_arguments(COMP "NOPREFIX;NO_HEADER_MACROS;CPP11;CPP14;CPP17;NOFLAGS" # no arg
+                               "PREFIX;NAMESPACE;CMAKE_PATH;INCLUDE_PATH;LOG;SINGLE_HEADER" # single arg
                                 "" ${ARGN})
     if(COMP_NOPREFIX)
         set(COMP_PREFIX "")
@@ -80,6 +154,15 @@ macro(_comp_parse_arguments)
         string(SUBSTRING "${COMP_ID}" 0 ${length} COMP_ID)
     else()
         string(TOLOWER "${COMP_PREFIX}" COMP_ID)
+    endif()
+
+    if(COMP_LOG)
+        _comp_adjust_log_level(COMP_LOG ${COMP_LOG})
+        set(COMP_LOG_LVL ${COMP_LOG})
+    endif()
+
+    if(NOT DEFINED COMP_LOG_LVL)
+        set(COMP_LOG_LVL ${COMP_LOG_LEVEL})
     endif()
 
     if(NOT DEFINED COMP_NAMESPACE)
@@ -100,62 +183,80 @@ macro(_comp_parse_arguments)
     if(NOT DEFINED COMP_INCLUDE_PATH)
         set(COMP_INCLUDE_PATH "${CMAKE_BINARY_DIR}/comp.generated")
     endif()
+
+    if(NOT DEFINED COMP_SINGLE_HEADER)
+        set(COMP_SINGLE_HEADER off)
+    endif()
+
+    if(NOT DEFINED COMP_NO_HEADER_MACROS)
+        set(COMP_NO_HEADER_MACROS off)
+    endif()
 endmacro()
 
 # INTERNAL
 # translates feature names
 function(_comp_translate_feature feature)
-    set(_cxx_alias_templates cpp11_lang/alias_template)
-    set(_cxx_alignas cpp11_lang/alignas)
-    set(_cxx_alignof cpp11_lang/alignof)
-    set(_cxx_attribute_deprecated cpp14_lang/deprecated)
-    set(_cxx_constexpr cpp11_lang/constexpr)
-    set(_cxx_decltype cpp11_lang/decltype)
-    set(_cxx_deleted_functions cpp11_lang/delete_fnc)
-    set(_cxx_explicit_conversions cpp11_lang/explicit_conversion_op)
-    set(_cxx_final cpp11_lang/final)
-    set(_cxx_noexcept cpp11_lang/noexcept)
-    set(_cxx_nullptr cpp11_lang/nullptr)
-    set(_cxx_override cpp11_lang/override)
-    set(_cxx_relaxed_constexpr cpp14_lang/general_constexpr)
-    set(_cxx_rvalue_references cpp11_lang/rvalue_ref)
-    set(_cxx_static_assert cpp11_lang/static_assert)
-    set(_cxx_thread_local cpp11_lang/thread_local)
-    set(_cxx_user_literals cpp11_lang/literal_op)
-    set(_cxx_variable_templates cpp14_lang/variable_template)
+    # Use a function so these don't bleed out of scope
+    set(_cxx_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")
+    set(_cxx_alignas cpp11_lang/alignas CACHE INTERNAL "")
+    set(_cxx_alignof cpp11_lang/alignof CACHE INTERNAL "")
+    set(_cxx_attribute_deprecated cpp14_lang/deprecated CACHE INTERNAL "")
+    set(_cxx_auto_type cpp11_lang/auto_type CACHE INTERNAL "")
+    set(_cxx_constexpr cpp11_lang/constexpr CACHE INTERNAL "")
+    set(_cxx_decltype cpp11_lang/decltype CACHE INTERNAL "")
+    set(_cxx_decltype_auto cpp14_lang/return_type_deduction CACHE INTERNAL "")
+    set(_cxx_deleted_functions cpp11_lang/delete_fnc CACHE INTERNAL "")
+    set(_cxx_default_function_template_args cpp11_lang/default_function_template_args CACHE INTERNAL "")
+    set(_cxx_explicit_conversions cpp11_lang/explicit_conversion_op CACHE INTERNAL "")
+    set(_cxx_final cpp11_lang/final CACHE INTERNAL "")
+    set(_cxx_lambdas cpp11_lang/lambdas CACHE INTERNAL "")
+    set(_cxx_noexcept cpp11_lang/noexcept CACHE INTERNAL "")
+    set(_cxx_nullptr cpp11_lang/nullptr CACHE INTERNAL "")
+    set(_cxx_override cpp11_lang/override CACHE INTERNAL "")
+    set(_cxx_relaxed_constexpr cpp14_lang/general_constexpr CACHE INTERNAL "")
+    set(_cxx_range_for cpp11_lang/range_for CACHE INTERNAL "")
+    set(_cxx_return_type_deduction cpp14_lang/return_type_deduction CACHE INTERNAL "")
+    set(_cxx_right_angle_brackets cpp11_lang/right_angle_brackets CACHE INTERNAL "")
+    set(_cxx_rvalue_references cpp11_lang/rvalue_ref CACHE INTERNAL "")
+    set(_cxx_static_assert cpp11_lang/static_assert CACHE INTERNAL "")
+    set(_cxx_strong_enums cpp11_lang/enum_class CACHE INTERNAL "")
+    set(_cxx_thread_local cpp11_lang/thread_local CACHE INTERNAL "")
+    set(_cxx_user_literals cpp11_lang/literal_op CACHE INTERNAL "")
+    set(_cxx_variable_templates cpp14_lang/variable_template CACHE INTERNAL "")
+    set(_cxx_variadic_templates cpp11_lang/parameter_pack CACHE INTERNAL "")
 
     # note: triple underscore at beginning!
-    set(___cpp_alias_templates cpp11_lang/alias_template)
-    set(___cpp_constexpr cpp11_lang/constexpr)
-    set(___cpp_decltype cpp11_lang/decltype)
-    set(___cpp_user_defined_literals cpp11_lang/literal_op)
-    set(___cpp_noexcept cpp11_lang/noexcept)
-    set(___cpp_rvalue_references cpp11_lang/rvalue_ref)
-    set(___cpp_static_assert cpp11_lang/static_assert)
+    set(___cpp_alias_templates cpp11_lang/alias_template CACHE INTERNAL "")
+    set(___cpp_constexpr cpp11_lang/constexpr CACHE INTERNAL "")
+    set(___cpp_decltype cpp11_lang/decltype CACHE INTERNAL "")
+    set(___cpp_user_defined_literals cpp11_lang/literal_op CACHE INTERNAL "")
+    set(___cpp_noexcept cpp11_lang/noexcept CACHE INTERNAL "")
+    set(___cpp_rvalue_references cpp11_lang/rvalue_ref CACHE INTERNAL "")
+    set(___cpp_static_assert cpp11_lang/static_assert CACHE INTERNAL "")
 
-    set(___cpp_return_type_deduction cpp14_lang/return_type_deduction)
-    set(___cpp_sized_deallocation cpp14_lang/sized_deallocation)
-    set(___cpp_variable_templates cpp14_lang/variable_template)
+    set(___cpp_return_type_deduction cpp14_lang/return_type_deduction CACHE INTERNAL "")
+    set(___cpp_sized_deallocation cpp14_lang/sized_deallocation CACHE INTERNAL "")
+    set(___cpp_variable_templates cpp14_lang/variable_template CACHE INTERNAL "")
 
-    set(___cpp_lib_exchange_function cpp14_lib/exchange)
-    set(___cpp_lib_transparent_operators cpp14_lib/generic_operator_functors)
-    set(___cpp_lib_integer_sequence cpp14_lib/integer_sequence)
-    set(___cpp_lib_make_unique cpp14_lib/make_unique)
-    set(___cpp_lib_quoted_string_io cpp14_lib/quoted)
-    set(___cpp_lib_shared_timed_mutex cpp14_lib/shared_lock)
-    set(___cpp_lib_robust_nonmodifying_seq_ops cpp14_lib/two_range_algorithms)
+    set(___cpp_lib_exchange_function cpp14_lib/exchange CACHE INTERNAL "")
+    set(___cpp_lib_transparent_operators cpp14_lib/generic_operator_functors CACHE INTERNAL "")
+    set(___cpp_lib_integer_sequence cpp14_lib/integer_sequence CACHE INTERNAL "")
+    set(___cpp_lib_make_unique cpp14_lib/make_unique CACHE INTERNAL "")
+    set(___cpp_lib_quoted_string_io cpp14_lib/quoted CACHE INTERNAL "")
+    set(___cpp_lib_shared_timed_mutex cpp14_lib/shared_lock CACHE INTERNAL "")
+    set(___cpp_lib_robust_nonmodifying_seq_ops cpp14_lib/two_range_algorithms CACHE INTERNAL "")
 
-    set(___cpp_fold_expressions cpp17_lang/fold_expressions)
-    set(___cpp_unicode_characters cpp17_lang/utf8_char_literal)
+    set(___cpp_fold_expressions cpp17_lang/fold_expressions CACHE INTERNAL "")
+    set(___cpp_unicode_characters cpp17_lang/utf8_char_literal CACHE INTERNAL "")
 
-    set(___cpp_lib_nonmember_container_access cpp17_lib/container_access)
-    set(___cpp_lib_invoke cpp17_lib/invoke)
-    set(___cpp_lib_map_insertion cpp17_lib/map_insertion)
-    set(___cpp_lib_unordered_map_insertion cpp17_lib/map_insertion)
-    set(___cpp_lib_map_try_emplace cpp17_lib/map_insertion)
-    set(___cpp_lib_unordered_map_try_emplace cpp17_lib/map_insertion)
-    set(___cpp_lib_uncaught_exceptions cpp17_lib/uncaught_exceptions)
-    set(___cpp_lib_void_t cpp17_lib/void_t)
+    set(___cpp_lib_nonmember_container_access cpp17_lib/container_access CACHE INTERNAL "")
+    set(___cpp_lib_invoke cpp17_lib/invoke CACHE INTERNAL "")
+    set(___cpp_lib_map_insertion cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_unordered_map_insertion cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_map_try_emplace cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_unordered_map_try_emplace cpp17_lib/map_insertion CACHE INTERNAL "")
+    set(___cpp_lib_uncaught_exceptions cpp17_lib/uncaught_exceptions CACHE INTERNAL "")
+    set(___cpp_lib_void_t cpp17_lib/void_t CACHE INTERNAL "")
 
     if(DEFINED _${feature})
         set(feature "${_${feature}}" PARENT_SCOPE)
@@ -170,15 +271,21 @@ endfunction()
 # downloads the file for a feature
 function(_comp_fetch_feature path feature)
     if(NOT EXISTS "${path}/${feature}.cmake")
+        if(${COMP_LOG_LVL} GREATER ${_COMP_LOG_LVL_INFO})
+            set(show_progress_flag "SHOW_PROGRESS")
+        else()
+            set(show_progress_flag "")
+        endif()
+
         file(DOWNLOAD ${COMP_REMOTE_URL}${feature}.cmake
                      ${path}/${feature}.cmake
-                     SHOW_PROGESS
+                     ${show_progress_flag}
                      STATUS status
                      LOG log)
         list(GET status 0 status_code)
         list(GET status 1 status_string)
         if(NOT status_code EQUAL 0)
-            message(FATAL_ERROR "error downloading feature file ${feature}.cmake: ${status_string} - ${log}")
+            message(FATAL_ERROR "error downloading feature file ${feature}.cmake: ${status_string}. Check spelling of feature.\n${log}")
         endif()
     endif()
 endfunction()
@@ -195,7 +302,9 @@ function(_comp_gen_files feature)
         set(result "0")
     endif()
 
-    set(headers ${headers} ${COMP_PREFIX}${macro_name}_HEADER="${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp" PARENT_SCOPE)
+    list(APPEND _COMP_HEADERS ${COMP_PREFIX}${macro_name}_HEADER="${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp")
+    set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
+
     file(WRITE ${COMP_INCLUDE_PATH}/${COMP_ID}/${name}.hpp
 "// This file was autogenerated using foonathan/compatibility.
 // See https://github.com/foonathan/compatibility for further information.
@@ -233,12 +342,15 @@ endfunction()
 
 # INTERNAL
 # handles a feature file
-macro(_comp_handle_feature feature)
+function(_comp_handle_feature feature)
     _comp_translate_feature(${feature})
     _comp_fetch_feature(${COMP_CMAKE_PATH} ${feature})
     include(${COMP_CMAKE_PATH}/${feature}.cmake)
     _comp_gen_files(${feature})
-endmacro()
+
+    # propagate variables up
+    set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
+endfunction()
 
 # EXTERNAL; user
 # setups certain features for a target
@@ -251,37 +363,70 @@ function(comp_target_features target include_policy)
     set(cpp14_flag ${COMP_CPP14_FLAG})
     set(cpp17_flag ${COMP_CPP17_FLAG})
 
+    list(LENGTH COMP_UNPARSED_ARGUMENTS _args_len)
+    _comp_log(QUIET "Checking ${_args_len} features" EXACT)
     foreach(feature ${COMP_UNPARSED_ARGUMENTS})
         _comp_handle_feature(${feature})
     endforeach()
-    target_include_directories(${target} ${include_policy} ${COMP_INCLUDE_PATH})
-    target_compile_definitions(${target} ${include_policy} ${headers})
+
+    target_include_directories(${target} ${include_policy} $<BUILD_INTERFACE:${COMP_INCLUDE_PATH}>)
+
+    if((NOT COMP_SINGLE_HEADER) AND (NOT COMP_NO_HEADER_MACROS))
+        target_compile_definitions(${target} ${include_policy} ${_COMP_HEADERS})
+    endif()
 
     # first explicit option, then implicit; 17 over 14 over 11
     if(COMP_CPP17)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP17_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(COMP_CPP14)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(COMP_CPP11)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP17_FLAG)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP17_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP14_FLAG)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP14_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     elseif(need_COMP_CPP11_FLAG)
         set(${target}_COMP_COMPILE_OPTIONS ${COMP_CPP11_FLAG}
-            CACHE STRING "required compile options for target")
+           CACHE STRING "required compile options for target")
     endif()
 
     # actually set option
     if (NOT COMP_NOFLAGS)
         target_compile_options(${target} PRIVATE ${${target}_COMP_COMPILE_OPTIONS})
     endif()
+
+    if(COMP_SINGLE_HEADER)
+        set(include_lines )
+        foreach(header ${headers})
+            string(REGEX REPLACE ".+=\"(.+)\"" "\\1" header_path ${header})
+            file(RELATIVE_PATH header_path ${COMP_INCLUDE_PATH} ${header_path})
+            list(APPEND include_lines "#include \"${header_path}\"\n")
+        endforeach()
+
+        string(REPLACE ";" "" include_lines "${include_lines}")
+
+        file(WRITE ${COMP_INCLUDE_PATH}/${COMP_ID}/${COMP_SINGLE_HEADER}
+        "// This file was autogenerated using foonathan/compatibility.
+// See https://github.com/foonathan/compatibility for further information.
+// Do not edit manually!
+
+#ifndef COMP_${COMP_PREFIX}CONFIG_HPP_INCLUDED
+#define COMP_${COMP_PREFIX}CONFIG_HPP_INCLUDED
+
+${include_lines}
+
+#endif")
+
+    endif()
+
+    list(LENGTH COMP_UNPARSED_ARGUMENTS _args_len)
+    _comp_log(QUIET "Checking ${_args_len} features -- Completed" EXACT)
 endfunction()
 
 # EXTERNAL; feature module
@@ -290,16 +435,20 @@ endfunction()
 # additional arguments are required other features, if they are not supported, it will be neither
 function(comp_feature name test_code standard)
     string(TOUPPER "${name}" macro_name)
-    message(STATUS "Checking for feature ${name}")
+
+    _comp_log(DEBUG "Checking for feature ${name}")
 
     if(_COMP_TEST_WORKAROUND)
-        set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "" FORCE)
+        set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "whether or not ${name} is available" FORCE)
     elseif(DEFINED COMP_HAS_${macro_name})
-        message(STATUS "Checking for feature ${name} - overriden")
+
+        _comp_log(INFO "Checking for feature ${name} - overriden")
+
         if(COMP_HAS_${macro_name})
             set(need_${standard} TRUE PARENT_SCOPE)
         endif()
     else()
+
         set(result ON)
         foreach(feature ${ARGN})
             _comp_handle_feature(${feature})
@@ -307,7 +456,7 @@ function(comp_feature name test_code standard)
             string(TOUPPER "${cur_name}" cur_name)
             if(NOT COMP_HAS_${cur_name})
                 set(result OFF)
-                message(STATUS "Checking for feature ${name} - Requirement failure: ${feature}")
+                _comp_log(ALL "Checking for feature ${name} - Requirement failure: ${feature}")
             endif()
         endforeach()
 
@@ -317,15 +466,15 @@ function(comp_feature name test_code standard)
             check_cxx_source_compiles("${test_code}" has_${name})
 
             if(has_${name})
-                option(COMP_HAS_${macro_name} "whether or not ${name} is available" ON)
+                set(COMP_HAS_${macro_name} ON CACHE INTERNAL "whether or not ${name} is available")
                 set(need_${standard} TRUE PARENT_SCOPE)
-                message(STATUS "Checking for feature ${name} - Success")
+                _comp_log(INFO "Checking for feature ${name} - overriden")
             else()
-                option(COMP_HAS_${macro_name} "whether or not ${name} is available" OFF)
-                message(STATUS "Checking for feature ${name} - Failed")
+                set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "whether or not ${name} is available")
+                _comp_log(ALL "Checking for feature ${name} - Failed")
             endif()
         else()
-            option(COMP_HAS_${macro_name} "whether or not ${name} is available" OFF)
+            set(COMP_HAS_${macro_name} OFF CACHE INTERNAL "whether or not ${name} is available")
         endif()
     endif()
 endfunction()
@@ -345,8 +494,10 @@ function(comp_workaround name workaround standard)
         set(requires "${requires}#include \"${header}.hpp\"\n")
         _comp_handle_feature(${feature})
     endforeach()
+
+    # Parent vars
     set(${name}_requires ${requires} PARENT_SCOPE)
-    set(headers "${headers}" PARENT_SCOPE)
+    set(_COMP_HEADERS "${_COMP_HEADERS}" PARENT_SCOPE)
 endfunction()
 
 # EXTERNAL; feature module
@@ -357,6 +508,7 @@ function(comp_unit_test name global code)
     if (NOT _COMP_TEST)
         return()
     endif()
+
     set(${name}_test_code "${code}" PARENT_SCOPE)
     set(${name}_test_global "${global}" PARENT_SCOPE)
 endfunction()
